@@ -1,7 +1,7 @@
-import { userEntity } from "../entities/User.entityt";
+import { userEntity } from "../entities/User.entity";
 import mongoose from "mongoose";
-import { LogError } from "@/utils/logger";
-import { LogSuccess } from "@/utils/logger";
+import { LogError } from "../../utils/logger";
+import { LogSuccess } from "../../utils/logger";
 
 // CRUS
 
@@ -9,7 +9,7 @@ import { LogSuccess } from "@/utils/logger";
  * Method to obtain all Users from Collection "Users" in Mongo Server
  */
 
-export const GetAllUsers = async (): Promise<any[] | undefined>  =>{
+export const getAllUsers = async (): Promise<any[] | undefined>  =>{
     try{
         let userModel = userEntity();
         

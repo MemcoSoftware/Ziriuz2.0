@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 export const userEntity = () => {
     let userSchema = new mongoose.Schema(
         {
+            number: Number,
             username: String,
             name: String,
             cedula: Number,
@@ -14,7 +15,7 @@ export const userEntity = () => {
             more_info: String
         }
     )
-    return mongoose.model('Users', userSchema);
+    return mongoose.models.Users || mongoose.model('Users', userSchema);
 }
 
 

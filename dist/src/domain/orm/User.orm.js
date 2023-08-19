@@ -9,16 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetAllUsers = void 0;
-const User_entityt_1 = require("../entities/User.entityt");
-const logger_1 = require("@/utils/logger");
+exports.getAllUsers = void 0;
+const User_entity_1 = require("../entities/User.entity");
+const logger_1 = require("../../utils/logger");
 // CRUS
 /**
  * Method to obtain all Users from Collection "Users" in Mongo Server
  */
-const GetAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
+const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let userModel = (0, User_entityt_1.userEntity)();
+        let userModel = (0, User_entity_1.userEntity)();
         // Search all users
         return yield userModel.find({ isDelete: false });
     }
@@ -26,5 +26,5 @@ const GetAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting All Users: ${error}`);
     }
 });
-exports.GetAllUsers = GetAllUsers;
+exports.getAllUsers = getAllUsers;
 //# sourceMappingURL=User.orm.js.map
