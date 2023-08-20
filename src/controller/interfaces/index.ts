@@ -7,8 +7,7 @@ export interface IHelloController {
 
 export interface IUserController{
 
-    // Read all Users from DATABASE
-    getUsers(): Promise<any>
-    // Find User by ID (ObjectID)
-    getUserByID(id: string): Promise<any>
+    // Read all Users from DATABASE || Get User By ID
+    getUsers(id?: string): Promise<any>
+    
 }

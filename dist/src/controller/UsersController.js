@@ -30,34 +30,28 @@ let UserController = exports.UserController = class UserController {
     /**
      * Endpoint to retreive the Users in the Collection "Users" into DB
     */
-    getUsers() {
+    getUsers(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            (0, logger_1.LogSuccess)('[/api/users] Get All Users Request');
-            const response = yield (0, User_orm_1.getAllUsers)();
+            let response = '';
+            if (id) {
+                (0, logger_1.LogSuccess)(`[/api/users] Get User By ID: ${id}`);
+                response = yield (0, User_orm_1.getUserByID)(id);
+            }
+            else {
+                (0, logger_1.LogSuccess)('[/api/users] Get All Users Request');
+                response = yield (0, User_orm_1.getAllUsers)();
+            }
             return response;
-        });
-    }
-    getUserByID(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            (0, logger_1.LogSuccess)(`[/api/users] Get User By ID: ${id}`);
-            return {
-                message: `Obtaining user By ID: ${id}`
-            };
         });
     }
 };
 __decorate([
     (0, tsoa_1.Get)("/"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "getUsers", null);
-__decorate([
     __param(0, (0, tsoa_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "getUserByID", null);
+], UserController.prototype, "getUsers", null);
 exports.UserController = UserController = __decorate([
     (0, tsoa_1.Route)("/api/users"),
     (0, tsoa_1.Tags)("UserController")

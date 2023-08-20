@@ -14,16 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const UsersController_1 = require("../controller/UsersController");
+const logger_1 = require("../utils/logger");
 // Router from Express
 let usersRouter = express_1.default.Router();
-//http://localhost:8000/api/users/
+//http://localhost:8000/api/users?id=64e16f5e7b636b0679ca720c
 usersRouter.route('/')
     // GET:
     .get((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    // Obtein a Query Param (ID)
+    let id = (_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.id;
+    (0, logger_1.LogInfo)(`Query Param: ${id}`);
     // Controller Instance to execute a method
     const controller = new UsersController_1.UserController();
     // Get Response
-    const response = yield controller.getUsers();
+    const response = yield controller.getUsers(id);
     // Send to the client the response
     return res.send(response);
 }));
