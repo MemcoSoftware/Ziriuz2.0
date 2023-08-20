@@ -37,7 +37,7 @@ const getUserByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
         return yield userModel.findById(id);
     }
     catch (error) {
-        (0, logger_1.LogError)(`[ORM ERROR]: Getting All User By ID: ${error}`);
+        (0, logger_1.LogError)(`[ORM ERROR]: Getting User By ID: ${error}`);
     }
 });
 exports.getUserByID = getUserByID;

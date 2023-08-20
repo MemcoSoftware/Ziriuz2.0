@@ -28,7 +28,7 @@ server.use('/api', routes_1.default);
 server.use(express_1.default.static('public'));
 // TODO Mongoose Connection
 const mongoose_1 = __importDefault(require("mongoose"));
-mongoose_1.default.connect('mongodb+srv://ziriuz:memcodev900454322@generalsziriuz.vpq2tyf.mongodb.net/?retryWrites=true&w=majority');
+mongoose_1.default.connect('mongodb+srv://ziriuz:memcodev900454322@generalsziriuz.vpq2tyf.mongodb.net/usersZiriuz?retryWrites=true&w=majority');
 // * Security Connection
 server.use((0, helmet_1.default)());
 server.use((0, cors_1.default)());

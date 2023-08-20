@@ -32,7 +32,7 @@ export const getUserByID = async (id: string) : Promise <any | undefined> =>{
         return await userModel.findById(id);
 
     } catch(error){
-        LogError(`[ORM ERROR]: Getting All User By ID: ${error}`);
+        LogError(`[ORM ERROR]: Getting User By ID: ${error}`);
     }
 }
 

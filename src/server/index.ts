@@ -53,7 +53,7 @@ server.use(express.static('public'))
 import mongoose from "mongoose";
 
 
-mongoose.connect('mongodb+srv://ziriuz:memcodev900454322@generalsziriuz.vpq2tyf.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://ziriuz:memcodev900454322@generalsziriuz.vpq2tyf.mongodb.net/usersZiriuz?retryWrites=true&w=majority')
 
 
 
