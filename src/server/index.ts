@@ -55,6 +55,8 @@ import mongoose from "mongoose";
 
 mongoose.connect('mongodb+srv://ziriuz:memcodev900454322@generalsziriuz.vpq2tyf.mongodb.net/?retryWrites=true&w=majority')
 
+
+
 // * Security Connection
 
 server.use(helmet())

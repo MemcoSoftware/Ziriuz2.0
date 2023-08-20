@@ -17,7 +17,7 @@ usersRouter.route('/')
         // Controller Instance to execute a method
         const controller: UserController = new UserController();
         // Get Response
-        const response:any = await controller.getUsers();
+        const response: any | undefined = await controller.getUsers();
         // Send to the client the response
         return res.send(response);
 

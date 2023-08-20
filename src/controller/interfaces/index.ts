@@ -9,5 +9,6 @@ export interface IUserController{
 
     // Read all Users from DATABASE
     getUsers(): Promise<any>
-
+    // Find User by ID (ObjectID)
+    getUserByID(id: string): Promise<any>
 }
