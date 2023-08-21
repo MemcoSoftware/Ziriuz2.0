@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserByID = exports.getAllUsers = void 0;
+exports.deleteUserByID = exports.getUserByID = exports.getAllUsers = void 0;
 const User_entity_1 = require("../entities/User.entity");
 const logger_1 = require("../../utils/logger");
 // CRUS
@@ -20,7 +20,7 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let userModel = (0, User_entity_1.userEntity)();
         // Search all users
-        return yield userModel.find({ isDelete: false });
+        return yield userModel.find();
         // return await userModel.find();
     }
     catch (error) {
@@ -41,5 +41,17 @@ const getUserByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getUserByID = getUserByID;
+// - Delete User By ID
+const deleteUserByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let userModel = (0, User_entity_1.userEntity)();
+        // Delete User BY ID
+        return yield userModel.deleteOne({ _id: id });
+    }
+    catch (error) {
+        (0, logger_1.LogError)('[ORM ERROR]: Deleting User By ID');
+    }
+});
+exports.deleteUserByID = deleteUserByID;
 // TODO
 //# sourceMappingURL=User.orm.js.map

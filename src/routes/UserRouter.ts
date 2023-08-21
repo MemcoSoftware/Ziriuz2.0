@@ -24,6 +24,20 @@ usersRouter.route('/')
         return res.send(response);
 
     })
+    // DELETE: 
+    .delete(async (req: Request, res: Response)=> {
+        // Obtein a Query Param (ID)
+        let id: any = req?.query?.id;
+        LogInfo(`Query Param: ${id}`);
+        // Controller Instance to execute a method
+        const controller: UserController = new UserController();
+        // Get Response
+        const response: any | undefined = await controller.deleteUser(id);
+        // Send to the client the response
+        return res.send(response);
+    })
+
+    
 
 // Export usersRouter
 

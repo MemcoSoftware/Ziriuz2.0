@@ -9,5 +9,9 @@ export interface IUserController{
 
     // Read all Users from DATABASE || Get User By ID
     getUsers(id?: string): Promise<any>
+    // Delet user by ID from DATABASE 
+    deleteUser(id?:string): Promise<any>
+    // Create new User
+    createUser(user: any): Promise<any>
     
 }

@@ -44,6 +44,31 @@ let UserController = exports.UserController = class UserController {
             return response;
         });
     }
+    deleteUser(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let response = '';
+            if (id) {
+                try {
+                    yield (0, User_orm_1.deleteUserByID)(id);
+                    response = {
+                        message: `User with ID: ${id} deleted successfully`
+                    };
+                }
+                catch (error) {
+                    response = {
+                        message: `Error deleting user with ID: ${id}`
+                    };
+                }
+            }
+            else {
+                (0, logger_1.LogWarning)('[/api/users] Delete User Request WITHOUT ID ');
+                response = {
+                    message: 'Please, provide an ID to remove from DB'
+                };
+            }
+            return response;
+        });
+    }
 };
 __decorate([
     (0, tsoa_1.Get)("/"),
@@ -52,6 +77,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUsers", null);
+__decorate([
+    (0, tsoa_1.Delete)("/"),
+    __param(0, (0, tsoa_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "deleteUser", null);
 exports.UserController = UserController = __decorate([
     (0, tsoa_1.Route)("/api/users"),
     (0, tsoa_1.Tags)("UserController")

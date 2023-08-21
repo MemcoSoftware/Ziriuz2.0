@@ -31,6 +31,19 @@ usersRouter.route('/')
     const response = yield controller.getUsers(id);
     // Send to the client the response
     return res.send(response);
+}))
+    // DELETE: 
+    .delete((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
+    // Obtein a Query Param (ID)
+    let id = (_b = req === null || req === void 0 ? void 0 : req.query) === null || _b === void 0 ? void 0 : _b.id;
+    (0, logger_1.LogInfo)(`Query Param: ${id}`);
+    // Controller Instance to execute a method
+    const controller = new UsersController_1.UserController();
+    // Get Response
+    const response = yield controller.deleteUser(id);
+    // Send to the client the response
+    return res.send(response);
 }));
 // Export usersRouter
 exports.default = usersRouter;
