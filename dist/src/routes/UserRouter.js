@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const UsersController_1 = require("../controller/UsersController");
 const logger_1 = require("../utils/logger");
+// Body Parser to Read  BODY from requests
+const body_parser_1 = __importDefault(require("body-parser"));
+let jsonParser = body_parser_1.default.json();
 // Router from Express
 let usersRouter = express_1.default.Router();
 //http://localhost:8000/api/users?id=64e16f5e7b636b0679ca720c
@@ -43,10 +46,10 @@ usersRouter.route('/')
     // Get Response
     const response = yield controller.deleteUser(id);
     // Send to the client the response
-    return res.status(response.status).send(response);
+    return res.status(200).send(response);
 }))
     // CREATE
-    .post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    .post(jsonParser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c, _d, _e, _f, _g, _h, _j, _k;
     // Obtein a Query Param (ID)
     let id = (_c = req === null || req === void 0 ? void 0 : req.query) === null || _c === void 0 ? void 0 : _c.id;
@@ -58,6 +61,8 @@ usersRouter.route('/')
     let telefono = (_h = req === null || req === void 0 ? void 0 : req.query) === null || _h === void 0 ? void 0 : _h.telefono;
     let email = (_j = req === null || req === void 0 ? void 0 : req.query) === null || _j === void 0 ? void 0 : _j.email;
     let more_info = (_k = req === null || req === void 0 ? void 0 : req.query) === null || _k === void 0 ? void 0 : _k.more_info;
+    // let name2: any =req?.body?.name;
+    // LogInfo(`Name in BODY: ${name2}`)
     let user = {
         number: number,
         username: username,
@@ -101,7 +106,7 @@ usersRouter.route('/')
     // Get Response
     const response = yield controller.updateUser(id, user);
     // Send to the user response
-    return res.status(response.status).send(response);
+    return res.status(200).send(response);
 }));
 // Export usersRouter
 exports.default = usersRouter;

@@ -4,6 +4,7 @@ import { LogSuccess, LogError, LogWarning } from "../utils/logger";
 import { IUser } from "../domain/interfaces/IUser.interface";
 import { IAuth } from "../domain/interfaces/IAuth.interface";
 import { loginUser, registerUser } from "../domain/orm/User.orm";
+import { AuthResponse, ErrorResponse } from "./types";
 
 @Route("/apli/auth")
 @Tags("AuthController")
@@ -18,9 +19,9 @@ export class AuthController implements IAuthController {
         let response: any = '';
 
         if(user){
-            LogSuccess(`[/api/auth/register] Register New User: ${user}`)
+            LogSuccess(`[/api/auth/register] Register New User: ${user.name}`);
             await registerUser(user).then((r)=>{
-                LogSuccess(`[/api/auth/register] Registered User: ${user}`);
+                LogSuccess(`[/api/auth/register] Registered User: ${user.username}`);
                 response = {
                     message: `User Registered successfully: ${user.name}`
                 }
@@ -28,7 +29,7 @@ export class AuthController implements IAuthController {
         }else {
             LogWarning(`[/api/auth/register] Register needs user Entity`)
             response = {
-                message: 'Please, provide a User Entity to create.'
+                message: 'User not Registered: Please, provide an User Entity to create.'
             }
         }
 
@@ -41,18 +42,18 @@ export class AuthController implements IAuthController {
     @Post("/login")
     public async loginUser(auth: IAuth): Promise<any> {
 
-        let response: any = '';
+        let response: AuthResponse | ErrorResponse |undefined;
         if(auth){
-            await loginUser(auth).then((r)=>{
-                LogSuccess(`[/api/auth/register] User Logged In: ${auth.username}`);
-                response = {
-                    message: `User successfully Logged In: ${auth.username}`,
-                    token: r.token //JWT generated for logged in User
-                }
-            });
+            LogSuccess(`[/api/auth/register] User Logged In: ${auth.username}`);
+            let data = await loginUser(auth);
+            response = {
+                token: data.token,
+                message: `Welcome, ${data.user.name}`
+            }
         }else{
             LogWarning(`[/api/auth/login] Login needs username and password`)
             response = {
+                error: '[AUTH ERROR]: Username and Password are Required',
                 message: "Please, provide an username and password"
             }
         }

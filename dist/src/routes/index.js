@@ -11,6 +11,7 @@ const express_1 = __importDefault(require("express"));
 const HelloRouter_1 = __importDefault(require("./HelloRouter"));
 const logger_1 = require("../utils/logger");
 const UserRouter_1 = __importDefault(require("./UserRouter"));
+const AuthRouter_1 = __importDefault(require("./AuthRouter"));
 // Server Instance
 let server = (0, express_1.default)();
 // Router Instance
@@ -26,5 +27,7 @@ server.use('/', rootRotuer); // http://localhost:8000/api/
 server.use('/hello', HelloRouter_1.default); // http://localhost:8000/api/hello --> HelloRouter
 // Add more routes to the app
 server.use('/users', UserRouter_1.default); // http://localhost:8000/api/users  --> userRouter
+// Auth routes
+server.use('/auth', AuthRouter_1.default); // http://localhost:8000/api/auth  --> authRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map

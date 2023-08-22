@@ -8,11 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserByID = exports.createUser = exports.deleteUserByID = exports.getUserByID = exports.getAllUsers = void 0;
+exports.logoutUser = exports.loginUser = exports.registerUser = exports.updateUserByID = exports.createUser = exports.deleteUserByID = exports.getUserByID = exports.getAllUsers = void 0;
 const User_entity_1 = require("../entities/User.entity");
 const logger_1 = require("../../utils/logger");
-// CRUS
+// BCRYPT For Passwords
+const bcrypt_1 = __importDefault(require("bcrypt"));
+// JWT
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+// CRUD
 /**
  * Method to obtain all Users from Collection "Users" in Mongo Server
  */
@@ -65,7 +72,6 @@ const createUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.createUser = createUser;
-// TODO
 // - Update User BY ID
 const updateUserByID = (id, user) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -78,4 +84,52 @@ const updateUserByID = (id, user) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.updateUserByID = updateUserByID;
+// Register User
+const registerUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let userModel = (0, User_entity_1.userEntity)();
+        // Create / Insert New User
+        return yield userModel.create(user);
+    }
+    catch (error) {
+        (0, logger_1.LogError)(`[ORM ERROR]: Registering User: ${error}`);
+    }
+});
+exports.registerUser = registerUser;
+// Login User
+const loginUser = (auth) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let userModel = (0, User_entity_1.userEntity)();
+        // Find User By Username
+        userModel.findOne({ email: auth.username }, (err, user) => {
+            if (err) {
+                // TODO Return ERROR --> User Not Found By username (500)
+            }
+            if (!user) {
+                // TODO return ERROR --> ERROR USER NOT FOUND (404)
+            }
+            // Use Bcrypt to Compare Passwords
+            let validPassword = bcrypt_1.default.compareSync(auth.password, user.password);
+            if (!validPassword) {
+                // TODO --> NOT AUTHORIZED (401)
+            }
+            // Create JWT
+            // TODO Secret must be in .env
+            let token = jsonwebtoken_1.default.sign({ username: user.username }, 'SECRET', {
+                expiresIn: "2h"
+            });
+            return token;
+        });
+    }
+    catch (error) {
+        (0, logger_1.LogError)(`[ORM ERROR]: Creating User: ${error}`);
+    }
+});
+exports.loginUser = loginUser;
+// Logout User
+const logoutUser = () => __awaiter(void 0, void 0, void 0, function* () {
+    // TODO NOT IMPLEMENTED
+});
+exports.logoutUser = logoutUser;
+// TODO
 //# sourceMappingURL=User.orm.js.map

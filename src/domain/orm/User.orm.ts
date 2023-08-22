@@ -103,35 +103,46 @@ export const registerUser = async (user: IUser): Promise <any | undefined>=>{
 export const loginUser = async (auth: IAuth): Promise <any | undefined>=>{
     try {
         let userModel = userEntity();
+
+
+        let userFound: IUser | undefined = undefined;
+        let token = undefined;
+
+        await userModel.findOne({username: auth.username}).then((user: IUser)=>{
+            userFound = user;
+        }).catch((error)=>{
+            console.error(`[AUTHENTICATION_ERROR in ORM]: User not found`)
+            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: ${error}`)
+        })
         
         // Find User By Username
 
-        userModel.findOne ({ email: auth.username}, (err: any, user: IUser)=>{
+        // userModel.findOne ({ email: auth.username}, (err: any, user: IUser)=>{
 
-            if(err){
-                // TODO Return ERROR --> User Not Found By username (500)
-            }
+        //     if(err){
+        //         // TODO Return ERROR --> User Not Found By username (500)
+        //     }
             
-            if(!user){
-                // TODO return ERROR --> ERROR USER NOT FOUND (404)
-            }
+        //     if(!user){
+        //         // TODO return ERROR --> ERROR USER NOT FOUND (404)
+        //     }
 
-            // Use Bcrypt to Compare Passwords
-            let validPassword = bcrypt.compareSync(auth.password, user.password);
+        //     // Use Bcrypt to Compare Passwords
+        //     let validPassword = bcrypt.compareSync(auth.password, user.password);
 
-            if(!validPassword){
-                // TODO --> NOT AUTHORIZED (401)
-            }
+        //     if(!validPassword){
+        //         // TODO --> NOT AUTHORIZED (401)
+        //     }
 
-            // Create JWT
-            // TODO Secret must be in .env
-            let token = jwt.sign({username: user.username}, 'SECRET', {
-                expiresIn: "2h"
-            });
+        //     // Create JWT
+        //     // TODO Secret must be in .env
+        //     let token = jwt.sign({username: user.username}, 'SECRET', {
+        //         expiresIn: "2h"
+        //     });
 
-            return token;
+        //     return token;
 
-        })
+        // })
 
     }catch(error){
         LogError(`[ORM ERROR]: Creating User: ${error}`)

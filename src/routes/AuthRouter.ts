@@ -9,14 +9,23 @@ import { IAuth } from "../domain/interfaces/IAuth.interface";
 import bcrypt from 'bcrypt';
 
 
+// MiddleWare 
+import { verifyToken } from "../middlewares/verifyToken.middleware";
+
+// Body Parser (READ JSON from Body in Requests)
+
+import bodyParser from 'body-parser';
+
+// Middleware to read JSON in Body
+let jsonParser = bodyParser.json()
 // Router from Express
 
 let authRouter = express.Router();
 
-authRouter.route('/auth/register')
-    .post(async (req: express.Request, res: Response)=>{
+authRouter.route('/register')
+    .post(jsonParser, async (req: express.Request, res: Response)=>{
 
-        let { number, username, password, name, cedula, telefono, email, more_info} = req.body;
+        let { number, username, password, name, cedula, telefono, email, more_info} = req?.body;
         let hashedPassword = '';
 
         if(number && username && password && name && cedula && telefono && email && more_info ){
@@ -41,6 +50,11 @@ authRouter.route('/auth/register')
             // Send to the client the response
             return res.status(200).send(response);
             
+        }else {
+            // Send to the client the response
+            return res.status(400).send({
+                message: ' [Error User Data Missing] User cannot be registered'
+            });
         }
         
     })
@@ -48,8 +62,8 @@ authRouter.route('/auth/register')
 
       
 
-authRouter.route('/auth/login')
-    .post(async (req: express.Request, res: Response)=>{
+authRouter.route('/login')
+    .post(jsonParser, async (req: express.Request, res: Response)=>{
 
         let { username, password} = req.body;
         
@@ -72,6 +86,11 @@ authRouter.route('/auth/login')
             // Send to the client the response whicho includes the JWT
             return res.status(200).send(response);
             
+        }else{
+            // Send to the client the response
+            return res.status(400).send({
+                message: ' [Error User Data Missing] User cannot be logged in'
+            });
         }
         
     });

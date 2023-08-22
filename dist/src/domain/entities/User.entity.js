@@ -6,21 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userEntity = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const userEntity = () => {
-    // let userSchema = new mongoose.Schema(
-    //     {
-    //         number: Number,
-    //         username: String,
-    //         name: String,
-    //         cedula: Number,
-    //         telefono: String,
-    //         email: String,
-    //         more_info: String
-    //     },
-    //     { versionKey: false } // Deshabilitar la función versionKey
-    // );
     let userSchema = new mongoose_1.default.Schema({
         number: { type: Number, required: true },
         username: { type: String, required: true },
+        password: { type: String, required: true },
         name: { type: String, required: true },
         cedula: { type: Number, required: true },
         telefono: { type: String, required: true },
