@@ -4,6 +4,9 @@ import { BasicResponse, ErrorResponse } from "./types";
 import { IHelloController } from "./interfaces";
 import { LogSuccess } from "../utils/logger";
 
+// ORM imports
+import { registerUser, loginUser, logoutUser } from "../domain/orm/User.orm";
+
 @Route("/api/hello")
 @Tags("HelloController")
 export class HelloController implements IHelloController {

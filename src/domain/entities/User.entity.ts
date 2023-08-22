@@ -1,22 +1,38 @@
 import mongoose from "mongoose";
-
+import { IUser } from "../interfaces/IUser.interface";
 
 
 
 export const userEntity = () => {
-    let userSchema = new mongoose.Schema(
+    // let userSchema = new mongoose.Schema(
+    //     {
+    //         number: Number,
+    //         username: String,
+    //         name: String,
+    //         cedula: Number,
+    //         telefono: String,
+    //         email: String,
+    //         more_info: String
+    //     },
+    //     { versionKey: false } // Deshabilitar la función versionKey
+    // );
+
+    let userSchema = new mongoose.Schema<IUser>(
         {
-            number: Number,
-            username: String,
-            name: String,
-            cedula: Number,
-            telefono: String,
-            email: String,
-            more_info: String
+            number: { type: Number, required: true},
+            username: { type: String, required: true},
+            password: {type: String, required: true},
+            name: { type: String, required: true},
+            cedula: { type: Number, required: true},
+            telefono: { type: String, required: true},
+            email: { type: String, required: true},
+            more_info: { type: String, required: true},
         },
         { versionKey: false } // Deshabilitar la función versionKey
     )
-    return mongoose.models.Users || mongoose.model('Users', userSchema);
+
+
+    return mongoose.models.Users || mongoose.model<IUser>('Users', userSchema);
 }
 
 

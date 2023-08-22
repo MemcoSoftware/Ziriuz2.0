@@ -30,7 +30,7 @@ usersRouter.route('/')
     // Get Response
     const response = yield controller.getUsers(id);
     // Send to the client the response
-    return res.send(response);
+    return res.status(200).send(response);
 }))
     // DELETE: 
     .delete((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -43,8 +43,9 @@ usersRouter.route('/')
     // Get Response
     const response = yield controller.deleteUser(id);
     // Send to the client the response
-    return res.send(response);
+    return res.status(response.status).send(response);
 }))
+    // CREATE
     .post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c, _d, _e, _f, _g, _h, _j, _k;
     // Obtein a Query Param (ID)
@@ -71,13 +72,13 @@ usersRouter.route('/')
     // Get Response
     const response = yield controller.createUser(user);
     // Send to the client the response
-    return res.send(response);
+    return res.status(201).send(response);
 }))
+    // UPDATE
     .put((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _l, _m, _o, _p, _q, _r, _s, _t;
     // Obtein a Query Param (ID)
     let id = (_l = req === null || req === void 0 ? void 0 : req.query) === null || _l === void 0 ? void 0 : _l.id;
-    (0, logger_1.LogInfo)(`Query Param: ${id}`);
     let number = (_m = req === null || req === void 0 ? void 0 : req.query) === null || _m === void 0 ? void 0 : _m.number;
     let username = (_o = req === null || req === void 0 ? void 0 : req.query) === null || _o === void 0 ? void 0 : _o.username;
     let name = (_p = req === null || req === void 0 ? void 0 : req.query) === null || _p === void 0 ? void 0 : _p.name;
@@ -85,6 +86,7 @@ usersRouter.route('/')
     let telefono = (_r = req === null || req === void 0 ? void 0 : req.query) === null || _r === void 0 ? void 0 : _r.telefono;
     let email = (_s = req === null || req === void 0 ? void 0 : req.query) === null || _s === void 0 ? void 0 : _s.email;
     let more_info = (_t = req === null || req === void 0 ? void 0 : req.query) === null || _t === void 0 ? void 0 : _t.more_info;
+    (0, logger_1.LogInfo)(`Query Param: ${id} ${number} ${username} ${name} ${cedula} ${telefono} ${email} ${more_info}`);
     // Controller Instance to execute a method
     const controller = new UsersController_1.UserController();
     let user = {
@@ -99,8 +101,15 @@ usersRouter.route('/')
     // Get Response
     const response = yield controller.updateUser(id, user);
     // Send to the user response
-    return res.send(response);
+    return res.status(response.status).send(response);
 }));
 // Export usersRouter
 exports.default = usersRouter;
+/**
+ * Get / Read Documents => 200 OK
+ * Post / Create Document => 201 OK
+ * Delete Document => 200 (Entity) / 204 (No return)
+ * Put / Update Documents => 200 (Entity) / 204 (No Return)
+ *
+ */ 
 //# sourceMappingURL=UserRouter.js.map

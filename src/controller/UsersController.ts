@@ -7,8 +7,11 @@ import { LogSuccess, LogError, LogWarning } from "../utils/logger";
 import { deleteUserByID, getAllUsers, getUserByID, createUser, updateUserByID } from "../domain/orm/User.orm";
 import { BasicResponse } from "./types";
 
+
+
 @Route("/api/users")
 @Tags("UserController")
+
 export class UserController implements IUserController {
     
     
@@ -49,10 +52,12 @@ public async deleteUser(@Query()id?: string): Promise<any> {
          try {
              await deleteUserByID(id);
              response = {
+             
                 message: `User with ID: ${id} deleted successfully`
             };
         } catch (error) {
             response = {
+          
                 message: `Error deleting user with ID: ${id}`
             };
         }
@@ -60,6 +65,7 @@ public async deleteUser(@Query()id?: string): Promise<any> {
         LogWarning('[/api/users] Delete User Request WITHOUT ID ');
         
         response = {
+            
             message: 'Please, provide an ID to remove from DB'
         };
     }
@@ -95,6 +101,7 @@ public async updateUser(@Query()id: string, user: any): Promise<any> {
            LogSuccess(`[/api/users] Update User By ID: ${id}`)
             await updateUserByID(id, user).then((r)=>{
             response= {
+               
                 message: `User with ID ${id} updated successfully`
             }
            })
@@ -104,6 +111,7 @@ public async updateUser(@Query()id: string, user: any): Promise<any> {
         LogWarning('[/api/users] Update User Request WITHOUD ID')
         
         response = {
+           
             message: 'Please, provide an Id to update an existing User'
         }
     }
