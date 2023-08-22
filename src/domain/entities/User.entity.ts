@@ -13,7 +13,8 @@ export const userEntity = () => {
             telefono: String,
             email: String,
             more_info: String
-        }
+        },
+        { versionKey: false } // Deshabilitar la función versionKey
     )
     return mongoose.models.Users || mongoose.model('Users', userSchema);
 }

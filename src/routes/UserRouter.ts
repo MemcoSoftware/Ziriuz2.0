@@ -38,19 +38,31 @@ usersRouter.route('/')
     })
 
     .post(async (req: Request, res: Response)=>{
-        // Controller Instance to execute a method
-        const controller: UserController = new UserController();
+        
+
+        // Obtein a Query Param (ID)
+        let id: any = req?.query?.id;
+        LogInfo(`Query Param: ${id}`);
+        let number: any = req?.query?.number;
+        let username: any = req?.query?.username;
+        let name: any = req?.query?.name;
+        let cedula: any = req?.query?.cedula;
+        let telefono: any = req?.query?.telefono;
+        let email: any = req?.query?.email;
+        let more_info: any = req?.query?.more_info;
 
         let user = {
-            number: 3,
-            username: "jaime.ruiz ",
-            name: "Jaime Ruiz",
-            cedula: 1010101010,
-            telefono: "3112121212",
-            email: "ceo@memcosas.com",
-            more_info: "CEO OF MEMCO SAS"
+            number: number,
+            username: username,
+            name: name,
+            cedula: cedula,
+            telefono: telefono,
+            email: email,
+            more_info: more_info
         }
 
+        // Controller Instance to execute a method
+        const controller: UserController = new UserController();
         // Get Response
         const response: any | undefined = await controller.createUser(user);
         // Send to the client the response
@@ -58,24 +70,31 @@ usersRouter.route('/')
     })
 
     .put(async (req: Request, res: Response)=>{
+        
         // Obtein a Query Param (ID)
         let id: any = req?.query?.id;
         LogInfo(`Query Param: ${id}`);
-
+        let number: any = req?.query?.number;
+        let username: any = req?.query?.username;
+        let name: any = req?.query?.name;
+        let cedula: any = req?.query?.cedula;
+        let telefono: any = req?.query?.telefono;
+        let email: any = req?.query?.email;
+        let more_info: any = req?.query?.more_info;
         // Controller Instance to execute a method
         const controller: UserController = new UserController();
 
         let user = {
-            number: 3,
-            username: "jaime.ruiz ",
-            name: "Jaime Ruiz",
-            cedula: 1010101010,
-            telefono: "3112121212",
-            email: "email@email.com",
-            more_info: "CEO OF MEMCO SAS"
+            number: number,
+            username: username,
+            name: name,
+            cedula: cedula,
+            telefono: telefono,
+            email: email,
+            more_info: more_info
         }
         // Get Response
-        const response: any | undefined = await controller.updateUser(id, user);
+        const response: any = await controller.updateUser(id, user);
 
         // Send to the user response
         return res.send(response);

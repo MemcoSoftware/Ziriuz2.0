@@ -98,7 +98,7 @@ let UserController = exports.UserController = class UserController {
             let response = '';
             if (id) {
                 (0, logger_1.LogSuccess)(`[/api/users] Update User By ID: ${id}`);
-                response = yield (0, User_orm_1.updateUserByID)(id, user).then((r) => {
+                yield (0, User_orm_1.updateUserByID)(id, user).then((r) => {
                     response = {
                         message: `User with ID ${id} updated successfully`
                     };

@@ -88,11 +88,12 @@ public async createUser(user: any): Promise<any> {
 @Put("/")
 
 public async updateUser(@Query()id: string, user: any): Promise<any> {
+
     let response: any = '';
     
        if(id){
            LogSuccess(`[/api/users] Update User By ID: ${id}`)
-           response = await updateUserByID(id, user).then((r)=>{
+            await updateUserByID(id, user).then((r)=>{
             response= {
                 message: `User with ID ${id} updated successfully`
             }
