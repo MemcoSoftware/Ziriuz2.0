@@ -115,6 +115,7 @@ export const loginUser = async (auth: IAuth): Promise <any | undefined>=>{
             throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: ${error}`)
         })
         
+        
         // Find User By Username
 
         // userModel.findOne ({ email: auth.username}, (err: any, user: IUser)=>{
