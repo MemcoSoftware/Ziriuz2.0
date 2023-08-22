@@ -53,7 +53,7 @@ export const deleteUserByID = async (id: string): Promise <any | undefined> =>{
 export const createUser = async (user: any): Promise <any | undefined> =>{
     try {
         let userModel = userEntity();
-        // Create New User
+        // Create / Insert New User
         return await userModel.create(user);
     }catch(error){
         LogError(`[ORM ERROR]: Creating User: ${error}`)
@@ -64,3 +64,14 @@ export const createUser = async (user: any): Promise <any | undefined> =>{
 // TODO
 
 
+// - Update User BY ID
+
+export const updateUserByID = async (id: string, user: any ): Promise <any | undefined> =>{
+    try {
+        let userModel = userEntity();
+        //  Update User
+        return await userModel.findByIdAndUpdate(id, user);
+    }catch(error){
+        LogError(`[ORM ERROR]: Updating User ${id}: ${error}`)
+    }
+}

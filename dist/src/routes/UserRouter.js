@@ -44,6 +44,44 @@ usersRouter.route('/')
     const response = yield controller.deleteUser(id);
     // Send to the client the response
     return res.send(response);
+}))
+    .post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // Controller Instance to execute a method
+    const controller = new UsersController_1.UserController();
+    let user = {
+        number: 3,
+        username: "jaime.ruiz ",
+        name: "Jaime Ruiz",
+        cedula: 1010101010,
+        telefono: "3112121212",
+        email: "ceo@memcosas.com",
+        more_info: "CEO OF MEMCO SAS"
+    };
+    // Get Response
+    const response = yield controller.createUser(user);
+    // Send to the client the response
+    return res.send(response);
+}))
+    .put((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c;
+    // Obtein a Query Param (ID)
+    let id = (_c = req === null || req === void 0 ? void 0 : req.query) === null || _c === void 0 ? void 0 : _c.id;
+    (0, logger_1.LogInfo)(`Query Param: ${id}`);
+    // Controller Instance to execute a method
+    const controller = new UsersController_1.UserController();
+    let user = {
+        number: 3,
+        username: "jaime.ruiz ",
+        name: "Jaime Ruiz",
+        cedula: 1010101010,
+        telefono: "3112121212",
+        email: "email@email.com",
+        more_info: "CEO OF MEMCO SAS"
+    };
+    // Get Response
+    const response = yield controller.updateUser(id, user);
+    // Send to the user response
+    return res.send(response);
 }));
 // Export usersRouter
 exports.default = usersRouter;

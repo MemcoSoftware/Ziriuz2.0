@@ -72,7 +72,7 @@
 				"operationId": "GetUsers",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "All users or user found by ID",
 						"content": {
 							"application/json": {
 								"schema": {}
@@ -80,13 +80,14 @@
 						}
 					}
 				},
-				"description": "Endpoint to retreive the Users in the Collection \"Users\" into DB",
+				"description": "Endpoint to retreive the USers in the \"Users\" Collection from DB",
 				"tags": [
 					"UserController"
 				],
 				"security": [],
 				"parameters": [
 					{
+						"description": "Id of user to retreive (optional)",
 						"in": "query",
 						"name": "id",
 						"required": false,
@@ -100,7 +101,7 @@
 				"operationId": "DeleteUser",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "message confirming user was deleted",
 						"content": {
 							"application/json": {
 								"schema": {}
@@ -108,12 +109,14 @@
 						}
 					}
 				},
+				"description": "Endpoint to delete the USers in the \"Users\" Collection from DB",
 				"tags": [
 					"UserController"
 				],
 				"security": [],
 				"parameters": [
 					{
+						"description": "Id of user to retreive (optional)",
 						"in": "query",
 						"name": "id",
 						"required": false,

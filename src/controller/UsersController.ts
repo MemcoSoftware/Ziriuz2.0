@@ -1,15 +1,16 @@
-import { Get, Query, Route, Tags, Delete, Post } from "tsoa";
+import { Get, Query, Route, Tags, Delete, Post, Put } from "tsoa";
 import { IUserController } from "./interfaces";
 import { LogSuccess, LogError, LogWarning } from "../utils/logger";
 
 
 // ORM - Users Collection
-import { deleteUserByID, getAllUsers, getUserByID } from "../domain/orm/User.orm";
+import { deleteUserByID, getAllUsers, getUserByID, createUser, updateUserByID } from "../domain/orm/User.orm";
 import { BasicResponse } from "./types";
 
 @Route("/api/users")
 @Tags("UserController")
 export class UserController implements IUserController {
+    
     
     /**
      * Endpoint to retreive the USers in the "Users" Collection from DB
@@ -73,12 +74,45 @@ public async deleteUser(@Query()id?: string): Promise<any> {
 
 @Post("/")
 public async createUser(user: any): Promise<any> {
-    return {
-        message: "Creating new User"
+    let response: any= '';
+
+    await createUser(user).then((r)=>{
+        LogSuccess(`[/api/users] Create user: ${user}`)
+        response = {
+            message: `User Created: ${user.name}`
+        }
+    })
+    return response;
+}
+
+@Put("/")
+
+public async updateUser(@Query()id: string, user: any): Promise<any> {
+    let response: any = '';
+    
+       if(id){
+           LogSuccess(`[/api/users] Update User By ID: ${id}`)
+           response = await updateUserByID(id, user).then((r)=>{
+            response= {
+                message: `User with ID ${id} updated successfully`
+            }
+           })
+           
+        
+    }else{
+        LogWarning('[/api/users] Update User Request WITHOUD ID')
+        
+        response = {
+            message: 'Please, provide an Id to update an existing User'
+        }
     }
+    return response;
 }
 
 
 
+
 }
+
+
 

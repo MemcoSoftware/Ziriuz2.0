@@ -28,7 +28,9 @@ const logger_1 = require("../utils/logger");
 const User_orm_1 = require("../domain/orm/User.orm");
 let UserController = exports.UserController = class UserController {
     /**
-     * Endpoint to retreive the Users in the Collection "Users" into DB
+     * Endpoint to retreive the USers in the "Users" Collection from DB
+     * @param {string} id Id of user to retreive (optional)
+     * @returns All users or user found by ID
     */
     getUsers(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -44,6 +46,11 @@ let UserController = exports.UserController = class UserController {
             return response;
         });
     }
+    /**
+     * Endpoint to delete the USers in the "Users" Collection from DB
+     * @param {string} id Id of user to retreive (optional)
+     * @returns message confirming user was deleted
+    */
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
             let response = '';
@@ -69,6 +76,43 @@ let UserController = exports.UserController = class UserController {
             return response;
         });
     }
+    /**
+     * Endpoint to create new user in the "Users" Collection from DB
+     * @param {string} id Id of user to retreive (optional)
+     * @returns message confirming user was deleted
+    */
+    createUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let response = '';
+            yield (0, User_orm_1.createUser)(user).then((r) => {
+                (0, logger_1.LogSuccess)(`[/api/users] Create user: ${user}`);
+                response = {
+                    message: `User Created: ${user.name}`
+                };
+            });
+            return response;
+        });
+    }
+    updateUser(id, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let response = '';
+            if (id) {
+                (0, logger_1.LogSuccess)(`[/api/users] Update User By ID: ${id}`);
+                response = yield (0, User_orm_1.updateUserByID)(id, user).then((r) => {
+                    response = {
+                        message: `User with ID ${id} updated successfully`
+                    };
+                });
+            }
+            else {
+                (0, logger_1.LogWarning)('[/api/users] Update User Request WITHOUD ID');
+                response = {
+                    message: 'Please, provide an Id to update an existing User'
+                };
+            }
+            return response;
+        });
+    }
 };
 __decorate([
     (0, tsoa_1.Get)("/"),
@@ -84,6 +128,19 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "deleteUser", null);
+__decorate([
+    (0, tsoa_1.Post)("/"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "createUser", null);
+__decorate([
+    (0, tsoa_1.Put)("/"),
+    __param(0, (0, tsoa_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateUser", null);
 exports.UserController = UserController = __decorate([
     (0, tsoa_1.Route)("/api/users"),
     (0, tsoa_1.Tags)("UserController")
