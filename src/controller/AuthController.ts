@@ -74,13 +74,11 @@ export class AuthController implements IAuthController {
        let response: any = '';
     
        if(id){
-           LogSuccess(`[/api/auth/me] Get User Data By ID: ${id}`)
+           LogSuccess(`[/api/users] Get User Data By ID: ${id}`);
            response = await getUserByID(id);
-           // Remove the password
-           response.password = '';
+           
     }
     return response;
-
     
 } 
 

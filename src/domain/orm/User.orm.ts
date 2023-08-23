@@ -15,6 +15,7 @@ import bcrypt from 'bcrypt';
 // JWT
 
 import jwt from 'jsonwebtoken';
+import { UserResponse } from "../types/UserResponse";
 
 // Environment variables Configuration
 
@@ -29,13 +30,34 @@ const secret = process.env.SECRETKEY || 'MYSECRETKEY';
  * Method to obtain all Users from Collection "Users" in Mongo Server
  */
 
-export const getAllUsers = async (): Promise<any[] | undefined>  =>{
+export const getAllUsers = async (page: number, limit: number): Promise<any[] | undefined>  =>{
     try{
         let userModel = userEntity();
-        
-        // Search all users
-        return await userModel.find()
-        // return await userModel.find();
+
+        let response: any = {};
+        // Search all users (using pagination)
+
+        await userModel.find({}, { _id: 0, password: 0})
+        .limit(limit)
+        .skip((page - 1) * limit)
+        .select('number username name cedula telefono email more_info')
+        .exec().then((users: IUser[]) =>{
+            // users.forEach((user: IUser)=>{
+            //     // Clean Passwords from result
+            //     user.password = ''
+            // });
+            response.users = users;
+        });
+
+        // Count total documents in Users collection
+        await userModel.countDocuments().then((total: number) => {
+            response.totalPages = Math.ceil(total / limit);
+            response.currentPage = page;
+        });
+        return response;
+
+
+    
     }catch (error){
         LogError(`[ORM ERROR]: Getting All Users: ${error}`);
         // throw error;
@@ -49,7 +71,7 @@ export const getUserByID = async (id: string) : Promise <any | undefined> =>{
         let userModel = userEntity();
 
         // Search User by ID
-        return await userModel.findById(id);
+        return await userModel.findById(id).select('number username name cedula telefono email more_info');
 
     } catch(error){
         LogError(`[ORM ERROR]: Getting User By ID: ${error}`);

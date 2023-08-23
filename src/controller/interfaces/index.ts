@@ -9,7 +9,7 @@ export interface IHelloController {
 export interface IUserController{
 
     // Read all Users from DATABASE || Get User By ID
-    getUsers(id?: string): Promise<any>
+    getUsers(page: number, limit: number, id?: string): Promise<any>
     // Delet user by ID from DATABASE 
     deleteUser(id?:string): Promise<any>
     

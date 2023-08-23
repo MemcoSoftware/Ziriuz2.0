@@ -32,19 +32,16 @@ let UserController = exports.UserController = class UserController {
      * @param {string} id Id of user to retreive (optional)
      * @returns All users or user found by ID
     */
-    getUsers(id) {
+    getUsers(page, limit, id) {
         return __awaiter(this, void 0, void 0, function* () {
             let response = '';
             if (id) {
                 (0, logger_1.LogSuccess)(`[/api/users] Get User By ID: ${id}`);
                 response = yield (0, User_orm_1.getUserByID)(id);
-                // Remove the password
-                response.password = '';
             }
             else {
                 (0, logger_1.LogSuccess)('[/api/users] Get All Users Request');
-                response = yield (0, User_orm_1.getAllUsers)();
-                // TODO: Remove passwords from the response
+                response = yield (0, User_orm_1.getAllUsers)(page, limit);
             }
             return response;
         });
@@ -107,9 +104,9 @@ let UserController = exports.UserController = class UserController {
 };
 __decorate([
     (0, tsoa_1.Get)("/"),
-    __param(0, (0, tsoa_1.Query)()),
+    __param(2, (0, tsoa_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number, Number, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUsers", null);
 __decorate([

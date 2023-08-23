@@ -5,6 +5,9 @@ import { LogInfo } from "../utils/logger";
 // Body Parser to Read  BODY from requests
 import bodyParser from 'body-parser';
 
+ // JWT Verifier Middleware
+import { verifyToken } from "../middlewares/verifyToken.middleware";
+
 let jsonParser = bodyParser.json();
 
 // Router from Express
@@ -17,14 +20,19 @@ usersRouter.route('/')
 
 
 // GET:
-    .get(async (req: Request, res: Response) =>{
+    .get(verifyToken, async (req: Request, res: Response) =>{
         // Obtein a Query Param (ID)
         let id: any = req?.query?.id;
+
+        // Pagination
+        let page: any = req?.query?.page || 1;
+        let limit: any = req?.query?.limit || 9;
+
         LogInfo(`Query Param: ${id}`)
         // Controller Instance to execute a method
         const controller: UserController = new UserController();
         // Get Response
-        const response: any | undefined = await controller.getUsers(id);
+        const response: any | undefined = await controller.getUsers(page, limit, id);
         // Send to the client the response
         return res.status(200).send(response);
 
@@ -32,7 +40,7 @@ usersRouter.route('/')
 
 
     // DELETE: 
-    .delete(async (req: Request, res: Response)=> {
+    .delete(verifyToken, async (req: Request, res: Response)=> {
         // Obtein a Query Param (ID)
         let id: any = req?.query?.id;
         LogInfo(`Query Param: ${id}`);
@@ -48,7 +56,7 @@ usersRouter.route('/')
 
 
     // UPDATE
-    .put(async (req: Request, res: Response)=>{
+    .put(verifyToken, async (req: Request, res: Response)=>{
 
         // Obtein a Query Param (ID)
         let id: any = req?.query?.id;

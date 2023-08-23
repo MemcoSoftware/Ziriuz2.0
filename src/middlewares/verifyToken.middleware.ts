@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const secret = process.env.SECRETKEY || 'MY SECRETKEY';
+const secret = process.env.SECRETKEY || 'MYSECRETKEY';
 
 
 /***
@@ -33,7 +33,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction)=>{
 
 
     // Verify the token obtained
-    // TODO: pass secret key
+    
     jwt.verify(token, secret, (err: any, decoded: any) =>{
         if(err){
             return res.status(500).send({
@@ -42,7 +42,6 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction)=>{
             });
         }
 
-        // Pass something to next request (id of user || other info)
         // Execute Next Function -> Protected Routes will be executed
         next();
     

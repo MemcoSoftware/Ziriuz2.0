@@ -82,7 +82,7 @@ authRouter.route('/login')
 authRouter.route('/me')
     .get(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    //Obtain User ID to check it's data             
+    //Obtain User ID to check its data             
     let id = (_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.id;
     if (id) {
         // Controller: Auth Controller

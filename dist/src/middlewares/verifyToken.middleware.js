@@ -8,7 +8,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 // Dotenv Configuration to read variables environment
 dotenv_1.default.config();
-const secret = process.env.SECRETKEY || 'MY SECRETKEY';
+const secret = process.env.SECRETKEY || 'MYSECRETKEY';
 /***
  * @param { Request } req  Original request previous middleware of verification JWT
  * @param { Response }res Response to verification of JWT
@@ -26,7 +26,6 @@ const verifyToken = (req, res, next) => {
         });
     }
     // Verify the token obtained
-    // TODO: pass secret key
     jsonwebtoken_1.default.verify(token, secret, (err, decoded) => {
         if (err) {
             return res.status(500).send({
@@ -34,7 +33,6 @@ const verifyToken = (req, res, next) => {
                 message: ' Failed to verify JWT token in request'
             });
         }
-        // Pass something to next request (id of user || other info)
         // Execute Next Function -> Protected Routes will be executed
         next();
     });

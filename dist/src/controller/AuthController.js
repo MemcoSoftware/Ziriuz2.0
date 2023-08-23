@@ -79,10 +79,8 @@ let AuthController = exports.AuthController = class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             let response = '';
             if (id) {
-                (0, logger_1.LogSuccess)(`[/api/auth/me] Get User Data By ID: ${id}`);
+                (0, logger_1.LogSuccess)(`[/api/users] Get User Data By ID: ${id}`);
                 response = yield (0, User_orm_1.getUserByID)(id);
-                // Remove the password
-                response.password = '';
             }
             return response;
         });

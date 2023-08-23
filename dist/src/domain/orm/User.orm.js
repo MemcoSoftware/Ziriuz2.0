@@ -29,12 +29,28 @@ const secret = process.env.SECRETKEY || 'MYSECRETKEY';
 /**
  * Method to obtain all Users from Collection "Users" in Mongo Server
  */
-const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
+const getAllUsers = (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let userModel = (0, User_entity_1.userEntity)();
-        // Search all users
-        return yield userModel.find();
-        // return await userModel.find();
+        let response = {};
+        // Search all users (using pagination)
+        yield userModel.find({}, { _id: 0, password: 0 })
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .select('number username name cedula telefono email more_info')
+            .exec().then((users) => {
+            // users.forEach((user: IUser)=>{
+            //     // Clean Passwords from result
+            //     user.password = ''
+            // });
+            response.users = users;
+        });
+        // Count total documents in Users collection
+        yield userModel.countDocuments().then((total) => {
+            response.totalPages = Math.ceil(total / limit);
+            response.currentPage = page;
+        });
+        return response;
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting All Users: ${error}`);
@@ -47,7 +63,7 @@ const getUserByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let userModel = (0, User_entity_1.userEntity)();
         // Search User by ID
-        return yield userModel.findById(id);
+        return yield userModel.findById(id).select('number username name cedula telefono email more_info');
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting User By ID: ${error}`);

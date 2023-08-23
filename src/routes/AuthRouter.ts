@@ -98,14 +98,16 @@ authRouter.route('/login')
     authRouter.route('/me')
          .get(verifyToken, async (req: Request, res: Response) => {
 
-            //Obtain User ID to check it's data             
+            //Obtain User ID to check its data             
             let id: any = req?.query?.id;
+
+            
             if(id){
                 // Controller: Auth Controller
                 const controller: AuthController = new AuthController();
                 
                 // Get Response from Controller
-                let response: any = await controller.userData(id)
+                let response: any = await controller.userData(id);
 
                 // If user is authorized
                 return res.status(200).send(response);
