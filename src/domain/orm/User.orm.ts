@@ -5,6 +5,10 @@ import { LogSuccess } from "../../utils/logger";
 import { IUser } from "../interfaces/IUser.interface";
 import { IAuth } from "../interfaces/IAuth.interface";
 
+// Environment variables
+
+import dotenv from 'dotenv';
+
 // BCRYPT For Passwords
 import bcrypt from 'bcrypt';
 
@@ -12,6 +16,13 @@ import bcrypt from 'bcrypt';
 
 import jwt from 'jsonwebtoken';
 
+// Environment variables Configuration
+
+dotenv.config();
+
+// Obtein Secret key to generate JWT
+
+const secret = process.env.SECRETKEY || 'MYSECRETKEY';
 // CRUD
 
 /**
@@ -108,42 +119,38 @@ export const loginUser = async (auth: IAuth): Promise <any | undefined>=>{
         let userFound: IUser | undefined = undefined;
         let token = undefined;
 
+        // Check if user exists by Username
         await userModel.findOne({username: auth.username}).then((user: IUser)=>{
             userFound = user;
         }).catch((error)=>{
-            console.error(`[AUTHENTICATION_ERROR in ORM]: User not found`)
-            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: ${error}`)
-        })
+            console.error(`[AUTHENTICATION_ERROR in ORM]: User not found`);
+            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: ${error}`);
+        });
         
+        // Check if Password is valid (compare with bcrypt)
+        let validPassword = bcrypt.compareSync(auth.password, userFound!.password);
+
+        if(!validPassword){
+            console.error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password `);
+            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: Invalid Password`);
+        }
+
+
+        // Generate JWT
         
-        // Find User By Username
+            token = jwt.sign({username: userFound!.username}, secret, {
+                expiresIn: "2h"
+            });
 
-        // userModel.findOne ({ email: auth.username}, (err: any, user: IUser)=>{
 
-        //     if(err){
-        //         // TODO Return ERROR --> User Not Found By username (500)
-        //     }
-            
-        //     if(!user){
-        //         // TODO return ERROR --> ERROR USER NOT FOUND (404)
-        //     }
+            return {
+                user: userFound,
+                token: token
+            }
 
-        //     // Use Bcrypt to Compare Passwords
-        //     let validPassword = bcrypt.compareSync(auth.password, user.password);
 
-        //     if(!validPassword){
-        //         // TODO --> NOT AUTHORIZED (401)
-        //     }
 
-        //     // Create JWT
-        //     // TODO Secret must be in .env
-        //     let token = jwt.sign({username: user.username}, 'SECRET', {
-        //         expiresIn: "2h"
-        //     });
-
-        //     return token;
-
-        // })
+        
 
     }catch(error){
         LogError(`[ORM ERROR]: Creating User: ${error}`)

@@ -5,6 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const dotenv_1 = __importDefault(require("dotenv"));
+// Dotenv Configuration to read variables environment
+dotenv_1.default.config();
+const secret = process.env.SECRETKEY || 'MY SECRETKEY';
 /***
  * @param { Request } req  Original request previous middleware of verification JWT
  * @param { Response }res Response to verification of JWT
@@ -22,7 +26,8 @@ const verifyToken = (req, res, next) => {
         });
     }
     // Verify the token obtained
-    jsonwebtoken_1.default.verify(token, '', (err, decoded) => {
+    // TODO: pass secret key
+    jsonwebtoken_1.default.verify(token, secret, (err, decoded) => {
         if (err) {
             return res.status(500).send({
                 authenticationError: ' JWT Veriication failed',
@@ -31,6 +36,7 @@ const verifyToken = (req, res, next) => {
         }
         // Pass something to next request (id of user || other info)
         // Execute Next Function -> Protected Routes will be executed
+        next();
     });
 };
 exports.verifyToken = verifyToken;

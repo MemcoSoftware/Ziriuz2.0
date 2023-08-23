@@ -15,10 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.logoutUser = exports.loginUser = exports.registerUser = exports.updateUserByID = exports.createUser = exports.deleteUserByID = exports.getUserByID = exports.getAllUsers = void 0;
 const User_entity_1 = require("../entities/User.entity");
 const logger_1 = require("../../utils/logger");
+// Environment variables
+const dotenv_1 = __importDefault(require("dotenv"));
 // BCRYPT For Passwords
 const bcrypt_1 = __importDefault(require("bcrypt"));
 // JWT
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+// Environment variables Configuration
+dotenv_1.default.config();
+// Obtein Secret key to generate JWT
+const secret = process.env.SECRETKEY || 'MYSECRETKEY';
 // CRUD
 /**
  * Method to obtain all Users from Collection "Users" in Mongo Server
@@ -100,26 +106,29 @@ exports.registerUser = registerUser;
 const loginUser = (auth) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let userModel = (0, User_entity_1.userEntity)();
-        // Find User By Username
-        userModel.findOne({ email: auth.username }, (err, user) => {
-            if (err) {
-                // TODO Return ERROR --> User Not Found By username (500)
-            }
-            if (!user) {
-                // TODO return ERROR --> ERROR USER NOT FOUND (404)
-            }
-            // Use Bcrypt to Compare Passwords
-            let validPassword = bcrypt_1.default.compareSync(auth.password, user.password);
-            if (!validPassword) {
-                // TODO --> NOT AUTHORIZED (401)
-            }
-            // Create JWT
-            // TODO Secret must be in .env
-            let token = jsonwebtoken_1.default.sign({ username: user.username }, 'SECRET', {
-                expiresIn: "2h"
-            });
-            return token;
+        let userFound = undefined;
+        let token = undefined;
+        // Check if user exists by Username
+        yield userModel.findOne({ username: auth.username }).then((user) => {
+            userFound = user;
+        }).catch((error) => {
+            console.error(`[AUTHENTICATION_ERROR in ORM]: User not found`);
+            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: ${error}`);
         });
+        // Check if Password is valid (compare with bcrypt)
+        let validPassword = bcrypt_1.default.compareSync(auth.password, userFound.password);
+        if (!validPassword) {
+            console.error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password `);
+            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: Invalid Password`);
+        }
+        // Generate JWT
+        token = jsonwebtoken_1.default.sign({ username: userFound.username }, secret, {
+            expiresIn: "2h"
+        });
+        return {
+            user: userFound,
+            token: token
+        };
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Creating User: ${error}`);

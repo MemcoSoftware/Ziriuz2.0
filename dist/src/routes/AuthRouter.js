@@ -16,6 +16,8 @@ const express_1 = __importDefault(require("express"));
 const AuthController_1 = require("../controller/AuthController");
 // BCRYPT for passwords
 const bcrypt_1 = __importDefault(require("bcrypt"));
+// MiddleWare 
+const verifyToken_middleware_1 = require("../middlewares/verifyToken.middleware");
 // Body Parser (READ JSON from Body in Requests)
 const body_parser_1 = __importDefault(require("body-parser"));
 // Middleware to read JSON in Body
@@ -46,6 +48,12 @@ authRouter.route('/register')
         // Send to the client the response
         return res.status(200).send(response);
     }
+    else {
+        // Send to the client the response
+        return res.status(400).send({
+            message: ' [Error User Data Missing] User cannot be registered'
+        });
+    }
 }));
 authRouter.route('/login')
     .post(jsonParser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -62,6 +70,32 @@ authRouter.route('/login')
         const response = yield controller.loginUser(auth);
         // Send to the client the response whicho includes the JWT
         return res.status(200).send(response);
+    }
+    else {
+        // Send to the client the response
+        return res.status(400).send({
+            message: ' [Error User Data Missing] User cannot be logged in'
+        });
+    }
+}));
+// Route protected by VERIFY TOKEN Middleware
+authRouter.route('/me')
+    .get(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    //Obtain User ID to check it's data             
+    let id = (_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.id;
+    if (id) {
+        // Controller: Auth Controller
+        const controller = new AuthController_1.AuthController();
+        // Get Response from Controller
+        let response = yield controller.userData(id);
+        // If user is authorized
+        return res.status(200).send(response);
+    }
+    else {
+        return res.status(401).send({
+            message: 'You are not authorized to perform this action'
+        });
     }
 }));
 exports.default = authRouter;

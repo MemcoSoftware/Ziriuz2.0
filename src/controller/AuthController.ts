@@ -3,7 +3,7 @@ import { IAuthController } from "./interfaces";
 import { LogSuccess, LogError, LogWarning } from "../utils/logger";
 import { IUser } from "../domain/interfaces/IUser.interface";
 import { IAuth } from "../domain/interfaces/IAuth.interface";
-import { loginUser, registerUser } from "../domain/orm/User.orm";
+import { getUserByID, loginUser, registerUser } from "../domain/orm/User.orm";
 import { AuthResponse, ErrorResponse } from "./types";
 
 @Route("/apli/auth")
@@ -60,9 +60,31 @@ export class AuthController implements IAuthController {
         return response; 
     }
 
+    /**
+     * Endpoint to retreive the USers in the "Users" Collection from DB
+     * Middleware: Validate JWT
+     * In Headers the x-access-token must be added with a valid JWT
+     * @param {string} id Id of user to retreive (optional)
+     * @returns All users or user found by ID  
+    */
 
+    @Get("/me")
+   public async userData(@Query()id: string): Promise<any> {
+       
+       let response: any = '';
+    
+       if(id){
+           LogSuccess(`[/api/auth/me] Get User Data By ID: ${id}`)
+           response = await getUserByID(id);
+           // Remove the password
+           response.password = '';
+    }
+    return response;
 
+    
+} 
 
+    
     @Post("/logout")
     public async logoutUser(): Promise<any> {
         let response: any = '';

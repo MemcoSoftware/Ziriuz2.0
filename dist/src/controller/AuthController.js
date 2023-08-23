@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -46,21 +49,40 @@ let AuthController = exports.AuthController = class AuthController {
     }
     loginUser(auth) {
         return __awaiter(this, void 0, void 0, function* () {
-            let response = '';
+            let response;
             if (auth) {
-                yield (0, User_orm_1.loginUser)(auth).then((r) => {
-                    (0, logger_1.LogSuccess)(`[/api/auth/register] User Logged In: ${auth.username}`);
-                    response = {
-                        message: `User successfully Logged In: ${auth.username}`,
-                        token: r.token //JWT generated for logged in User
-                    };
-                });
+                (0, logger_1.LogSuccess)(`[/api/auth/register] User Logged In: ${auth.username}`);
+                let data = yield (0, User_orm_1.loginUser)(auth);
+                response = {
+                    token: data.token,
+                    message: `Welcome, ${data.user.name}`
+                };
             }
             else {
                 (0, logger_1.LogWarning)(`[/api/auth/login] Login needs username and password`);
                 response = {
+                    error: '[AUTH ERROR]: Username and Password are Required',
                     message: "Please, provide an username and password"
                 };
+            }
+            return response;
+        });
+    }
+    /**
+     * Endpoint to retreive the USers in the "Users" Collection from DB
+     * Middleware: Validate JWT
+     * In Headers the x-access-token must be added with a valid JWT
+     * @param {string} id Id of user to retreive (optional)
+     * @returns All users or user found by ID
+    */
+    userData(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let response = '';
+            if (id) {
+                (0, logger_1.LogSuccess)(`[/api/auth/me] Get User Data By ID: ${id}`);
+                response = yield (0, User_orm_1.getUserByID)(id);
+                // Remove the password
+                response.password = '';
             }
             return response;
         });
@@ -85,6 +107,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "loginUser", null);
+__decorate([
+    (0, tsoa_1.Get)("/me"),
+    __param(0, (0, tsoa_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "userData", null);
 __decorate([
     (0, tsoa_1.Post)("/logout"),
     __metadata("design:type", Function),

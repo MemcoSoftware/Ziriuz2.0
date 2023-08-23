@@ -94,5 +94,36 @@ authRouter.route('/login')
         }
         
     });
+    // Route protected by VERIFY TOKEN Middleware
+    authRouter.route('/me')
+         .get(verifyToken, async (req: Request, res: Response) => {
+
+            //Obtain User ID to check it's data             
+            let id: any = req?.query?.id;
+            if(id){
+                // Controller: Auth Controller
+                const controller: AuthController = new AuthController();
+                
+                // Get Response from Controller
+                let response: any = await controller.userData(id)
+
+                // If user is authorized
+                return res.status(200).send(response);
+                
+                
+
+            }else{
+                return res.status(401).send({
+                    message: 'You are not authorized to perform this action'
+                })
+            }
+
+         }) 
+
+
+
+
+
+
 
     export default authRouter;

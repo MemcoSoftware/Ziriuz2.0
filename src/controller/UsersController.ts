@@ -28,12 +28,15 @@ export class UserController implements IUserController {
        if(id){
            LogSuccess(`[/api/users] Get User By ID: ${id}`)
            response = await getUserByID(id);
+           // Remove the password
+           response.password = '';
            
         
     }else{
         LogSuccess('[/api/users] Get All Users Request')
         
         response = await getAllUsers();
+        // TODO: Remove passwords from the response
     }
     return response;
 } 
@@ -78,18 +81,7 @@ public async deleteUser(@Query()id?: string): Promise<any> {
  * @returns message confirming user was deleted
 */
 
-@Post("/")
-public async createUser(user: any): Promise<any> {
-    let response: any= '';
 
-    await createUser(user).then((r)=>{
-        LogSuccess(`[/api/users] Create user: ${user}`)
-        response = {
-            message: `User Created: ${user.name}`
-        }
-    })
-    return response;
-}
 
 @Put("/")
 
