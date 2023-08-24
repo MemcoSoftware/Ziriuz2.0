@@ -7,6 +7,7 @@ import helloRouter from './HelloRouter';
 import { LogInfo } from '../utils/logger';
 import usersRouter from './UserRouter';
 import authRouter from './AuthRouter'
+import tecnicosRouter from './TecnicoRouter';
 
 
 // Server Instance
@@ -35,4 +36,6 @@ server.use('/hello', helloRouter); // http://localhost:8000/api/hello --> HelloR
 server.use('/users', usersRouter) // http://localhost:8000/api/users  --> userRouter
 // Auth routes
 server.use('/auth', authRouter); // http://localhost:8000/api/auth  --> authRouter
+// Tecnicos routes
+server.use('/tecnicos',tecnicosRouter);// http://localhost:8000/api/tecnicos  --> tecnicosRouter
 export default server;

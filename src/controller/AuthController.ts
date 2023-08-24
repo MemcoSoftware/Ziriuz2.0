@@ -44,7 +44,7 @@ export class AuthController implements IAuthController {
 
         let response: AuthResponse | ErrorResponse |undefined;
         if(auth){
-            LogSuccess(`[/api/auth/register] User Logged In: ${auth.username}`);
+            LogSuccess(`[/api/auth/login] User Logged In: ${auth.username}`);
             let data = await loginUser(auth);
             response = {
                 token: data.token,

@@ -51,7 +51,7 @@ let AuthController = exports.AuthController = class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             let response;
             if (auth) {
-                (0, logger_1.LogSuccess)(`[/api/auth/register] User Logged In: ${auth.username}`);
+                (0, logger_1.LogSuccess)(`[/api/auth/login] User Logged In: ${auth.username}`);
                 let data = yield (0, User_orm_1.loginUser)(auth);
                 response = {
                     token: data.token,

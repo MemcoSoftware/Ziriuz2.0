@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logoutUser = exports.loginUser = exports.registerUser = exports.updateUserByID = exports.createUser = exports.deleteUserByID = exports.getUserByID = exports.getAllUsers = void 0;
+exports.logoutUser = exports.loginUser = exports.registerUser = exports.updateUserByID = exports.deleteUserByID = exports.getUserByID = exports.getAllUsers = void 0;
 const User_entity_1 = require("../entities/User.entity");
 const logger_1 = require("../../utils/logger");
 // Environment variables
@@ -82,18 +82,6 @@ const deleteUserByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.deleteUserByID = deleteUserByID;
-// - Create New User
-const createUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let userModel = (0, User_entity_1.userEntity)();
-        // Create / Insert New User
-        return yield userModel.create(user);
-    }
-    catch (error) {
-        (0, logger_1.LogError)(`[ORM ERROR]: Creating User: ${error}`);
-    }
-});
-exports.createUser = createUser;
 // - Update User BY ID
 const updateUserByID = (id, user) => __awaiter(void 0, void 0, void 0, function* () {
     try {

@@ -4,7 +4,7 @@ import { LogSuccess, LogError, LogWarning } from "../utils/logger";
 
 
 // ORM - Users Collection
-import { deleteUserByID, getAllUsers, getUserByID, createUser, updateUserByID } from "../domain/orm/User.orm";
+import { deleteUserByID, getAllUsers, getUserByID, updateUserByID } from "../domain/orm/User.orm";
 import { BasicResponse } from "./types";
 
 

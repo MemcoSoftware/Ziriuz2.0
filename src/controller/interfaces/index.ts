@@ -1,3 +1,4 @@
+import { ITecnico } from "../../domain/interfaces/ITecnico.interface";
 import { IUser } from "../../domain/interfaces/IUser.interface";
 import { BasicResponse, ErrorResponse } from "../types";
 
@@ -24,4 +25,18 @@ export interface IAuthController {
     registerUser(user: IUser): Promise<any>
     // Login user
     loginUser(auth: any): Promise<any>
+}
+
+
+export interface ITecnicoController {
+    // Read all Tecnicos from DATABASE || Get Tecnico By ID
+    getTecnico(page: number, limit: number, id?: string): Promise<any>
+    // Create Tecnico
+    createTecnico(tecnico: ITecnico): Promise<any>
+    // Delet Tecnico by ID from DATABASE 
+    deleteTecnico(id?:string): Promise<any>
+    
+    // Update Tecnico
+    updateTecnico(id:string, tecnico:ITecnico): Promise<any>
+
 }
