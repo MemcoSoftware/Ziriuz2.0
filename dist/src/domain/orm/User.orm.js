@@ -37,7 +37,7 @@ const getAllUsers = (page, limit) => __awaiter(void 0, void 0, void 0, function*
         yield userModel.find({}, { _id: 0, password: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('number username name cedula telefono email more_info')
+            .select('_id number username name cedula telefono email more_info')
             .exec().then((users) => {
             // users.forEach((user: IUser)=>{
             //     // Clean Passwords from result
@@ -63,7 +63,7 @@ const getUserByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let userModel = (0, User_entity_1.userEntity)();
         // Search User by ID
-        return yield userModel.findById(id).select('number username name cedula telefono email more_info');
+        return yield userModel.findById(id).select('_id number username name cedula telefono email more_info');
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting User By ID: ${error}`);

@@ -40,7 +40,7 @@ export const getAllUsers = async (page: number, limit: number): Promise<any[] | 
         await userModel.find({}, { _id: 0, password: 0})
         .limit(limit)
         .skip((page - 1) * limit)
-        .select('number username name cedula telefono email more_info')
+        .select('_id number username name cedula telefono email more_info')
         .exec().then((users: IUser[]) =>{
             // users.forEach((user: IUser)=>{
             //     // Clean Passwords from result
@@ -71,7 +71,7 @@ export const getUserByID = async (id: string) : Promise <any | undefined> =>{
         let userModel = userEntity();
 
         // Search User by ID
-        return await userModel.findById(id).select('number username name cedula telefono email more_info');
+        return await userModel.findById(id).select('_id number username name cedula telefono email more_info');
 
     } catch(error){
         LogError(`[ORM ERROR]: Getting User By ID: ${error}`);
