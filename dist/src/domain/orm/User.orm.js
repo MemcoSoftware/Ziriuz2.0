@@ -135,7 +135,7 @@ const loginUser = (auth) => __awaiter(void 0, void 0, void 0, function* () {
         };
     }
     catch (error) {
-        (0, logger_1.LogError)(`[ORM ERROR]: Creating User: ${error}`);
+        (0, logger_1.LogError)(`[ORM ERROR]: Cannot Log User: ${error}`);
     }
 });
 exports.loginUser = loginUser;

@@ -98,5 +98,11 @@ authRouter.route('/me')
         });
     }
 }));
+authRouter.post('/forgot-password', jsonParser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    const controller = new AuthController_1.AuthController();
+    let response = yield controller.generateAndSendOTP(email);
+    return res.status(200).json(response);
+}));
 exports.default = authRouter;
 //# sourceMappingURL=AuthRouter.js.map

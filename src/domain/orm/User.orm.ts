@@ -159,7 +159,7 @@ export const loginUser = async (auth: IAuth): Promise <any | undefined>=>{
         
 
     }catch(error){
-        LogError(`[ORM ERROR]: Creating User: ${error}`)
+        LogError(`[ORM ERROR]: Cannot Log User: ${error}`)
     }
 }
 

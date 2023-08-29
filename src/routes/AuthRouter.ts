@@ -120,9 +120,17 @@ authRouter.route('/login')
                 })
             }
 
-         }) 
+        }) 
+            
+        authRouter.post('/forgot-password', jsonParser, async (req: express.Request, res: express.Response) => {
+        const { email } = req.body;
+        
+        const controller: AuthController = new AuthController();
 
+        let response:any = await controller.generateAndSendOTP(email);
 
+        return res.status(200).json(response);
+    });
 
 
 
