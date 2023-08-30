@@ -2,17 +2,19 @@ import nodemailer from 'nodemailer';
 
 // Configuración del servicio de envío de correos
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', // Cambia esto según tu proveedor de correo
+  host: 'smtp.gmail.com',
+  port: 456,
+  secure: true, // true for 465, false for other ports
   auth: {
-    user: 'tu_correo@gmail.com', // Cambia esto por tu dirección de correo electrónico
-    pass: 'tu_contraseña' // Cambia esto por tu contraseña de correo electrónico
+    user: 'makob811@gmail.com', // User email
+    pass: 'Angel_30032' // User email password
   }
 });
 
 // Función para enviar correos electrónicos
 export const sendEmail = async (to: string, subject: string, text: string): Promise<void> => {
   const mailOptions = {
-    from: 'tu_correo@gmail.com', // Cambia esto por tu dirección de correo electrónico
+    from: 'makob811@gmail.com', // Cambia esto por tu dirección de correo electrónico
     to,
     subject,
     text
