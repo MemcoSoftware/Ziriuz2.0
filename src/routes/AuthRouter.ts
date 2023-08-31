@@ -120,7 +120,7 @@ authRouter.route('/login')
                 })
             }
 
-        }) 
+        }); 
             
         authRouter.post('/forgot-password', jsonParser, async (req: express.Request, res: express.Response) => {
         const { email } = req.body;
@@ -132,7 +132,18 @@ authRouter.route('/login')
         return res.status(200).json(response);
     });
 
-
+        authRouter.route('/otp-validator')
+            .post(jsonParser, async (req: express.Request, res: express.Response) => {
+                const { email, otp } = req.body;
+              
+                const controller: AuthController = new AuthController();
+              
+                let response: any = await controller.validateOTP({ email, otp });
+              
+                return res.status(response.status).json({ message: response.message });
+              });
+              
+    
 
 
 

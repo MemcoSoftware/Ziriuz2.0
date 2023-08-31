@@ -51,6 +51,8 @@ const User_orm_1 = require("../domain/orm/User.orm");
 const otpGenerator = __importStar(require("otp-generator"));
 const User_entity_1 = require("../domain/entities/User.entity");
 const emailService_1 = require("../utils/emailService");
+const IOTPData_interface_1 = require("../domain/interfaces/IOTPData.interface");
+const otpValidator_1 = require("../middlewares/otpValidator");
 let AuthController = exports.AuthController = class AuthController {
     registerUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -101,6 +103,9 @@ let AuthController = exports.AuthController = class AuthController {
             throw new Error("Method not implemented.");
         });
     }
+    /**
+     * Forgot Password Method
+    */
     generateAndSendOTP(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -111,7 +116,18 @@ let AuthController = exports.AuthController = class AuthController {
                     return { status: 404, message: 'Usuario no encontrado' };
                 }
                 // Generar un OTP
-                const otp = otpGenerator.generate(6, { digits: true, specialChars: false });
+                const otp = otpGenerator.generate(6, {
+                    digits: true,
+                    upperCaseAlphabets: false,
+                    lowerCaseAlphabets: false,
+                    specialChars: false,
+                });
+                // Almacenar el código OTP en el objeto temporal junto con la hora de generación
+                IOTPData_interface_1.otpMap[email] = {
+                    otp: otp,
+                    generationTime: new Date(),
+                };
+                console.log("OTP generado y almacenado:", otp); // Agregamos este mensaje
                 // Enviar el OTP al correo electrónico del usuario
                 const emailSubject = 'Recuperación de Contraseña';
                 const emailText = `Su código de recuperación de contraseña es: ${otp}`;
@@ -121,6 +137,33 @@ let AuthController = exports.AuthController = class AuthController {
             catch (error) {
                 console.error(error);
                 return { status: 500, message: 'Error al generar el código de recuperación' };
+            }
+        });
+    }
+    validateOTP(body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email, otp } = body;
+                // EMAIL & OTP
+                const otpData = IOTPData_interface_1.otpMap[email];
+                if (!otpData) {
+                    return { status: 400, message: 'Código OTP no encontrado' };
+                }
+                const expirationMinutes = 15;
+                const currentTime = new Date();
+                const timeDifference = currentTime.getTime() - otpData.generationTime.getTime();
+                const timeDifferenceInMinutes = timeDifference / (1000 * 60); // CONVERS TO MINUTE
+                if (timeDifferenceInMinutes > expirationMinutes) {
+                    return { status: 400, message: 'Código OTP ha expirado' };
+                }
+                if (otpData.otp !== otp) {
+                    return { status: 400, message: 'Código OTP incorrecto' };
+                }
+                return { status: 200, message: 'Código OTP válido' };
+            }
+            catch (error) {
+                console.error(error);
+                return { status: 500, message: 'Error al validar el código OTP' };
             }
         });
     }
@@ -161,15 +204,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logoutUser", null);
 __decorate([
-    (0, tsoa_1.Post)("/forgot-password")
-    /**
-     * Forgot Password Method
-    */
-    ,
+    (0, tsoa_1.Post)("/forgot-password"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "generateAndSendOTP", null);
+__decorate([
+    (0, tsoa_1.Post)("/otp-validator"),
+    (0, tsoa_1.Middlewares)([otpValidator_1.otpValidatorMiddleware]),
+    __param(0, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "validateOTP", null);
 __decorate([
     (0, tsoa_1.Get)("/me"),
     __param(0, (0, tsoa_1.Query)()),

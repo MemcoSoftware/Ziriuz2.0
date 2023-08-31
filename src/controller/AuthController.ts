@@ -1,4 +1,4 @@
-import { Get, Query, Route, Tags, Delete, Post, Put } from "tsoa";
+import { Get, Query, Route, Tags, Delete, Post, Put, Body, Middlewares, Request } from "tsoa";
 import { IAuthController } from "./interfaces";
 import { LogSuccess, LogError, LogWarning } from "../utils/logger";
 import { IUser } from "../domain/interfaces/IUser.interface";
@@ -9,6 +9,8 @@ import { AuthResponse, ErrorResponse } from "./types";
 import * as otpGenerator from 'otp-generator';
 import { userEntity } from "../domain/entities/User.entity";
 import { sendEmail } from "../utils/emailService";
+import { otpMap } from "../domain/interfaces/IOTPData.interface";
+import { otpValidatorMiddleware } from "../middlewares/otpValidator";
 @Route("/apli/auth")
 @Tags("AuthController")
 
@@ -72,36 +74,82 @@ export class AuthController implements IAuthController {
     }
     
     
-    
-    @Post("/forgot-password")
     /**
      * Forgot Password Method
     */
-   public   async generateAndSendOTP(email: string): Promise<any> {
-    try {
+    @Post("/forgot-password")
+    public async generateAndSendOTP(email: string): Promise<any> {
+      try {
         // Buscar el usuario en la base de datos por su dirección de correo electrónico
         const userModel = userEntity();
         const user: IUser | null = await userModel.findOne({ email });
-
+    
         if (!user) {
-            return { status: 404, message: 'Usuario no encontrado' };
+          return { status: 404, message: 'Usuario no encontrado' };
         }
-
+    
         // Generar un OTP
-        const otp = otpGenerator.generate(6, { digits: true, specialChars: false });
-
+        const otp = otpGenerator.generate(6, {
+          digits: true,
+          upperCaseAlphabets: false,
+          lowerCaseAlphabets: false,
+          specialChars: false,
+        });
+    
+        // Almacenar el código OTP en el objeto temporal junto con la hora de generación
+        otpMap[email] = {
+          otp: otp,
+          generationTime: new Date(),
+        };
+    
+        console.log("OTP generado y almacenado:", otp); // Agregamos este mensaje
+    
         // Enviar el OTP al correo electrónico del usuario
         const emailSubject = 'Recuperación de Contraseña';
         const emailText = `Su código de recuperación de contraseña es: ${otp}`;
         await sendEmail(user.email, emailSubject, emailText);
-
+    
         return { status: 200, message: 'Se ha enviado un correo con el código de recuperación' };
-    } catch (error) {
+      } catch (error) {
         console.error(error);
         return { status: 500, message: 'Error al generar el código de recuperación' };
+      }
     }
-}
+    
 
+
+    @Post("/otp-validator")
+    @Middlewares([otpValidatorMiddleware])
+    public async validateOTP(@Body() body: { email: string, otp: string }): Promise<any> {
+      try {
+        const { email, otp } = body;
+  
+        // EMAIL & OTP
+        const otpData = otpMap[email];
+        if (!otpData) {
+          return { status: 400, message: 'Código OTP no encontrado' };
+        }
+  
+        const expirationMinutes = 15;
+        const currentTime = new Date();
+        const timeDifference = currentTime.getTime() - otpData.generationTime.getTime();
+        const timeDifferenceInMinutes = timeDifference / (1000 * 60); // CONVERS TO MINUTE
+  
+        if (timeDifferenceInMinutes > expirationMinutes) {
+          return { status: 400, message: 'Código OTP ha expirado' };
+        }
+  
+        if (otpData.otp !== otp) {
+          return { status: 400, message: 'Código OTP incorrecto' };
+        }
+  
+        return { status: 200, message: 'Código OTP válido' };
+  
+      } catch (error) {
+        console.error(error);
+        return { status: 500, message: 'Error al validar el código OTP' };
+      }
+    }
 /**
  * Endpoint to retreive the USers in the "Users" Collection from DB
  * Middleware: Validate JWT

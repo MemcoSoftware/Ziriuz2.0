@@ -16,18 +16,19 @@ exports.sendEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 // Configuración del servicio de envío de correos
 const transporter = nodemailer_1.default.createTransport({
-    host: 'smtp.gmail.com',
-    port: 456,
-    secure: true,
+    // host: 'smtp.gmail.com',
+    // port: 465,
+    // secure: true, // true for 465, false for other ports
+    service: 'gmail',
     auth: {
-        user: 'makob811@gmail.com',
-        pass: 'Angel_30032' // User email password
+        user: 'ziriuzemail@gmail.com',
+        pass: 'lqrhxrmterexeprh' // User email password
     }
 });
 // Función para enviar correos electrónicos
 const sendEmail = (to, subject, text) => __awaiter(void 0, void 0, void 0, function* () {
     const mailOptions = {
-        from: 'makob811@gmail.com',
+        from: 'ziriuzemail@gmail.com',
         to,
         subject,
         text

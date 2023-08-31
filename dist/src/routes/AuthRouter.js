@@ -104,5 +104,12 @@ authRouter.post('/forgot-password', jsonParser, (req, res) => __awaiter(void 0, 
     let response = yield controller.generateAndSendOTP(email);
     return res.status(200).json(response);
 }));
+authRouter.route('/otp-validator')
+    .post(jsonParser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, otp } = req.body;
+    const controller = new AuthController_1.AuthController();
+    let response = yield controller.validateOTP({ email, otp });
+    return res.status(response.status).json({ message: response.message });
+}));
 exports.default = authRouter;
 //# sourceMappingURL=AuthRouter.js.map
