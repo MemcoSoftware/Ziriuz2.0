@@ -111,5 +111,12 @@ authRouter.route('/otp-validator')
     let response = yield controller.validateOTP({ email, otp });
     return res.status(response.status).json({ message: response.message });
 }));
+authRouter.route('/update-password')
+    .put(jsonParser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, newPassword } = req.body;
+    const controller = new AuthController_1.AuthController();
+    const response = yield controller.updatePassword({ email, newPassword });
+    return res.status(response.status).json({ message: response.message });
+}));
 exports.default = authRouter;
 //# sourceMappingURL=AuthRouter.js.map

@@ -48,6 +48,7 @@ exports.AuthController = void 0;
 const tsoa_1 = require("tsoa");
 const logger_1 = require("../utils/logger");
 const User_orm_1 = require("../domain/orm/User.orm");
+const Auth_orm_1 = require("../domain/orm/Auth.orm");
 const otpGenerator = __importStar(require("otp-generator"));
 const User_entity_1 = require("../domain/entities/User.entity");
 const emailService_1 = require("../utils/emailService");
@@ -167,6 +168,14 @@ let AuthController = exports.AuthController = class AuthController {
             }
         });
     }
+    updatePassword(body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { email, newPassword } = body;
+            // Utiliza la función de Auth.orm para actualizar la contraseña
+            const response = yield (0, Auth_orm_1.updatePassword)(email, newPassword);
+            return response;
+        });
+    }
     /**
      * Endpoint to retreive the USers in the "Users" Collection from DB
      * Middleware: Validate JWT
@@ -218,6 +227,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "validateOTP", null);
 __decorate([
+    (0, tsoa_1.Put)("/update-password"),
+    __param(0, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "updatePassword", null);
+__decorate([
     (0, tsoa_1.Get)("/me"),
     __param(0, (0, tsoa_1.Query)()),
     __metadata("design:type", Function),
@@ -225,7 +241,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "userData", null);
 exports.AuthController = AuthController = __decorate([
-    (0, tsoa_1.Route)("/apli/auth"),
+    (0, tsoa_1.Route)("/api/auth"),
     (0, tsoa_1.Tags)("AuthController")
 ], AuthController);
 //# sourceMappingURL=AuthController.js.map

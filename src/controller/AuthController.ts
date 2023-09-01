@@ -4,14 +4,14 @@ import { LogSuccess, LogError, LogWarning } from "../utils/logger";
 import { IUser } from "../domain/interfaces/IUser.interface";
 import { IAuth } from "../domain/interfaces/IAuth.interface";
 import { getUserByID, loginUser, registerUser } from "../domain/orm/User.orm";
-import { findUserByEmail } from "../domain/orm/Auth.orm";
+import { findUserByEmail, updatePassword } from "../domain/orm/Auth.orm";
 import { AuthResponse, ErrorResponse } from "./types";
 import * as otpGenerator from 'otp-generator';
 import { userEntity } from "../domain/entities/User.entity";
 import { sendEmail } from "../utils/emailService";
 import { otpMap } from "../domain/interfaces/IOTPData.interface";
 import { otpValidatorMiddleware } from "../middlewares/otpValidator";
-@Route("/apli/auth")
+@Route("/api/auth")
 @Tags("AuthController")
 
 
@@ -150,6 +150,19 @@ export class AuthController implements IAuthController {
         return { status: 500, message: 'Error al validar el código OTP' };
       }
     }
+
+    @Put("/update-password")
+    public async updatePassword(@Body() body: { email: string, newPassword: string }): Promise<any> {
+        const { email, newPassword } = body;
+
+        // Utiliza la función de Auth.orm para actualizar la contraseña
+        const response = await updatePassword(email, newPassword);
+
+        return response;
+    }
+
+
+
 /**
  * Endpoint to retreive the USers in the "Users" Collection from DB
  * Middleware: Validate JWT
