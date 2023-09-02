@@ -6,5 +6,11 @@ export interface IUser {
         cedula: number,
         telefono: string,
         email: string,
-        more_info: string
+        more_info: string,
+        // New spaces related with Collection Roles
+        roles: string[],
+        type?: string,
+        titulo?: string,
+        reg_invima?: string
+
     }

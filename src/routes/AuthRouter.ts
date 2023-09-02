@@ -34,14 +34,15 @@ authRouter.route('/register')
             let hashedPassword = bcrypt.hashSync(password, 8);
 
             let newUser: IUser = {
-                number:  number,
+                number: number,
                 username: username,
                 password: hashedPassword,
                 name: name,
                 cedula: cedula,
                 telefono: telefono,
                 email: email,
-                more_info: more_info
+                more_info: more_info,
+                roles: []
             } 
             // Controller Instance to execute a method
             const controller: AuthController = new AuthController();

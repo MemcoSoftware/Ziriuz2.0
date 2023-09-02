@@ -23,26 +23,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userEntity = void 0;
+exports.roleEntity = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const userEntity = () => {
-    let userSchema = new mongoose_1.default.Schema({
-        number: { type: Number, required: true },
-        username: { type: String, required: true },
-        password: { type: String, required: true },
-        name: { type: String, required: true },
-        cedula: { type: Number, required: true },
-        telefono: { type: String, required: true },
-        email: { type: String, required: true },
-        more_info: { type: String, required: true },
-        // New spaces related with Collection Roles
-        roles: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "Roles" }],
-        type: { type: String, required: false },
-        titulo: { type: String, required: false },
-        reg_invima: { type: String, required: false } // INVIMA Register
-    }, { versionKey: false } // Deshabilitar la función versionKey
-    );
-    return mongoose_1.default.models.Users || mongoose_1.default.model('Users', userSchema);
+const roleEntity = () => {
+    let roleSchema = new mongoose_1.Schema({
+        name: {
+            type: String,
+            required: true,
+            unique: true
+        }
+    });
+    return mongoose_1.default.models.Roles || mongoose_1.default.model('Roles', roleSchema);
 };
-exports.userEntity = userEntity;
-//# sourceMappingURL=User.entity.js.map
+exports.roleEntity = roleEntity;
+//# sourceMappingURL=Roles.entity.js.map

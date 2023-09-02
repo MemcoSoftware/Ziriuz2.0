@@ -39,7 +39,8 @@ authRouter.route('/register')
             cedula: cedula,
             telefono: telefono,
             email: email,
-            more_info: more_info
+            more_info: more_info,
+            roles: []
         };
         // Controller Instance to execute a method
         const controller = new AuthController_1.AuthController();
