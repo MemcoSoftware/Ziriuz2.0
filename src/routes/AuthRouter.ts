@@ -75,7 +75,7 @@ authRouter.route('/login')
             const controller: AuthController = new AuthController();
             
             
-            // TODO use IAuth
+         
 
             let auth: IAuth = {
                 username: username,

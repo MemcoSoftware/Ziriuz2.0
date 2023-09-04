@@ -31,6 +31,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction)=>{
         });
     }
 
+    
 
     // Verify the token obtained
     

@@ -8,6 +8,7 @@ import { LogInfo } from '../utils/logger';
 import usersRouter from './UserRouter';
 import authRouter from './AuthRouter'
 import tecnicosRouter from './TecnicoRouter';
+import rolesRouter from './RolesRouter';
 
 
 // Server Instance
@@ -38,4 +39,5 @@ server.use('/users', usersRouter) // http://localhost:8000/api/users  --> userRo
 server.use('/auth', authRouter); // http://localhost:8000/api/auth  --> authRouter
 // Tecnicos routes
 server.use('/tecnicos',tecnicosRouter);// http://localhost:8000/api/tecnicos  --> tecnicosRouter
+server.use('/roles', rolesRouter) // http://localhost:8000/api/tecnicos  --> rolesRouter
 export default server;

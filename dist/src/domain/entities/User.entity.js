@@ -35,13 +35,22 @@ const userEntity = () => {
         telefono: { type: String, required: true },
         email: { type: String, required: true },
         more_info: { type: String, required: true },
-        // New spaces related with Collection Roles
+        // New spaces related to Collection Roles
         roles: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "Roles" }],
         type: { type: String, required: false },
         titulo: { type: String, required: false },
         reg_invima: { type: String, required: false } // INVIMA Register
-    }, { versionKey: false } // Deshabilitar la función versionKey
+    }, { versionKey: false } // Disable the versionKey function
     );
+    // Define a virtual populate field for user roles
+    userSchema.virtual('userRoles', {
+        ref: 'Roles',
+        localField: 'roles',
+        foreignField: '_id',
+    });
+    // Apply the virtual populate to the schema
+    userSchema.set('toObject', { virtuals: true });
+    userSchema.set('toJSON', { virtuals: true });
     return mongoose_1.default.models.Users || mongoose_1.default.model('Users', userSchema);
 };
 exports.userEntity = userEntity;

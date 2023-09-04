@@ -32,6 +32,8 @@ const roleEntity = () => {
             required: true,
             unique: true
         }
+    }, {
+        versionKey: false, // Disable the '__v' field
     });
     return mongoose_1.default.models.Roles || mongoose_1.default.model('Roles', roleSchema);
 };

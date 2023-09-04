@@ -8,6 +8,8 @@ export const roleEntity = ()=>{
             required: true,
             unique: true
         } 
+    }, {
+        versionKey: false, // Disable the '__v' field
     })
     return mongoose.models.Roles || mongoose.model<IRole>('Roles', roleSchema);
 };

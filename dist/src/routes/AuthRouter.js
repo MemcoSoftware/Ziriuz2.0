@@ -62,7 +62,6 @@ authRouter.route('/login')
     if (username && password) {
         // Controller Instance to execute a method
         const controller = new AuthController_1.AuthController();
-        // TODO use IAuth
         let auth = {
             username: username,
             password: password
