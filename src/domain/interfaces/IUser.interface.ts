@@ -8,7 +8,7 @@ export interface IUser {
         email: string,
         more_info: string,
         // New spaces related with Collection Roles
-        roles: string[],
+        roles: { _id: string; name: string }[];
         type?: string,
         titulo?: string,
         reg_invima?: string

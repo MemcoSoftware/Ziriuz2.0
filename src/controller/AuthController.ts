@@ -5,12 +5,13 @@ import { IUser } from "../domain/interfaces/IUser.interface";
 import { IAuth } from "../domain/interfaces/IAuth.interface";
 import { getUserByID, loginUser, registerUser } from "../domain/orm/User.orm";
 import { findUserByEmail, updatePassword } from "../domain/orm/Auth.orm";
-import { AuthResponse, ErrorResponse } from "./types";
+import { AuthResponse, BasicResponse, ErrorResponse } from "./types";
 import * as otpGenerator from 'otp-generator';
 import { userEntity } from "../domain/entities/User.entity";
 import { sendEmail } from "../utils/emailService";
 import { otpMap } from "../domain/interfaces/IOTPData.interface";
 import { otpValidatorMiddleware } from "../middlewares/otpValidator";
+import { roleEntity } from "../domain/entities/Roles.entity";
 @Route("/api/auth")
 @Tags("AuthController")
 
@@ -18,31 +19,40 @@ import { otpValidatorMiddleware } from "../middlewares/otpValidator";
 
 export class AuthController implements IAuthController {
     
-    @Post("/register")
-    public async registerUser(user: IUser): Promise<any> {
+  @Post("/register")
+public async registerUser(@Body() user: IUser): Promise<BasicResponse | ErrorResponse> {
+  try {
+    if (user) {
+      LogSuccess(`[/api/auth/register] Register New User: ${user.name}`);
+      
+      // Asegúrate de que los roles se manejen correctamente
+      const roleNames: string[] = user.roles.map((role) => role.name) || ['user']; // Obtén los nombres de los roles
+      
+      // Llama a registerUser para registrar al usuario y asignar roles
+      await registerUser(user, roleNames);
 
-        let response: any = '';
+      LogSuccess(`[/api/auth/register] Registered User: ${user.username}`);
 
-        if(user){
-            LogSuccess(`[/api/auth/register] Register New User: ${user.name}`);
-            await registerUser(user).then((r)=>{
-                LogSuccess(`[/api/auth/register] Registered User: ${user.username}`);
-                response = {
-                    message: `User Registered successfully: ${user.name}`
-                }
-            });
-        }else {
-            LogWarning(`[/api/auth/register] Register needs user Entity`)
-            response = {
-                message: 'User not Registered: Please, provide an User Entity to create.'
-            }
-        }
-
-        return response;
+      // Devuelve una respuesta exitosa sin la propiedad 'user'
+      return {
+        message: `User Registered successfully: ${user.name}`,
+      };
+    } else {
+      LogWarning(`[/api/auth/register] Register needs user Entity`);
+      return {
+        error: 'User not Registered',
+        message: 'Please, provide a User Entity to create.',
+      };
     }
-
-
-
+  } catch (error) {
+    const errorMessage = (error instanceof Error) ? error.message : 'An error occurred while registering the user.';
+    LogError(`[/api/auth/register] Error registering user: ${error}`);
+    return {
+      error: 'Error registering user',
+      message: errorMessage
+    };
+  }
+}
 
     @Post("/login")
     public async loginUser(auth: IAuth): Promise<any> {

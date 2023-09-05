@@ -25,10 +25,11 @@ let authRouter = express.Router();
 authRouter.route('/register')
     .post(jsonParser, async (req: express.Request, res: Response)=>{
 
-        let { number, username, password, name, cedula, telefono, email, more_info} = req?.body;
+        let { number, username, password, name, cedula, telefono, email, more_info, roles} = req?.body;
+        console.log('Roles received:', roles);
         let hashedPassword = '';
 
-        if(number && username && password && name && cedula && telefono && email && more_info ){
+        if(number && username && password && name && cedula && telefono && email && more_info && roles ){
 
             // Obtain Password in Request and cypher
             let hashedPassword = bcrypt.hashSync(password, 8);
@@ -42,7 +43,7 @@ authRouter.route('/register')
                 telefono: telefono,
                 email: email,
                 more_info: more_info,
-                roles: []
+                roles: roles
             } 
             // Controller Instance to execute a method
             const controller: AuthController = new AuthController();

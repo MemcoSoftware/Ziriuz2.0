@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logoutUser = exports.loginUser = exports.registerUser = exports.updateUserByID = exports.deleteUserByID = exports.getUserByID = exports.getAllUsers = void 0;
 const User_entity_1 = require("../entities/User.entity");
+const Roles_entity_1 = require("../entities/Roles.entity"); // Importa el modelo de Roles
 const logger_1 = require("../../utils/logger");
 // Environment variables
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -32,17 +33,19 @@ const secret = process.env.SECRETKEY || 'MYSECRETKEY';
 const getAllUsers = (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let userModel = (0, User_entity_1.userEntity)();
+        let roleModel = (0, Roles_entity_1.roleEntity)(); // Agrega esta línea para obtener el modelo de Roles
         let response = {};
         // Search all users (using pagination)
         yield userModel.find({}, { _id: 0, password: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
             .select('_id number username name cedula telefono email more_info')
+            .populate({
+            path: 'roles',
+            model: roleModel,
+            select: 'name',
+        })
             .exec().then((users) => {
-            // users.forEach((user: IUser)=>{
-            //     // Clean Passwords from result
-            //     user.password = ''
-            // });
             response.users = users;
         });
         // Count total documents in Users collection
@@ -95,10 +98,23 @@ const updateUserByID = (id, user) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.updateUserByID = updateUserByID;
 // Register User
-const registerUser = (user) => __awaiter(void 0, void 0, void 0, function* () {
+// ...
+const registerUser = (user, roleNames) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let userModel = (0, User_entity_1.userEntity)();
-        // Create / Insert New User
+        // Comprueba si se proporcionaron nombres de roles
+        if (roleNames && roleNames.length > 0) {
+            // Busca los ObjectIds de los roles basados en los nombres proporcionados
+            const roles = yield (0, Roles_entity_1.roleEntity)().find({ name: { $in: roleNames } });
+            // Extrae los ObjectIds y nombres de los roles encontrados
+            const roleData = roles.map((role) => ({
+                _id: role._id.toString(),
+                name: role.name,
+            }));
+            // Asigna los roles al usuario
+            user.roles = roleData;
+        }
+        // Crea / Inserta al nuevo usuario
         return yield userModel.create(user);
     }
     catch (error) {

@@ -57,23 +57,35 @@ const otpValidator_1 = require("../middlewares/otpValidator");
 let AuthController = exports.AuthController = class AuthController {
     registerUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            let response = '';
-            if (user) {
-                (0, logger_1.LogSuccess)(`[/api/auth/register] Register New User: ${user.name}`);
-                yield (0, User_orm_1.registerUser)(user).then((r) => {
+            try {
+                if (user) {
+                    (0, logger_1.LogSuccess)(`[/api/auth/register] Register New User: ${user.name}`);
+                    // Asegúrate de que los roles se manejen correctamente
+                    const roleNames = user.roles.map((role) => role.name) || ['user']; // Obtén los nombres de los roles
+                    // Llama a registerUser para registrar al usuario y asignar roles
+                    yield (0, User_orm_1.registerUser)(user, roleNames);
                     (0, logger_1.LogSuccess)(`[/api/auth/register] Registered User: ${user.username}`);
-                    response = {
-                        message: `User Registered successfully: ${user.name}`
+                    // Devuelve una respuesta exitosa sin la propiedad 'user'
+                    return {
+                        message: `User Registered successfully: ${user.name}`,
                     };
-                });
+                }
+                else {
+                    (0, logger_1.LogWarning)(`[/api/auth/register] Register needs user Entity`);
+                    return {
+                        error: 'User not Registered',
+                        message: 'Please, provide a User Entity to create.',
+                    };
+                }
             }
-            else {
-                (0, logger_1.LogWarning)(`[/api/auth/register] Register needs user Entity`);
-                response = {
-                    message: 'User not Registered: Please, provide an User Entity to create.'
+            catch (error) {
+                const errorMessage = (error instanceof Error) ? error.message : 'An error occurred while registering the user.';
+                (0, logger_1.LogError)(`[/api/auth/register] Error registering user: ${error}`);
+                return {
+                    error: 'Error registering user',
+                    message: errorMessage
                 };
             }
-            return response;
         });
     }
     loginUser(auth) {
@@ -196,6 +208,7 @@ let AuthController = exports.AuthController = class AuthController {
 };
 __decorate([
     (0, tsoa_1.Post)("/register"),
+    __param(0, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)

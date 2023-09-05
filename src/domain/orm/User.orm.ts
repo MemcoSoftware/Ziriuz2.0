@@ -1,9 +1,11 @@
-import { userEntity } from "../entities/User.entity";
 import mongoose from "mongoose";
+import { userEntity } from "../entities/User.entity";
+import { roleEntity } from "../entities/Roles.entity"; // Importa el modelo de Roles
 import { LogError } from "../../utils/logger";
 import { LogSuccess } from "../../utils/logger";
 import { IUser } from "../interfaces/IUser.interface";
 import { IAuth } from "../interfaces/IAuth.interface";
+import { IRole } from "../interfaces/IRoles.interface";
 
 // Environment variables
 
@@ -33,6 +35,7 @@ const secret = process.env.SECRETKEY || 'MYSECRETKEY';
 export const getAllUsers = async (page: number, limit: number): Promise<any[] | undefined>  =>{
     try{
         let userModel = userEntity();
+        let roleModel = roleEntity(); // Agrega esta línea para obtener el modelo de Roles
 
         let response: any = {};
         // Search all users (using pagination)
@@ -41,11 +44,13 @@ export const getAllUsers = async (page: number, limit: number): Promise<any[] | 
         .limit(limit)
         .skip((page - 1) * limit)
         .select('_id number username name cedula telefono email more_info')
-        .exec().then((users: IUser[]) =>{
-            // users.forEach((user: IUser)=>{
-            //     // Clean Passwords from result
-            //     user.password = ''
-            // });
+        .populate({
+            path: 'roles',
+            model: roleModel, // Usa el modelo de Roles aquí
+            select: 'name',
+        })
+        .exec().then((users: any[]) => { // Cambia IUser a any[] para evitar errores de tipado
+            
             response.users = users;
         });
 
@@ -55,15 +60,11 @@ export const getAllUsers = async (page: number, limit: number): Promise<any[] | 
             response.currentPage = page;
         });
         return response;
-
-
-    
     }catch (error){
         LogError(`[ORM ERROR]: Getting All Users: ${error}`);
         // throw error;
     }
 }
-
 // - GET User by ID
 
 export const getUserByID = async (id: string) : Promise <any | undefined> =>{
@@ -104,17 +105,34 @@ export const updateUserByID = async (id: string, user: any ): Promise <any | und
 
 // Register User
 
-export const registerUser = async (user: IUser): Promise <any | undefined>=>{
+
+// ...
+
+export const registerUser = async (user: IUser, roleNames: string[]): Promise<any | undefined> => {
     try {
-        let userModel = userEntity();
-        // Create / Insert New User
-        return await userModel.create(user);
-    }catch(error){
-        LogError(`[ORM ERROR]: Registering User: ${error}`)
+      let userModel = userEntity();
+  
+      // Comprueba si se proporcionaron nombres de roles
+      if (roleNames && roleNames.length > 0) {
+        // Busca los ObjectIds de los roles basados en los nombres proporcionados
+        const roles = await roleEntity().find({ name: { $in: roleNames } });
+  
+        // Extrae los ObjectIds y nombres de los roles encontrados
+        const roleData = roles.map((role) => ({
+          _id: role._id.toString(),
+          name: role.name,
+        }));
+  
+        // Asigna los roles al usuario
+        user.roles = roleData;
+      }
+  
+      // Crea / Inserta al nuevo usuario
+      return await userModel.create(user);
+    } catch (error) {
+      LogError(`[ORM ERROR]: Registering User: ${error}`);
     }
-}
-
-
+  };
 // Login User
 
 export const loginUser = async (auth: IAuth): Promise <any | undefined>=>{
