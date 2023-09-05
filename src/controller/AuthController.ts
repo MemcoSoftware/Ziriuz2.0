@@ -115,9 +115,71 @@ public async registerUser(@Body() user: IUser): Promise<BasicResponse | ErrorRes
         console.log("OTP generado y almacenado:", otp); // Agregamos este mensaje
     
         // Enviar el OTP al correo electrónico del usuario
-        const emailSubject = 'Recuperación de Contraseña';
-        const emailText = `Su código de recuperación de contraseña es: ${otp}`;
-        await sendEmail(user.email, emailSubject, emailText);
+        const emailSubject = '<no-reply> Recuperación de Contraseña';
+        const emailHtml = `
+        <html>
+              <head>
+                <style>
+                  /* Define tus estilos CSS aquí */
+                  .box {
+                    position: relative;
+                    width: 380px;
+                    height: 420px;
+                    background: #1c1c1c;
+                    border-radius: 8px;
+                    overflow: hidden;
+                  }
+                  h1 {
+                    color: #333333;
+                  }
+                  p {
+                    color: #555555;
+                  }
+
+                  .form {
+                    position: absolute;
+                    inset: 2px;
+                    border-radius: 8px;
+                    background: #28292d;
+                    z-index: 10;
+                    padding: 50px 40px;
+                    display: flex;
+                    flex-direction:  column;    
+                }
+                .form {
+                      color:#00ddfa;
+                      font-weight: 500;
+                      text-align: center;
+                      letter-spacing: 0.1em;
+                  }
+                
+                .inputBox {
+                  position: relative;
+                  width: 300px;
+                  margin-top: 35px;
+              
+              }
+
+
+                </style>
+              </head>
+              <body>
+                <div class="box">
+                  <div class="form">
+                    <div class="inputBox">
+                      <h1>Recuperación de Contraseña</h1>
+                      <p>Su código de recuperación de contraseña es: ${otp}</p>
+                    <div>
+                </div>
+              </body>
+        </html>
+        
+        
+        
+        
+        
+        `;
+        await sendEmail(user.email, emailSubject, emailHtml);
     
         return { status: 200, message: 'Se ha enviado un correo con el código de recuperación' };
       } catch (error) {

@@ -26,16 +26,20 @@ const transporter = nodemailer_1.default.createTransport({
     }
 });
 // Función para enviar correos electrónicos
-const sendEmail = (to, subject, text) => __awaiter(void 0, void 0, void 0, function* () {
+const sendEmail = (to, subject, html) => __awaiter(void 0, void 0, void 0, function* () {
     const mailOptions = {
         from: 'ziriuzemail@gmail.com',
         to,
         subject,
-        text
+        html
     };
     try {
         yield transporter.sendMail(mailOptions);
-        console.log(`Correo electrónico enviado a: ${to}`);
+        console.log(`
+    
+    
+    
+    `);
     }
     catch (error) {
         console.error(`Error al enviar el correo electrónico: ${error}`);

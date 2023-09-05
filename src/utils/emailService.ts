@@ -13,17 +13,21 @@ const transporter = nodemailer.createTransport({
 });
 
 // Función para enviar correos electrónicos
-export const sendEmail = async (to: string, subject: string, text: string): Promise<void> => {
+export const sendEmail = async (to: string, subject: string, html: string): Promise<void> => {
   const mailOptions = {
     from: 'ziriuzemail@gmail.com', // Cambia esto por tu dirección de correo electrónico
     to,
     subject,
-    text
+    html
   };
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`Correo electrónico enviado a: ${to}`);
+    console.log(`
+    
+    
+    
+    `);
   } catch (error) {
     console.error(`Error al enviar el correo electrónico: ${error}`);
     throw new Error(`Error al enviar el correo electrónico: ${error}`);
