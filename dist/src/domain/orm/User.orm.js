@@ -65,8 +65,16 @@ exports.getAllUsers = getAllUsers;
 const getUserByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let userModel = (0, User_entity_1.userEntity)();
+        let roleModel = (0, Roles_entity_1.roleEntity)();
         // Search User by ID
-        return yield userModel.findById(id).select('_id number username name cedula telefono email more_info');
+        return yield userModel.findById(id)
+            .select('_id number username name cedula telefono email more_info roles') // Incluye 'roles' en la selección
+            .populate({
+            path: 'roles',
+            model: roleModel,
+            select: 'name',
+        }) // Realiza la operación de "populate" para traer el nombre del rol
+            .exec();
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting User By ID: ${error}`);

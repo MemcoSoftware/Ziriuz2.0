@@ -67,18 +67,24 @@ export const getAllUsers = async (page: number, limit: number): Promise<any[] | 
 }
 // - GET User by ID
 
-export const getUserByID = async (id: string) : Promise <any | undefined> =>{
+export const getUserByID = async (id: string): Promise<any | undefined> => {
     try {
         let userModel = userEntity();
+        let roleModel = roleEntity(); 
 
         // Search User by ID
-        return await userModel.findById(id).select('_id number username name cedula telefono email more_info');
-
-    } catch(error){
+        return await userModel.findById(id)
+            .select('_id number username name cedula telefono email more_info roles') // Incluye 'roles' en la selección
+            .populate({
+                path: 'roles',
+                model: roleModel, // Usa el modelo de Roles aquí
+                select: 'name',
+            }) // Realiza la operación de "populate" para traer el nombre del rol
+            .exec();
+    } catch (error) {
         LogError(`[ORM ERROR]: Getting User By ID: ${error}`);
     }
 }
-
 // - Delete User By ID
 
 export const deleteUserByID = async (id: string): Promise <any | undefined> =>{

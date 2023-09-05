@@ -3,7 +3,7 @@ import { AuthController } from "../controller/AuthController";
 import { LogInfo } from "../utils/logger";
 import { IUser } from "../domain/interfaces/IUser.interface";
 import { IAuth } from "../domain/interfaces/IAuth.interface";
-
+import { isUser, isAdmin, isTecnico, isComercial, isAnalista, isCoordinador, isContabilidad, isAlmacen } from "../middlewares/authJwt";
 
 // BCRYPT for passwords
 import bcrypt from 'bcrypt';
