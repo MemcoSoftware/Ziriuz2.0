@@ -39,7 +39,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction)=>{
         if(err){
             return res.status(500).send({
                 authenticationError: ' JWT Veriication failed',
-                message: ' Failed to verify JWT token in request'
+                message: ' Invalid or expired Token'
             });
         }
 

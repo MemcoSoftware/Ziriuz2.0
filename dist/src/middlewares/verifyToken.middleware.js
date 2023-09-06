@@ -30,7 +30,7 @@ const verifyToken = (req, res, next) => {
         if (err) {
             return res.status(500).send({
                 authenticationError: ' JWT Veriication failed',
-                message: ' Failed to verify JWT token in request'
+                message: ' Invalid or expired Token'
             });
         }
         // Execute Next Function -> Protected Routes will be executed
