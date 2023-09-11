@@ -1,3 +1,4 @@
+import { ISede } from "../../domain/interfaces/ISede.interface";
 import { ITecnico } from "../../domain/interfaces/ITecnico.interface";
 import { IUser } from "../../domain/interfaces/IUser.interface";
 import { BasicResponse, ErrorResponse } from "../types";
@@ -39,4 +40,17 @@ export interface ITecnicoController {
     // Update Tecnico
     updateTecnico(id:string, tecnico:ITecnico): Promise<any>
 
+}
+
+
+export interface ISedeController{
+    // Rad all Sedes from DATABASE // GET Sede by ID
+    getSedes(page: number, limit: number, id?: string): Promise<any>
+    // CREATE Sede
+    createSede(sedeData: ISede): Promise<any>
+    // Update Sede
+    updateSede(id:string, sedeData: ISede): Promise<any>
+    // Delete Sede By ID from DATABASE
+    deleteSede(id?: string): Promise<any>
+    
 }
