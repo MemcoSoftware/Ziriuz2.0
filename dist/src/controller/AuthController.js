@@ -90,23 +90,37 @@ let AuthController = exports.AuthController = class AuthController {
     }
     loginUser(auth) {
         return __awaiter(this, void 0, void 0, function* () {
-            let response;
-            if (auth) {
+            try {
+                if (!auth || !auth.username || !auth.password) {
+                    (0, logger_1.LogWarning)(`[/api/auth/login] Login needs username and password`);
+                    return {
+                        error: '[AUTH ERROR]: Username and Password are Required',
+                        message: "Please, provide an username and password"
+                    };
+                }
+                (0, logger_1.LogSuccess)(`[/api/auth/login] User Login Attempt: ${auth.username}`);
+                const data = yield (0, User_orm_1.loginUser)(auth);
+                if (!data || !data.user) {
+                    (0, logger_1.LogError)(`[/api/auth/login] User not found or Invalid Password`);
+                    return {
+                        error: '[AUTH ERROR]: Invalid Username or Password',
+                        message: "Invalid Username or Password"
+                    };
+                }
                 (0, logger_1.LogSuccess)(`[/api/auth/login] User Logged In: ${auth.username}`);
-                let data = yield (0, User_orm_1.loginUser)(auth);
-                response = {
+                return {
                     token: data.token,
                     message: `Welcome, ${data.user.name}`
                 };
             }
-            else {
-                (0, logger_1.LogWarning)(`[/api/auth/login] Login needs username and password`);
-                response = {
-                    error: '[AUTH ERROR]: Username and Password are Required',
-                    message: "Please, provide an username and password"
+            catch (error) {
+                const errorMessage = (error instanceof Error) ? error.message : 'An error occurred while logging in';
+                (0, logger_1.LogError)(`[/api/auth/login] Error logging in: ${errorMessage}`);
+                return {
+                    error: '[AUTH ERROR]: An error occurred while logging in',
+                    message: errorMessage
                 };
             }
-            return response;
         });
     }
     logoutUser() {
@@ -277,6 +291,7 @@ __decorate([
 ], AuthController.prototype, "registerUser", null);
 __decorate([
     (0, tsoa_1.Post)("/login"),
+    __param(0, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
