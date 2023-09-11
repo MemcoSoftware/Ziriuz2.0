@@ -134,32 +134,32 @@ exports.registerUser = registerUser;
 const loginUser = (auth) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let userModel = (0, User_entity_1.userEntity)();
-        let userFound = undefined;
+        let userFound = null; // Cambiamos la inicialización a null
         let token = undefined;
         // Check if user exists by Username
-        yield userModel.findOne({ username: auth.username }).then((user) => {
-            userFound = user;
-        }).catch((error) => {
+        userFound = yield userModel.findOne({ username: auth.username });
+        if (!userFound) {
             console.error(`[AUTHENTICATION_ERROR in ORM]: User not found`);
-            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: ${error}`);
-        });
+            throw new Error(`[AUTHENTICATION_ERROR in ORM]: User not found`);
+        }
         // Check if Password is valid (compare with bcrypt)
         let validPassword = bcrypt_1.default.compareSync(auth.password, userFound.password);
         if (!validPassword) {
-            console.error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password `);
-            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: Invalid Password`);
+            console.error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password`);
+            throw new Error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password`);
         }
         // Generate JWT
         token = jsonwebtoken_1.default.sign({ username: userFound.username }, secret, {
-            expiresIn: "2h"
+            expiresIn: "2h",
         });
         return {
             user: userFound,
-            token: token
+            token: token,
         };
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Cannot Log User: ${error}`);
+        throw error;
     }
 });
 exports.loginUser = loginUser;

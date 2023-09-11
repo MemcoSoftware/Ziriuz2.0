@@ -141,53 +141,45 @@ export const registerUser = async (user: IUser, roleNames: string[]): Promise<an
   };
 // Login User
 
-export const loginUser = async (auth: IAuth): Promise <any | undefined>=>{
+export const loginUser = async (auth: IAuth): Promise<any | undefined> => {
     try {
-        let userModel = userEntity();
-
-
-        let userFound: IUser | undefined = undefined;
-        let token = undefined;
-
-        // Check if user exists by Username
-        await userModel.findOne({username: auth.username}).then((user: IUser)=>{
-            userFound = user;
-        }).catch((error)=>{
-            console.error(`[AUTHENTICATION_ERROR in ORM]: User not found`);
-            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: ${error}`);
-        });
-        
-        // Check if Password is valid (compare with bcrypt)
-        let validPassword = bcrypt.compareSync(auth.password, userFound!.password);
-
-        if(!validPassword){
-            console.error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password `);
-            throw new Error(`[[AUTHENTICATION_ERROR in ORM]: User not found: Invalid Password`);
-        }
-
-
-        // Generate JWT
-        
-            token = jwt.sign({username: userFound!.username}, secret, {
-                expiresIn: "2h"
-            });
-
-
-            return {
-                user: userFound,
-                token: token
-            }
-
-
-
-        
-
-    }catch(error){
-        LogError(`[ORM ERROR]: Cannot Log User: ${error}`)
+      let userModel = userEntity();
+  
+      let userFound: IUser | null = null; // Cambiamos la inicialización a null
+      let token = undefined;
+  
+      // Check if user exists by Username
+      userFound = await userModel.findOne({ username: auth.username });
+  
+      if (!userFound) {
+        console.error(`[AUTHENTICATION_ERROR in ORM]: User not found`);
+        throw new Error(`[AUTHENTICATION_ERROR in ORM]: User not found`);
+      }
+  
+      // Check if Password is valid (compare with bcrypt)
+      let validPassword = bcrypt.compareSync(auth.password, userFound!.password);
+  
+      if (!validPassword) {
+        console.error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password`);
+        throw new Error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password`);
+      }
+  
+      // Generate JWT
+      token = jwt.sign({ username: userFound!.username }, secret, {
+        expiresIn: "2h",
+      });
+  
+      return {
+        user: userFound,
+        token: token,
+      };
+    } catch (error) {
+      LogError(`[ORM ERROR]: Cannot Log User: ${error}`);
+      throw error;
     }
-}
-
-
+  };
+  
+  
 // Logout User
 
 export const logoutUser = async (): Promise <any | undefined>=>{
