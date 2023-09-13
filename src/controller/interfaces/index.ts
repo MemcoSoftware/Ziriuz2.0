@@ -17,6 +17,8 @@ export interface IUserController{
     
     // Update User
     updateUser(id:string, user:any): Promise<any>
+    // Search User
+    searchUsersByKeyword(keyword: string): Promise<any>
 }
 
 

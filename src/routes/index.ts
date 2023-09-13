@@ -11,6 +11,7 @@ import tecnicosRouter from './TecnicoRouter';
 import rolesRouter from './RolesRouter';
 
 import sedesRouter from './SedeRouter';
+import searchRouter from './SearchRouter';
 
 
 // Server Instance
@@ -43,4 +44,5 @@ server.use('/auth', authRouter); // http://localhost:8000/api/auth  --> authRout
 server.use('/tecnicos',tecnicosRouter);// http://localhost:8000/api/tecnicos  --> tecnicosRouter
 server.use('/sedes', sedesRouter)
 server.use('/roles', rolesRouter) // http://localhost:8000/api/tecnicos  --> rolesRouter
+server.use('/api/users', searchRouter)
 export default server;

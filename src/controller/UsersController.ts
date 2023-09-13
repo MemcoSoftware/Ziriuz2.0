@@ -6,6 +6,7 @@ import { LogSuccess, LogError, LogWarning } from "../utils/logger";
 // ORM - Users Collection
 import { deleteUserByID, getAllUsers, getUserByID, updateUserByID } from "../domain/orm/User.orm";
 import { BasicResponse } from "./types";
+import { userEntity } from "../domain/entities/User.entity";
 
 
 
@@ -109,7 +110,33 @@ public async updateUser(@Query()id: string, user: any): Promise<any> {
     return response;
 }
 
-
+    
+public async searchUsersByKeyword(keyword: string): Promise<any> {
+    try {
+      const userModel = userEntity();
+  
+      const users = await userModel
+        .find({
+          $or: [
+            { username: { $regex: keyword, $options: 'i' } },
+            { name: { $regex: keyword, $options: 'i' } },
+            { cedula: { $regex: keyword, $options: 'i' } },
+            { telefono: { $regex: keyword, $options: 'i'} },
+            { email: { $regex: keyword, $options: 'i'} },
+            { more_info: { $regex: keyword, $options: 'i'} },
+            { roles: { $regex: keyword, $options: 'i'} },
+            // Add new data to be found here
+          ],
+        })
+        .select('_id number username name cedula telefono email more_info');
+  
+      return users;
+    } catch (error) {
+      LogError(`[ORM ERROR]: Searching Users by Keyword: ${error}`);
+      throw error;
+    }
+  }
+  
 
 
 }

@@ -15,6 +15,7 @@ const AuthRouter_1 = __importDefault(require("./AuthRouter"));
 const TecnicoRouter_1 = __importDefault(require("./TecnicoRouter"));
 const RolesRouter_1 = __importDefault(require("./RolesRouter"));
 const SedeRouter_1 = __importDefault(require("./SedeRouter"));
+const SearchRouter_1 = __importDefault(require("./SearchRouter"));
 // Server Instance
 let server = (0, express_1.default)();
 // Router Instance
@@ -36,5 +37,6 @@ server.use('/auth', AuthRouter_1.default); // http://localhost:8000/api/auth  --
 server.use('/tecnicos', TecnicoRouter_1.default); // http://localhost:8000/api/tecnicos  --> tecnicosRouter
 server.use('/sedes', SedeRouter_1.default);
 server.use('/roles', RolesRouter_1.default); // http://localhost:8000/api/tecnicos  --> rolesRouter
+server.use('/api/users', SearchRouter_1.default);
 exports.default = server;
 //# sourceMappingURL=index.js.map

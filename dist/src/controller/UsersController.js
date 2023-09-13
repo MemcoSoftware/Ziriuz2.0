@@ -26,6 +26,7 @@ const tsoa_1 = require("tsoa");
 const logger_1 = require("../utils/logger");
 // ORM - Users Collection
 const User_orm_1 = require("../domain/orm/User.orm");
+const User_entity_1 = require("../domain/entities/User.entity");
 let UserController = exports.UserController = class UserController {
     /**
      * Endpoint to retreive the USers in the "Users" Collection from DB
@@ -99,6 +100,32 @@ let UserController = exports.UserController = class UserController {
                 };
             }
             return response;
+        });
+    }
+    searchUsersByKeyword(keyword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userModel = (0, User_entity_1.userEntity)();
+                const users = yield userModel
+                    .find({
+                    $or: [
+                        { username: { $regex: keyword, $options: 'i' } },
+                        { name: { $regex: keyword, $options: 'i' } },
+                        { cedula: { $regex: keyword, $options: 'i' } },
+                        { telefono: { $regex: keyword, $options: 'i' } },
+                        { email: { $regex: keyword, $options: 'i' } },
+                        { more_info: { $regex: keyword, $options: 'i' } },
+                        { roles: { $regex: keyword, $options: 'i' } },
+                        // Add new data to be found here
+                    ],
+                })
+                    .select('_id number username name cedula telefono email more_info');
+                return users;
+            }
+            catch (error) {
+                (0, logger_1.LogError)(`[ORM ERROR]: Searching Users by Keyword: ${error}`);
+                throw error;
+            }
         });
     }
 };
