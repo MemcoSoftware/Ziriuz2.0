@@ -44,5 +44,5 @@ server.use('/auth', authRouter); // http://localhost:8000/api/auth  --> authRout
 server.use('/tecnicos',tecnicosRouter);// http://localhost:8000/api/tecnicos  --> tecnicosRouter
 server.use('/sedes', sedesRouter)
 server.use('/roles', rolesRouter) // http://localhost:8000/api/tecnicos  --> rolesRouter
-server.use('/api/users', searchRouter)
+server.use('/users', searchRouter)
 export default server;

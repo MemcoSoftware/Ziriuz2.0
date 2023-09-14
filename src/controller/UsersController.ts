@@ -6,7 +6,9 @@ import { LogSuccess, LogError, LogWarning } from "../utils/logger";
 // ORM - Users Collection
 import { deleteUserByID, getAllUsers, getUserByID, updateUserByID } from "../domain/orm/User.orm";
 import { BasicResponse } from "./types";
-import { userEntity } from "../domain/entities/User.entity";
+import { userEntity} from "../domain/entities/User.entity";
+import { roleEntity } from "../domain/entities/Roles.entity";
+import mongoose from "mongoose";
 
 
 
@@ -114,30 +116,37 @@ public async updateUser(@Query()id: string, user: any): Promise<any> {
 public async searchUsersByKeyword(keyword: string): Promise<any> {
     try {
       const userModel = userEntity();
+      const rolesModel = roleEntity();
   
+      // Primero, busca los roles por nombre en la colección Roles
+      const roles = await rolesModel.find({ name: { $regex: keyword, $options: 'i' } }).select('_id');
+      const roleIds = roles.map(role => role._id);
+  
+      // Luego, busca usuarios que tengan esos roles por ObjectId
       const users = await userModel
         .find({
           $or: [
             { username: { $regex: keyword, $options: 'i' } },
             { name: { $regex: keyword, $options: 'i' } },
-            { cedula: { $regex: keyword, $options: 'i' } },
             { telefono: { $regex: keyword, $options: 'i'} },
             { email: { $regex: keyword, $options: 'i'} },
             { more_info: { $regex: keyword, $options: 'i'} },
-            { roles: { $regex: keyword, $options: 'i'} },
-            // Add new data to be found here
+            { roles: { $in: roleIds.map(roleId => new mongoose.Types.ObjectId(roleId.toString())) } },
           ],
         })
         .select('_id number username name cedula telefono email more_info');
   
+      // Agregamos un registro de depuración para verificar los resultados
+      console.log('Usuarios encontrados:', users);
+  
       return users;
     } catch (error) {
-      LogError(`[ORM ERROR]: Searching Users by Keyword: ${error}`);
+      LogError(`[USERS CONTROLLER ERROR]: Searching Users by Keyword: ${error}`);
       throw error;
     }
   }
-  
 
+  
 
 }
 
