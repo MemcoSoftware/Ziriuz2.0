@@ -20,18 +20,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const tsoa_1 = require("tsoa");
 const logger_1 = require("../utils/logger");
 // ORM - Users Collection
 const User_orm_1 = require("../domain/orm/User.orm");
-const User_entity_1 = require("../domain/entities/User.entity");
-const Roles_entity_1 = require("../domain/entities/Roles.entity");
-const mongoose_1 = __importDefault(require("mongoose"));
 let UserController = exports.UserController = class UserController {
     /**
      * Endpoint to retreive the USers in the "Users" Collection from DB
@@ -105,37 +99,6 @@ let UserController = exports.UserController = class UserController {
                 };
             }
             return response;
-        });
-    }
-    searchUsersByKeyword(keyword) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const userModel = (0, User_entity_1.userEntity)();
-                const rolesModel = (0, Roles_entity_1.roleEntity)();
-                // Primero, busca los roles por nombre en la colección Roles
-                const roles = yield rolesModel.find({ name: { $regex: keyword, $options: 'i' } }).select('_id');
-                const roleIds = roles.map(role => role._id);
-                // Luego, busca usuarios que tengan esos roles por ObjectId
-                const users = yield userModel
-                    .find({
-                    $or: [
-                        { username: { $regex: keyword, $options: 'i' } },
-                        { name: { $regex: keyword, $options: 'i' } },
-                        { telefono: { $regex: keyword, $options: 'i' } },
-                        { email: { $regex: keyword, $options: 'i' } },
-                        { more_info: { $regex: keyword, $options: 'i' } },
-                        { roles: { $in: roleIds.map(roleId => new mongoose_1.default.Types.ObjectId(roleId.toString())) } },
-                    ],
-                })
-                    .select('_id number username name cedula telefono email more_info');
-                // Agregamos un registro de depuración para verificar los resultados
-                console.log('Usuarios encontrados:', users);
-                return users;
-            }
-            catch (error) {
-                (0, logger_1.LogError)(`[USERS CONTROLLER ERROR]: Searching Users by Keyword: ${error}`);
-                throw error;
-            }
         });
     }
 };

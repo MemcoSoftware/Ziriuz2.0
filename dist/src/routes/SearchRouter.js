@@ -13,27 +13,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const UsersController_1 = require("../controller/UsersController");
-const logger_1 = require("../utils/logger");
+const SearchController_1 = __importDefault(require("../controller/SearchController"));
 const verifyToken_middleware_1 = require("../middlewares/verifyToken.middleware");
-let searchRouter = express_1.default.Router();
-// Ruta para buscar usuarios por palabra clave
-searchRouter.get('/search', verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { keyword } = req.query;
-    if (typeof keyword !== 'string') {
-        // Manejar el caso en el que keyword no sea una cadena
-        return res.status(400).json({ error: 'El parámetro keyword es inválido.' });
-    }
+const body_parser_1 = __importDefault(require("body-parser"));
+const searchRouter = express_1.default.Router();
+let jsonParser = body_parser_1.default.json();
+searchRouter.route('/')
+    // POST: Realizar búsqueda
+    .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword } = req.body;
+    // Lógica para buscar usuarios por palabra clave 'keyword'
     try {
-        (0, logger_1.LogInfo)(`Search for users with keyword: ${keyword}`);
-        const controller = new UsersController_1.UserController();
-        const users = yield controller.searchUsersByKeyword(keyword);
-        res.status(200).json(users);
+        // Tu lógica de búsqueda aquí
+        const results = yield SearchController_1.default.searchUsersByKeyword(keyword);
+        res.status(200).json(results);
     }
     catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Error en la búsqueda de usuarios.' });
     }
 }));
+// GET: Otras operaciones si es necesario
 exports.default = searchRouter;
 //# sourceMappingURL=SearchRouter.js.map

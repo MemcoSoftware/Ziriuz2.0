@@ -3,10 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Root Router
- * Redirections to Routers
- */
 const express_1 = __importDefault(require("express"));
 const HelloRouter_1 = __importDefault(require("./HelloRouter"));
 const logger_1 = require("../utils/logger");
@@ -16,8 +12,11 @@ const TecnicoRouter_1 = __importDefault(require("./TecnicoRouter"));
 const RolesRouter_1 = __importDefault(require("./RolesRouter"));
 const SedeRouter_1 = __importDefault(require("./SedeRouter"));
 const SearchRouter_1 = __importDefault(require("./SearchRouter"));
+const body_parser_1 = __importDefault(require("body-parser")); // Importa bodyParser
 // Server Instance
 let server = (0, express_1.default)();
+// Configura body-parser antes de las rutas
+server.use(body_parser_1.default.json());
 // Router Instance
 let rootRotuer = express_1.default.Router();
 // Activate request to http://localhost:8000/api
@@ -37,6 +36,6 @@ server.use('/auth', AuthRouter_1.default); // http://localhost:8000/api/auth  --
 server.use('/tecnicos', TecnicoRouter_1.default); // http://localhost:8000/api/tecnicos  --> tecnicosRouter
 server.use('/sedes', SedeRouter_1.default);
 server.use('/roles', RolesRouter_1.default); // http://localhost:8000/api/tecnicos  --> rolesRouter
-server.use('/users', SearchRouter_1.default);
+server.use('/search', SearchRouter_1.default);
 exports.default = server;
 //# sourceMappingURL=index.js.map

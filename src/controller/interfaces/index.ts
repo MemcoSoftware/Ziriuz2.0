@@ -18,7 +18,7 @@ export interface IUserController{
     // Update User
     updateUser(id:string, user:any): Promise<any>
     // Search User
-    searchUsersByKeyword(keyword: string): Promise<any>
+    // searchUsersByKeyword(keyword: string): Promise<any>
 }
 
 
@@ -56,3 +56,9 @@ export interface ISedeController{
     deleteSede(id?: string): Promise<any>
     
 }
+
+export interface ISearchController {
+    searchUsersByKeyword(keyword: string): Promise<any>;
+  }
+  
+  
