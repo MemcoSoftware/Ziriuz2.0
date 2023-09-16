@@ -32,7 +32,12 @@ class SearchController implements ISearchController {
             { roles: { $in: roleIds } },
           ],
         })
-        .select('_id number username name cedula telefono email more_info');
+        .select('_id number username name cedula telefono email more_info') // Excluye el campo 'cedula'
+        .populate({
+          path: 'roles',
+          model: rolesModel, // Usa el modelo de Roles aquí
+          select: 'name',
+        }); // Agrega el nombre del rol a la respuesta
 
       return users;
     } catch (error) {
