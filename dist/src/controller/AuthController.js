@@ -108,9 +108,12 @@ let AuthController = exports.AuthController = class AuthController {
                     };
                 }
                 (0, logger_1.LogSuccess)(`[/api/auth/login] User Logged In: ${auth.username}`);
+                // Obtén el nombre del rol desde la respuesta
+                const roleName = data.roles && data.roles.length > 0 ? data.roles[0] : '';
                 return {
                     token: data.token,
-                    message: `Welcome, ${data.user.name}`
+                    message: `Welcome, ${data.user.name}`,
+                    roleName: roleName // Agrega el nombre del rol a la respuesta
                 };
             }
             catch (error) {

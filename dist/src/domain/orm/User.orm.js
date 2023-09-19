@@ -148,6 +148,7 @@ const loginUser = (auth) => __awaiter(void 0, void 0, void 0, function* () {
             console.error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password`);
             throw new Error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password`);
         }
+        const userRoles = yield (0, Roles_entity_1.roleEntity)().find({ _id: { $in: userFound.roles } });
         // Generate JWT
         token = jsonwebtoken_1.default.sign({ username: userFound.username }, secret, {
             expiresIn: "2h",
@@ -155,6 +156,7 @@ const loginUser = (auth) => __awaiter(void 0, void 0, void 0, function* () {
         return {
             user: userFound,
             token: token,
+            roles: userRoles.map(role => role.name)
         };
     }
     catch (error) {

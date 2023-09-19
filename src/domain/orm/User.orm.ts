@@ -164,6 +164,8 @@ export const loginUser = async (auth: IAuth): Promise<any | undefined> => {
         throw new Error(`[AUTHENTICATION_ERROR in ORM]: Invalid Password`);
       }
   
+      const userRoles = await roleEntity().find({ _id: { $in: userFound!.roles } });
+
       // Generate JWT
       token = jwt.sign({ username: userFound!.username }, secret, {
         expiresIn: "2h",
@@ -172,6 +174,7 @@ export const loginUser = async (auth: IAuth): Promise<any | undefined> => {
       return {
         user: userFound,
         token: token,
+        roles: userRoles.map(role => role.name)
       };
     } catch (error) {
       LogError(`[ORM ERROR]: Cannot Log User: ${error}`);

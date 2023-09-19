@@ -55,44 +55,49 @@ public async registerUser(@Body() user: IUser): Promise<BasicResponse | ErrorRes
 }
 
 @Post("/login")
-  public async loginUser(@Body() auth: IAuth): Promise<AuthResponse | ErrorResponse> {
-    try {
-      if (!auth || !auth.username || !auth.password) {
-        LogWarning(`[/api/auth/login] Login needs username and password`);
-        return {
-          error: '[AUTH ERROR]: Username and Password are Required',
-          message: "Please, provide an username and password"
-        } as ErrorResponse;
-      }
-
-      LogSuccess(`[/api/auth/login] User Login Attempt: ${auth.username}`);
-      const data = await loginUser(auth);
-
-      if (!data || !data.user) {
-        LogError(`[/api/auth/login] User not found or Invalid Password`);
-        return {
-          error: '[AUTH ERROR]: Invalid Username or Password',
-          message: "Invalid Username or Password"
-        } as ErrorResponse;
-      }
-
-      LogSuccess(`[/api/auth/login] User Logged In: ${auth.username}`);
-
+public async loginUser(@Body() auth: IAuth): Promise<AuthResponse | ErrorResponse> {
+  try {
+    if (!auth || !auth.username || !auth.password) {
+      LogWarning(`[/api/auth/login] Login needs username and password`);
       return {
-        token: data.token,
-        message: `Welcome, ${data.user.name}`
-      } as AuthResponse;
-    } catch (error) {
-      const errorMessage = (error instanceof Error) ? error.message : 'An error occurred while logging in';
-
-      LogError(`[/api/auth/login] Error logging in: ${errorMessage}`);
-
-      return {
-        error: '[AUTH ERROR]: An error occurred while logging in',
-        message: errorMessage
+        error: '[AUTH ERROR]: Username and Password are Required',
+        message: "Please, provide an username and password"
       } as ErrorResponse;
     }
+
+    LogSuccess(`[/api/auth/login] User Login Attempt: ${auth.username}`);
+    const data = await loginUser(auth);
+
+    if (!data || !data.user) {
+      LogError(`[/api/auth/login] User not found or Invalid Password`);
+      return {
+        error: '[AUTH ERROR]: Invalid Username or Password',
+        message: "Invalid Username or Password"
+      } as ErrorResponse;
+    }
+
+    LogSuccess(`[/api/auth/login] User Logged In: ${auth.username}`);
+
+    // Obtén el nombre del rol desde la respuesta
+    const roleName = data.roles && data.roles.length > 0 ? data.roles[0] : '';
+
+    return {
+      token: data.token,
+      message: `Welcome, ${data.user.name}`,
+      roleName: roleName // Agrega el nombre del rol a la respuesta
+    } as AuthResponse;
+  } catch (error) {
+    const errorMessage = (error instanceof Error) ? error.message : 'An error occurred while logging in';
+
+    LogError(`[/api/auth/login] Error logging in: ${errorMessage}`);
+
+    return {
+      error: '[AUTH ERROR]: An error occurred while logging in',
+      message: errorMessage
+    } as ErrorResponse;
   }
+}
+
     
     @Post("/logout")
     public async logoutUser(): Promise<any> {
