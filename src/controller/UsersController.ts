@@ -86,31 +86,42 @@ public async deleteUser(@Query()id?: string): Promise<any> {
 
 
 @Put("/")
+public async updateUser(@Query() id: string, @Body() user: any): Promise<{ success: boolean; message: string }> {
+    try {
+        let response: { success: boolean; message: string } = {
+            success: false,
+            message: "",
+        };
 
-public async updateUser(@Query()id: string, user: any): Promise<any> {
-
-    let response: any = '';
-    
-       if(id){
-           LogSuccess(`[/api/users] Update User By ID: ${id}`)
-            await updateUserByID(id, user).then((r)=>{
-            response= {
-               
-                message: `User with ID ${id} updated successfully`
-            }
-           })
-           
-        
-    }else{
-        LogWarning('[/api/users] Update User Request WITHOUD ID')
-        
-        response = {
-           
-            message: 'Please, provide an Id to update an existing User'
+        if (!id) {
+            LogWarning('[/api/users] Update User Request WITHOUT ID');
+            response.message = "Please, provide an Id to update an existing User";
+            return response;
         }
+
+        // Controller Instance to execute a method
+        const existingUser = await getUserByID(id);
+
+        if (!existingUser) {
+            response.message = `User with ID ${id} not found`;
+            return response;
+        }
+
+        // Update User
+        await updateUserByID(id, user);
+
+        response.success = true;
+        response.message = `User with ID ${id} updated successfully`;
+        return response;
+    } catch (error) {
+        LogError(`[Controller ERROR]: Updating User ${id}: ${error}`);
+        return {
+            success: false,
+            message: "An error occurred while updating the user",
+        };
     }
-    return response;
 }
+
 
 
 

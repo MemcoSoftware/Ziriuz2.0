@@ -83,22 +83,35 @@ let UserController = exports.UserController = class UserController {
     */
     updateUser(id, user) {
         return __awaiter(this, void 0, void 0, function* () {
-            let response = '';
-            if (id) {
-                (0, logger_1.LogSuccess)(`[/api/users] Update User By ID: ${id}`);
-                yield (0, User_orm_1.updateUserByID)(id, user).then((r) => {
-                    response = {
-                        message: `User with ID ${id} updated successfully`
-                    };
-                });
+            try {
+                let response = {
+                    success: false,
+                    message: "",
+                };
+                if (!id) {
+                    (0, logger_1.LogWarning)('[/api/users] Update User Request WITHOUT ID');
+                    response.message = "Please, provide an Id to update an existing User";
+                    return response;
+                }
+                // Controller Instance to execute a method
+                const existingUser = yield (0, User_orm_1.getUserByID)(id);
+                if (!existingUser) {
+                    response.message = `User with ID ${id} not found`;
+                    return response;
+                }
+                // Update User
+                yield (0, User_orm_1.updateUserByID)(id, user);
+                response.success = true;
+                response.message = `User with ID ${id} updated successfully`;
+                return response;
             }
-            else {
-                (0, logger_1.LogWarning)('[/api/users] Update User Request WITHOUD ID');
-                response = {
-                    message: 'Please, provide an Id to update an existing User'
+            catch (error) {
+                (0, logger_1.LogError)(`[Controller ERROR]: Updating User ${id}: ${error}`);
+                return {
+                    success: false,
+                    message: "An error occurred while updating the user",
                 };
             }
-            return response;
         });
     }
 };
@@ -119,6 +132,7 @@ __decorate([
 __decorate([
     (0, tsoa_1.Put)("/"),
     __param(0, (0, tsoa_1.Query)()),
+    __param(1, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)

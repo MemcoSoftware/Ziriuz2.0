@@ -56,36 +56,22 @@ usersRouter.route('/')
 
 
     // UPDATE
-    .put(verifyToken, async (req: Request, res: Response)=>{
-
-        // Obtein a Query Param (ID)
-        let id: any = req?.query?.id;
-        let number: any = req?.query?.number;
-        let username: any = req?.query?.username;
-        let name: any = req?.query?.name;
-        let cedula: any = req?.query?.cedula;
-        let telefono: any = req?.query?.telefono;
-        let email: any = req?.query?.email;
-        let more_info: any = req?.query?.more_info;
-        LogInfo(`Query Param: ${id} ${number} ${username} ${name} ${cedula} ${telefono} ${email} ${more_info}`);
+    .put(verifyToken, jsonParser, async (req: Request, res: Response) => {
+        const id: any = req?.query?.id;
+        const user: any = req.body; // Obtén los datos del usuario del cuerpo (body)
+    
         // Controller Instance to execute a method
         const controller: UserController = new UserController();
-
-        let user = {
-            number: number,
-            username: username,
-            name: name,
-            cedula: cedula,
-            telefono: telefono,
-            email: email,
-            more_info: more_info
-        }
-        // Get Response
+    
         const response: any = await controller.updateUser(id, user);
-
-        // Send to the user response
-        return res.status(200).send(response);
+    
+        if (response.success) {
+            return res.status(200).send(response);
+        } else {
+            return res.status(500).send(response);
+        }
     })
+    
 
 
 
