@@ -80,11 +80,14 @@ public async loginUser(@Body() auth: IAuth): Promise<AuthResponse | ErrorRespons
 
     // Obtén el nombre del rol desde la respuesta
     const roleName = data.roles && data.roles.length > 0 ? data.roles[0] : '';
+    // Obten el ObjectId del usuario desde la base de datos
+    const userId = data.user._id;
 
     return {
       token: data.token,
       message: `Welcome, ${data.user.name}`,
-      roleName: roleName // Agrega el nombre del rol a la respuesta
+      roleName: roleName,
+      userId: userId // Agrega el nombre del rol a la respuesta
     } as AuthResponse;
   } catch (error) {
     const errorMessage = (error instanceof Error) ? error.message : 'An error occurred while logging in';
