@@ -68,7 +68,7 @@ const getUserByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
         let roleModel = (0, Roles_entity_1.roleEntity)();
         // Search User by ID
         return yield userModel.findById(id)
-            .select('_id number username name cedula telefono email more_info roles') // Incluye 'roles' en la selección
+            .select('_id number username name cedula telefono email more_info roles type titulo reg_invima')
             .populate({
             path: 'roles',
             model: roleModel,

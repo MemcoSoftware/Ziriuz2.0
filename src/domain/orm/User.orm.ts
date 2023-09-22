@@ -74,7 +74,7 @@ export const getUserByID = async (id: string): Promise<any | undefined> => {
 
         // Search User by ID
         return await userModel.findById(id)
-            .select('_id number username name cedula telefono email more_info roles') // Incluye 'roles' en la selección
+            .select('_id number username name cedula telefono email more_info roles type titulo reg_invima') 
             .populate({
                 path: 'roles',
                 model: roleModel, // Usa el modelo de Roles aquí
