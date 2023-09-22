@@ -26,7 +26,7 @@ let jsonParser = body_parser_1.default.json();
 let authRouter = express_1.default.Router();
 authRouter.route('/register')
     .post(jsonParser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let { number, username, password, name, cedula, telefono, email, more_info, roles } = req === null || req === void 0 ? void 0 : req.body;
+    let { number, username, password, name, cedula, telefono, email, more_info, roles, type, titulo, reg_invima } = req === null || req === void 0 ? void 0 : req.body;
     console.log('Roles received:', roles);
     let hashedPassword = '';
     if (number && username && password && name && cedula && telefono && email && more_info && roles) {
@@ -41,8 +41,18 @@ authRouter.route('/register')
             telefono: telefono,
             email: email,
             more_info: more_info,
-            roles: roles
+            roles: roles,
         };
+        // Optional fields
+        if (type) {
+            newUser.type = type;
+        }
+        if (titulo) {
+            newUser.titulo = titulo;
+        }
+        if (reg_invima) {
+            newUser.reg_invima = reg_invima;
+        }
         // Controller Instance to execute a method
         const controller = new AuthController_1.AuthController();
         // Get Response
