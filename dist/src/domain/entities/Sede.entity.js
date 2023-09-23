@@ -7,11 +7,10 @@ exports.sedeEntity = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const sedeEntity = () => {
     let sedeSchema = new mongoose_1.default.Schema({
-        nombre_sede: { type: String, required: true },
-        address_sede: { type: String, required: true },
+        sede_nombre: { type: String, required: true },
+        sede_address: { type: String, required: true },
         sede_telefono: { type: String, required: true },
         sede_email: { type: String, required: true },
-        more_info: { type: String, required: true },
     }, { versionKey: false });
     return mongoose_1.default.models.Sedes || mongoose_1.default.model('Sedes', sedeSchema);
 };

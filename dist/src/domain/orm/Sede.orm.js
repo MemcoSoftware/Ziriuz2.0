@@ -20,7 +20,7 @@ const getAllSedes = (page, limit) => __awaiter(void 0, void 0, void 0, function*
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('_id nombre_sede address_sede sede_telefono sede_email more_info')
+            .select('_id sede_nombre sede_address sede_telefono sede_email')
             .exec()
             .then((sedes) => {
             response.sedes = sedes;
@@ -40,7 +40,7 @@ const getSedeByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let sedeModel = (0, Sede_entity_1.sedeEntity)();
         return yield sedeModel.findById(id)
-            .select('_id nombre_sede address_sede sede_telefono sede_email more_info')
+            .select('_id sede_nombre sede_address sede_telefono sede_email')
             .exec();
     }
     catch (error) {

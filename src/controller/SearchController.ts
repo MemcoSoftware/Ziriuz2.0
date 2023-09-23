@@ -3,6 +3,7 @@ import { userEntity } from '../domain/entities/User.entity';
 import { roleEntity } from '../domain/entities/Roles.entity';
 import mongoose from 'mongoose';
 import { ISearchController } from './interfaces';
+import { sedeEntity } from '../domain/entities/Sede.entity';
 
 class SearchController implements ISearchController {
   public async searchUsersByKeyword(keyword: string): Promise<any> {
@@ -45,6 +46,37 @@ class SearchController implements ISearchController {
       throw new Error('Error en la búsqueda de usuarios.');
     }
   }
+
+  public async searchSedesByKeyword(keyword: string): Promise<any> {
+    try {
+      if (typeof keyword !== 'string') {
+        throw new Error('El parámetro keyword es inválido.');
+      }
+
+      LogInfo(`Buscar sedes con palabra clave: ${keyword}`);
+
+      const sedeModel = sedeEntity();
+
+      // Realiza la búsqueda de sedes por nombre o cualquier otro campo relevante
+      const sedes = await sedeModel
+        .find({
+          $or: [
+            { sede_nombre: { $regex: keyword, $options: 'i' } },
+            { sede_address: { $regex: keyword, $options: 'i' } },
+            { sede_telefono: { $regex: keyword, $options: 'i' } },
+            { sede_email: { $regex: keyword, $options: 'i' } },
+            // Agrega otros campos para buscar según sea necesario
+          ],
+        })
+        .select('sede_nombre sede_address sede_telefono sede_email'); // Puedes seleccionar los campos que desees
+
+      return sedes;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error en la búsqueda de sedes.');
+    }
+  }
+
 }
 
 export default new SearchController();

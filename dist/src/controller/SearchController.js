@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const logger_1 = require("../utils/logger");
 const User_entity_1 = require("../domain/entities/User.entity");
 const Roles_entity_1 = require("../domain/entities/Roles.entity");
+const Sede_entity_1 = require("../domain/entities/Sede.entity");
 class SearchController {
     searchUsersByKeyword(keyword) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -48,6 +49,34 @@ class SearchController {
             catch (error) {
                 console.error(error);
                 throw new Error('Error en la búsqueda de usuarios.');
+            }
+        });
+    }
+    searchSedesByKeyword(keyword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (typeof keyword !== 'string') {
+                    throw new Error('El parámetro keyword es inválido.');
+                }
+                (0, logger_1.LogInfo)(`Buscar sedes con palabra clave: ${keyword}`);
+                const sedeModel = (0, Sede_entity_1.sedeEntity)();
+                // Realiza la búsqueda de sedes por nombre o cualquier otro campo relevante
+                const sedes = yield sedeModel
+                    .find({
+                    $or: [
+                        { sede_nombre: { $regex: keyword, $options: 'i' } },
+                        { sede_address: { $regex: keyword, $options: 'i' } },
+                        { sede_telefono: { $regex: keyword, $options: 'i' } },
+                        { sede_email: { $regex: keyword, $options: 'i' } },
+                        // Agrega otros campos para buscar según sea necesario
+                    ],
+                })
+                    .select('sede_nombre sede_address sede_telefono sede_email'); // Puedes seleccionar los campos que desees
+                return sedes;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error('Error en la búsqueda de sedes.');
             }
         });
     }

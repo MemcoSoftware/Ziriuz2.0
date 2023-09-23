@@ -49,6 +49,9 @@ let SedeController = exports.SedeController = class SedeController {
             }
             catch (error) {
                 (0, logger_1.LogError)('[ORM ERROR]: Creating Sede');
+                response = {
+                    message: 'Invalid format/entity'
+                };
             }
             return response;
         });

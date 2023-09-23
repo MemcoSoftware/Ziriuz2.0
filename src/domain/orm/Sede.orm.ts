@@ -13,7 +13,7 @@ export const getAllSedes = async (page: number, limit: number): Promise<any[] | 
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('_id nombre_sede address_sede sede_telefono sede_email more_info')
+            .select('_id sede_nombre sede_address sede_telefono sede_email')
             .exec()
             .then((sedes: ISede[]) => {
                 response.sedes = sedes;
@@ -35,7 +35,7 @@ export const getSedeByID = async (id: string): Promise<any | undefined> => {
         let sedeModel = sedeEntity();
 
         return await sedeModel.findById(id)
-            .select('_id nombre_sede address_sede sede_telefono sede_email more_info')
+            .select('_id sede_nombre sede_address sede_telefono sede_email')
             .exec();
     } catch (error) {
         LogError(`[ORM ERROR]: Getting Sede By ID: ${error}`);

@@ -13,25 +13,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const SearchController_1 = __importDefault(require("../controller/SearchController"));
+const SearchController_1 = __importDefault(require("../controller/SearchController")); // Asegúrate de importar el controlador correcto
 const verifyToken_middleware_1 = require("../middlewares/verifyToken.middleware");
-const body_parser_1 = __importDefault(require("body-parser"));
 const searchRouter = express_1.default.Router();
-let jsonParser = body_parser_1.default.json();
 searchRouter.route('/')
-    // POST: Realizar búsqueda
     .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { keyword } = req.body;
     // Lógica para buscar usuarios por palabra clave 'keyword'
     try {
-        // Tu lógica de búsqueda aquí
-        const results = yield SearchController_1.default.searchUsersByKeyword(keyword);
+        const results = yield SearchController_1.default.searchUsersByKeyword(keyword); // Utiliza el controlador correcto
         res.status(200).json(results);
     }
     catch (error) {
         res.status(500).json({ error: 'Error en la búsqueda de usuarios.' });
     }
 }));
-// GET: Otras operaciones si es necesario
+searchRouter.route('/sedes')
+    .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword } = req.body;
+    // Lógica para buscar sedes por palabra clave 'keyword'
+    try {
+        const results = yield SearchController_1.default.searchSedesByKeyword(keyword); // Utiliza el controlador correcto
+        res.status(200).json(results);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Error en la búsqueda de sedes.' });
+    }
+}));
 exports.default = searchRouter;
 //# sourceMappingURL=SearchRouter.js.map

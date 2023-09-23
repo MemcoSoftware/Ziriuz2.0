@@ -30,6 +30,9 @@ export class SedeController implements ISedeController {
             response = await createSede(sedeData);
         } catch (error) {
             LogError('[ORM ERROR]: Creating Sede');
+            response = {
+                message: 'Invalid format/entity'
+            }
         }
         return response;
     }
