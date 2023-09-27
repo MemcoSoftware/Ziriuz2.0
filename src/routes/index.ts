@@ -9,6 +9,7 @@ import rolesRouter from './RolesRouter';
 import sedesRouter from './SedeRouter';
 import searchRouter from './SearchRouter';
 import bodyParser from 'body-parser'; // Importa bodyParser
+import clientRouter from './ClientRouter';
 
 // Server Instance
 let server = express();
@@ -38,4 +39,5 @@ server.use('/tecnicos', tecnicosRouter); // http://localhost:8000/api/tecnicos  
 server.use('/sedes', sedesRouter);
 server.use('/roles', rolesRouter); // http://localhost:8000/api/tecnicos  --> rolesRouter
 server.use('/search', searchRouter);
+server.use('/clients', clientRouter); // http://localhost:8000/api/clients --> clientRouter
 export default server;

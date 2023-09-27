@@ -13,6 +13,7 @@ const RolesRouter_1 = __importDefault(require("./RolesRouter"));
 const SedeRouter_1 = __importDefault(require("./SedeRouter"));
 const SearchRouter_1 = __importDefault(require("./SearchRouter"));
 const body_parser_1 = __importDefault(require("body-parser")); // Importa bodyParser
+const ClientRouter_1 = __importDefault(require("./ClientRouter"));
 // Server Instance
 let server = (0, express_1.default)();
 // Configura body-parser antes de las rutas
@@ -37,5 +38,6 @@ server.use('/tecnicos', TecnicoRouter_1.default); // http://localhost:8000/api/t
 server.use('/sedes', SedeRouter_1.default);
 server.use('/roles', RolesRouter_1.default); // http://localhost:8000/api/tecnicos  --> rolesRouter
 server.use('/search', SearchRouter_1.default);
+server.use('/clients', ClientRouter_1.default); // http://localhost:8000/api/clients --> clientRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map

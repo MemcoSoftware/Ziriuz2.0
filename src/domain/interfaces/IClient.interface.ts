@@ -1,10 +1,8 @@
 export interface IClient {
-    number: number;
-    client_username: string;
-    name: string;
-    cedula: number;
-    telefono: string;
-    email: string;
-    more_info: string
-    
-}
+    client_name: string;
+    client_nit: number;
+    client_address: string;
+    client_telefono: string;
+    client_email: string;
+  }
+  
