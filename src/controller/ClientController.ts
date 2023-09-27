@@ -1,63 +1,97 @@
-import { Get, Route, Tags, Post, Put, Delete, Body, Path } from 'tsoa';
-import { IClientController } from './interfaces';
-import { LogSuccess, LogError, LogWarning } from '../utils/logger';
-import * as ClientOrm from '../domain/orm/Client.orm';
-import { IClient } from '../domain/interfaces/IClient.interface';
+import { Get, Query, Route, Tags, Delete, Post, Put, Body } from "tsoa";
+import { IClientController } from "./interfaces";
+import { LogSuccess, LogError, LogWarning, LogInfo } from "../utils/logger";
 
-@Route('/api/clients')
-@Tags('ClientController')
+// ORM - Clients Collection
+import { deleteClientByID, getAllClients, getClientByID, updateClientByID } from "../domain/orm/Client.orm";
+import { BasicResponse } from "./types";
+import { clientEntity } from "../domain/entities/Client.entity";
+import mongoose from "mongoose";
+import { IClient } from "@/domain/interfaces/IClient.interface";
+
+@Route("/api/clients")
+@Tags("ClientController")
 export class ClientController implements IClientController {
-  @Get('/')
-  public async getClients(): Promise<IClient[]> {
-    try {
-      LogSuccess('[/api/clients] Get All Clients Request');
-      return await ClientOrm.getAllClients();
-    } catch (error) {
-      LogError('[Controller ERROR]: Getting All Clients');
-      return [];
+    
+    /**
+     * Endpoint to retrieve the clients in the "Clients" Collection from DB
+     * @param {number} page Page for pagination
+     * @param {number} limit Limit of clients per page
+     * @param {string} id ID of client to retrieve (optional)
+     * @returns All clients or client found by ID
+     */
+    @Get("/")
+    public async getClients(@Query() page: number, @Query() limit: number, @Query() id?: string): Promise<any> {
+        let response: any = '';
+        if (id) {
+            LogSuccess(`[/api/clients] Get Client By ID: ${id}`);
+            response = await getClientByID(id);
+        } else {
+            LogSuccess('[/api/clients] Get All Clients Request');
+            response = await getAllClients(page, limit);
+        }
+        return response;
     }
-  }
+    
 
-  @Get('{id}')
-  public async getClientByID(@Path() id: string): Promise<IClient | null> {
-    try {
-      LogSuccess(`[/api/clients/${id}] Get Client By ID: ${id}`);
-      return await ClientOrm.getClientByID(id);
-    } catch (error) {
-      LogError(`[Controller ERROR]: Getting Client By ID: ${id}`);
-      return null;
+    /**
+     * Endpoint to delete the clients in the "Clients" Collection from DB
+     * @param {string} id ID of client to delete
+     * @returns Message confirming client was deleted
+     */
+    @Delete("/")
+    public async deleteClient(@Query() id?: string): Promise<any> {
+        let response: any = '';
+        if (id) {
+            try {
+                await deleteClientByID(id);
+                response = {
+                    message: `Client with ID: ${id} deleted successfully`
+                };
+            } catch (error) {
+                response = {
+                    message: `Error deleting client with ID: ${id}`
+                };
+            }
+        } else {
+            LogWarning('[/api/clients] Delete Client Request WITHOUT ID ');
+            response = {
+                message: 'Please provide an ID to remove from the DB'
+            };
+        }
+        return response;
     }
-  }
 
-  @Post('/')
-  public async createClient(@Body() client: IClient): Promise<IClient> {
-    try {
-      LogSuccess('[/api/clients] Create Client Request');
-      return await ClientOrm.createClient(client);
-    } catch (error) {
-      LogError('[Controller ERROR]: Creating Client');
-      return {} as IClient;
+    /**
+     * Endpoint to create a new client in the "Clients" Collection from DB
+     * @param {string} id ID of client to retrieve (optional)
+     * @returns Message confirming client was created
+     */
+        @Post("/")
+    public async createClient(@Body() client: any): Promise<IClient> {
+        try {
+            const createdClient = await clientEntity().create(client);
+            return createdClient;
+        } catch (error) {
+            LogError('[Controller ERROR]: Creating Client');
+            throw error;
+        }
     }
-  }
 
-  @Put('{id}')
-  public async updateClient(@Path() id: string, @Body() client: IClient): Promise<IClient | null> {
-    try {
-      LogSuccess(`[/api/clients/${id}] Update Client Request`);
-      return await ClientOrm.updateClient(id, client);
-    } catch (error) {
-      LogError(`[Controller ERROR]: Updating Client: ${id}`);
-      return null;
-    }
-  }
+    @Put("/")
+    public async updateClient(@Query() id: string, @Body() client: any): Promise<IClient | null> {
+        try {
+            if (!id) {
+                LogWarning('[/api/clients] Update Client Request WITHOUT ID');
+                throw new Error("Please, provide an ID to update an existing client");
+            }
 
-  @Delete('{id}')
-  public async deleteClient(@Path() id: string): Promise<void> {
-    try {
-      LogSuccess(`[/api/clients/${id}] Delete Client Request`);
-      await ClientOrm.deleteClient(id);
-    } catch (error) {
-      LogError(`[Controller ERROR]: Deleting Client: ${id}`);
+            const updatedClient = await updateClientByID(id, client);
+            return updatedClient;
+        } catch (error) {
+            LogError(`[Controller ERROR]: Updating Client ${id}: ${error}`);
+            throw error;
+        }
     }
-  }
+
 }

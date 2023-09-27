@@ -8,7 +8,10 @@ export const clientEntity = () => {
     client_address: { type: String, required: true },
     client_telefono: { type: String, required: true },
     client_email: { type: String, required: true },
-  });
+    
+  },
+  { versionKey: false } // Disable the versionKey function
+  );
 
   return mongoose.models.Clients || mongoose.model<IClient>('Clients', clientSchema);
 };
