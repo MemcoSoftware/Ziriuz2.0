@@ -99,16 +99,33 @@ let ClientController = exports.ClientController = class ClientController {
     updateClient(id, client) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                let response = {
+                    success: false,
+                    message: "",
+                };
                 if (!id) {
                     (0, logger_1.LogWarning)('[/api/clients] Update Client Request WITHOUT ID');
-                    throw new Error("Please, provide an ID to update an existing client");
+                    response.message = "Please, provide an ID to update an existing Client";
+                    return response;
                 }
-                const updatedClient = yield (0, Client_orm_1.updateClientByID)(id, client);
-                return updatedClient;
+                // Controller Instance to execute a method
+                const existingClient = yield (0, Client_orm_1.getClientByID)(id);
+                if (!existingClient) {
+                    response.message = `Client with ID ${id} not found`;
+                    return response;
+                }
+                // Update Client
+                yield (0, Client_orm_1.updateClientByID)(id, client);
+                response.success = true;
+                response.message = `Client with ID ${id} updated successfully`;
+                return response;
             }
             catch (error) {
                 (0, logger_1.LogError)(`[Controller ERROR]: Updating Client ${id}: ${error}`);
-                throw error;
+                return {
+                    success: false,
+                    message: "An error occurred while updating the client",
+                };
             }
         });
     }

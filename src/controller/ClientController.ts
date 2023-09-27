@@ -79,19 +79,42 @@ export class ClientController implements IClientController {
     }
 
     @Put("/")
-    public async updateClient(@Query() id: string, @Body() client: any): Promise<IClient | null> {
-        try {
-            if (!id) {
-                LogWarning('[/api/clients] Update Client Request WITHOUT ID');
-                throw new Error("Please, provide an ID to update an existing client");
-            }
+    public async updateClient(@Query() id: string, @Body() client: any): Promise<{ success: boolean; message: string }> {
+    try {
+        let response: { success: boolean; message: string } = {
+            success: false,
+            message: "",
+        };
 
-            const updatedClient = await updateClientByID(id, client);
-            return updatedClient;
-        } catch (error) {
-            LogError(`[Controller ERROR]: Updating Client ${id}: ${error}`);
-            throw error;
+        if (!id) {
+            LogWarning('[/api/clients] Update Client Request WITHOUT ID');
+            response.message = "Please, provide an ID to update an existing Client";
+            return response;
         }
+
+        // Controller Instance to execute a method
+        const existingClient = await getClientByID(id);
+
+        if (!existingClient) {
+            response.message = `Client with ID ${id} not found`;
+            return response;
+        }
+
+        // Update Client
+        await updateClientByID(id, client);
+
+        response.success = true;
+        response.message = `Client with ID ${id} updated successfully`;
+        return response;
+    } catch (error) {
+        LogError(`[Controller ERROR]: Updating Client ${id}: ${error}`);
+        return {
+            success: false,
+            message: "An error occurred while updating the client",
+        };
     }
+}
+
+      
 
 }

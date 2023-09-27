@@ -68,7 +68,7 @@ export interface ISearchController {
   export interface IClientController {
     getClients(page: number, limit: number, id?: string): Promise<any>;
     createClient(client: IClient): Promise<IClient>;
-    updateClient(id: string, client: IClient): Promise<IClient | null>;
+    updateClient(id: string, client: any): Promise<any>;
     deleteClient(id: string): Promise<void>;
   }
   
