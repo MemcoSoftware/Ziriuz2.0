@@ -4,6 +4,7 @@ import { roleEntity } from '../domain/entities/Roles.entity';
 import mongoose from 'mongoose';
 import { ISearchController } from './interfaces';
 import { sedeEntity } from '../domain/entities/Sede.entity';
+import { clientEntity } from '../domain/entities/Client.entity';
 
 class SearchController implements ISearchController {
   public async searchUsersByKeyword(keyword: string): Promise<any> {
@@ -76,6 +77,45 @@ class SearchController implements ISearchController {
       throw new Error('Error en la búsqueda de sedes.');
     }
   }
+
+  public async searchClientByKeyword(keyword: string): Promise<any> {
+    try {
+      let searchCriteria: any = {};
+  
+      if (keyword) {
+        // Intenta convertir el keyword a número, si es una cadena válida
+        const numericKeyword = parseInt(keyword, 10);
+  
+        // Si la conversión es exitosa, busca en client_nit como número
+        if (!isNaN(numericKeyword)) {
+          searchCriteria.client_nit = numericKeyword;
+        } else {
+          // Si no se puede convertir a número, busca en otros campos como cadena
+          searchCriteria = {
+            $or: [
+              { client_name: { $regex: keyword, $options: 'i' } },
+              { client_address: { $regex: keyword, $options: 'i' } },
+              { client_telefono: { $regex: keyword, $options: 'i' } },
+              { client_email: { $regex: keyword, $options: 'i' } },
+              // Agrega otros campos para buscar según sea necesario
+            ],
+          };
+        }
+      }
+  
+      const clientModel = clientEntity();
+  
+      const clients = await clientModel
+        .find(searchCriteria)
+        .select('client_name client_nit client_address client_telefono client_email');
+  
+      return clients;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error en la búsqueda de clientes.');
+    }
+  }
+  
 
 }
 

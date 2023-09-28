@@ -13,6 +13,7 @@ const logger_1 = require("../utils/logger");
 const User_entity_1 = require("../domain/entities/User.entity");
 const Roles_entity_1 = require("../domain/entities/Roles.entity");
 const Sede_entity_1 = require("../domain/entities/Sede.entity");
+const Client_entity_1 = require("../domain/entities/Client.entity");
 class SearchController {
     searchUsersByKeyword(keyword) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -77,6 +78,42 @@ class SearchController {
             catch (error) {
                 console.error(error);
                 throw new Error('Error en la búsqueda de sedes.');
+            }
+        });
+    }
+    searchClientByKeyword(keyword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let searchCriteria = {};
+                if (keyword) {
+                    // Intenta convertir el keyword a número, si es una cadena válida
+                    const numericKeyword = parseInt(keyword, 10);
+                    // Si la conversión es exitosa, busca en client_nit como número
+                    if (!isNaN(numericKeyword)) {
+                        searchCriteria.client_nit = numericKeyword;
+                    }
+                    else {
+                        // Si no se puede convertir a número, busca en otros campos como cadena
+                        searchCriteria = {
+                            $or: [
+                                { client_name: { $regex: keyword, $options: 'i' } },
+                                { client_address: { $regex: keyword, $options: 'i' } },
+                                { client_telefono: { $regex: keyword, $options: 'i' } },
+                                { client_email: { $regex: keyword, $options: 'i' } },
+                                // Agrega otros campos para buscar según sea necesario
+                            ],
+                        };
+                    }
+                }
+                const clientModel = (0, Client_entity_1.clientEntity)();
+                const clients = yield clientModel
+                    .find(searchCriteria)
+                    .select('client_name client_nit client_address client_telefono client_email');
+                return clients;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error('Error en la búsqueda de clientes.');
             }
         });
     }

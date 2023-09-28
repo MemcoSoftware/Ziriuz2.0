@@ -28,4 +28,16 @@ searchRouter.route('/sedes')
     }
   });
 
+  searchRouter.route('/clients')
+  .post(verifyToken, async (req: Request, res: Response) => {
+    const { keyword } = req.body;
+    // Lógica para buscar clientes por palabra clave 'keyword'
+    try {
+      const results = await SearchController.searchClientByKeyword(keyword); // Utiliza el controlador correcto
+      res.status(200).json(results);
+    } catch (error) {
+      res.status(500).json({ error: 'Error en la búsqueda de clientes.' });
+    }
+  });
+
 export default searchRouter;

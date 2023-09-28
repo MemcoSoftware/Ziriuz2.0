@@ -40,5 +40,17 @@ searchRouter.route('/sedes')
         res.status(500).json({ error: 'Error en la búsqueda de sedes.' });
     }
 }));
+searchRouter.route('/clients')
+    .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword } = req.body;
+    // Lógica para buscar clientes por palabra clave 'keyword'
+    try {
+        const results = yield SearchController_1.default.searchClientByKeyword(keyword); // Utiliza el controlador correcto
+        res.status(200).json(results);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Error en la búsqueda de clientes.' });
+    }
+}));
 exports.default = searchRouter;
 //# sourceMappingURL=SearchRouter.js.map

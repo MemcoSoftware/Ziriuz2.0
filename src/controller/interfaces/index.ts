@@ -62,6 +62,7 @@ export interface ISedeController{
 export interface ISearchController {
     searchUsersByKeyword(keyword: string): Promise<any>;
     searchSedesByKeyword(keyword: string): Promise<any>;
+    searchClientByKeyword(keyword: string): Promise<any>; 
   }
 
 
