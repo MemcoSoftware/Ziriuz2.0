@@ -19,6 +19,12 @@ const RolesRouter_1 = __importDefault(require("../modules/users/routes/RolesRout
 const SedeRouter_1 = __importDefault(require("../modules/users/routes/SedeRouter"));
 const SearchRouter_1 = __importDefault(require("../modules/users/routes/SearchRouter"));
 const ClientRouter_1 = __importDefault(require("../modules/users/routes/ClientRouter"));
+/**
+ * @route  /api/equipos
+ * @description Equipos Module Routes
+ * @access Public
+ */
+const EquipoRouter_1 = __importDefault(require("../modules/equipos/routes/EquipoRouter"));
 // * Server Instance
 let server = (0, express_1.default)();
 // * Configura body-parser antes de las rutas
@@ -31,8 +37,8 @@ rootRotuer.get('/', (req, res) => {
     // Send Hello World
     res.send('Welcome to API Restful Express + Nodemon + Jest + TS + React + Swagger + Mongoose');
 });
-// * Redirections to Routers & Controllers -- MODULE USERS
 server.use('/', rootRotuer); // http://localhost:8000/api/
+// * Redirections to Routers & Controllers -- MODULE USERS
 server.use('/hello', HelloRouter_1.default); // http://localhost:8000/api/hello --> HelloRouter
 // Add more routes to the app
 server.use('/users', UserRouter_1.default); // http://localhost:8000/api/users  --> userRouter
@@ -45,5 +51,6 @@ server.use('/roles', RolesRouter_1.default); // http://localhost:8000/api/tecnic
 server.use('/search', SearchRouter_1.default);
 server.use('/clients', ClientRouter_1.default); // http://localhost:8000/api/clients --> clientRouter
 // * Redirections to Routers & Controllers -- MODULE EQUIPOS
+server.use('/equipos', EquipoRouter_1.default); // http://localhost:8000/api/equipos --> equiposRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map

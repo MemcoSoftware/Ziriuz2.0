@@ -16,6 +16,15 @@ import sedesRouter from '../modules/users/routes/SedeRouter';
 import searchRouter from '../modules/users/routes/SearchRouter';
 import clientRouter from '../modules/users/routes/ClientRouter';
 
+
+/**
+ * @route  /api/equipos
+ * @description Equipos Module Routes
+ * @access Public
+ */
+import equiposRouter from '../modules/equipos/routes/EquipoRouter';
+
+
 // * Server Instance
 let server = express();
 
@@ -32,8 +41,8 @@ rootRotuer.get('/', (req: Request, res: Response) => {
     res.send('Welcome to API Restful Express + Nodemon + Jest + TS + React + Swagger + Mongoose');
 });
 
-// * Redirections to Routers & Controllers -- MODULE USERS
 server.use('/', rootRotuer); // http://localhost:8000/api/
+// * Redirections to Routers & Controllers -- MODULE USERS
 server.use('/hello', helloRouter); // http://localhost:8000/api/hello --> HelloRouter
 // Add more routes to the app
 server.use('/users', usersRouter) // http://localhost:8000/api/users  --> userRouter
@@ -48,6 +57,6 @@ server.use('/clients', clientRouter); // http://localhost:8000/api/clients --> c
 
 // * Redirections to Routers & Controllers -- MODULE EQUIPOS
 
-
+server.use('/equipos', equiposRouter) // http://localhost:8000/api/equipos --> equiposRouter
 
 export default server;
