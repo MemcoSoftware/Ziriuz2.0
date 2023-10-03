@@ -25,6 +25,8 @@ const ClientRouter_1 = __importDefault(require("../modules/users/routes/ClientRo
  * @access Public
  */
 const EquipoRouter_1 = __importDefault(require("../modules/equipos/routes/EquipoRouter"));
+const ModeloEquipoRouter_1 = __importDefault(require("../modules/equipos/routes/ModeloEquipoRouter"));
+const ClassDeviceRouter_1 = __importDefault(require("../modules/equipos/routes/ClassDeviceRouter"));
 // * Server Instance
 let server = (0, express_1.default)();
 // * Configura body-parser antes de las rutas
@@ -52,5 +54,7 @@ server.use('/search', SearchRouter_1.default);
 server.use('/clients', ClientRouter_1.default); // http://localhost:8000/api/clients --> clientRouter
 // * Redirections to Routers & Controllers -- MODULE EQUIPOS
 server.use('/equipos', EquipoRouter_1.default); // http://localhost:8000/api/equipos --> equiposRouter
+server.use('/equipos/modelo', ModeloEquipoRouter_1.default); // http://localhost:8000/api/equipos --> modeloEquiposRouter
+server.use('/equipos/clases', ClassDeviceRouter_1.default); // http://localhost:8000/api/clases --> classDeviceRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map

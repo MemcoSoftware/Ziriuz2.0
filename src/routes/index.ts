@@ -23,6 +23,8 @@ import clientRouter from '../modules/users/routes/ClientRouter';
  * @access Public
  */
 import equiposRouter from '../modules/equipos/routes/EquipoRouter';
+import modeloEquiposRouter from '../modules/equipos/routes/ModeloEquipoRouter';
+import classDeviceRouter from '../modules/equipos/routes/ClassDeviceRouter';
 
 
 // * Server Instance
@@ -58,5 +60,6 @@ server.use('/clients', clientRouter); // http://localhost:8000/api/clients --> c
 // * Redirections to Routers & Controllers -- MODULE EQUIPOS
 
 server.use('/equipos', equiposRouter) // http://localhost:8000/api/equipos --> equiposRouter
-
+server.use('/equipos/modelo', modeloEquiposRouter) // http://localhost:8000/api/equipos --> modeloEquiposRouter
+server.use('/equipos/clases', classDeviceRouter) // http://localhost:8000/api/clases --> classDeviceRouter
 export default server;
