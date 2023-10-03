@@ -4,34 +4,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const HelloRouter_1 = __importDefault(require("./HelloRouter"));
 const logger_1 = require("../utils/logger");
+const UserRouter_1 = __importDefault(require("./UserRouter"));
+const AuthRouter_1 = __importDefault(require("./AuthRouter"));
+const TecnicoRouter_1 = __importDefault(require("./TecnicoRouter"));
+const RolesRouter_1 = __importDefault(require("./RolesRouter"));
+const SedeRouter_1 = __importDefault(require("./SedeRouter"));
+const SearchRouter_1 = __importDefault(require("./SearchRouter"));
 const body_parser_1 = __importDefault(require("body-parser")); // Importa bodyParser
-/**
- * @route  /api/users
- * @description Users Module Routes
- * @access Public
- */
-const HelloRouter_1 = __importDefault(require("../modules/users/routes/HelloRouter"));
-const UserRouter_1 = __importDefault(require("../modules/users/routes/UserRouter"));
-const AuthRouter_1 = __importDefault(require("../modules/users/routes/AuthRouter"));
-const TecnicoRouter_1 = __importDefault(require("../modules/users/routes/TecnicoRouter"));
-const RolesRouter_1 = __importDefault(require("../modules/users/routes/RolesRouter"));
-const SedeRouter_1 = __importDefault(require("../modules/users/routes/SedeRouter"));
-const SearchRouter_1 = __importDefault(require("../modules/users/routes/SearchRouter"));
-const ClientRouter_1 = __importDefault(require("../modules/users/routes/ClientRouter"));
-// * Server Instance
+const ClientRouter_1 = __importDefault(require("./ClientRouter"));
+// Server Instance
 let server = (0, express_1.default)();
-// * Configura body-parser antes de las rutas
+// Configura body-parser antes de las rutas
 server.use(body_parser_1.default.json());
-// * Router Instance
+// Router Instance
 let rootRotuer = express_1.default.Router();
-// * Activate request to http://localhost:8000/api
+// Activate request to http://localhost:8000/api
 rootRotuer.get('/', (req, res) => {
     (0, logger_1.LogInfo)('GET: http://localhost:8000/api');
     // Send Hello World
     res.send('Welcome to API Restful Express + Nodemon + Jest + TS + React + Swagger + Mongoose');
 });
-// * Redirections to Routers & Controllers -- MODULE USERS
+// Redirections to Routers & Controllers
 server.use('/', rootRotuer); // http://localhost:8000/api/
 server.use('/hello', HelloRouter_1.default); // http://localhost:8000/api/hello --> HelloRouter
 // Add more routes to the app
@@ -44,6 +39,5 @@ server.use('/sedes', SedeRouter_1.default);
 server.use('/roles', RolesRouter_1.default); // http://localhost:8000/api/tecnicos  --> rolesRouter
 server.use('/search', SearchRouter_1.default);
 server.use('/clients', ClientRouter_1.default); // http://localhost:8000/api/clients --> clientRouter
-// * Redirections to Routers & Controllers -- MODULE EQUIPOS
 exports.default = server;
 //# sourceMappingURL=index.js.map

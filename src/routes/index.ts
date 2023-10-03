@@ -1,33 +1,38 @@
 import express, { Request, Response } from 'express';
-import helloRouter from './HelloRouter';
 import { LogInfo } from '../utils/logger';
-import usersRouter from './UserRouter';
-import authRouter from './AuthRouter'
-import tecnicosRouter from './TecnicoRouter';
-import rolesRouter from './RolesRouter';
-
-import sedesRouter from './SedeRouter';
-import searchRouter from './SearchRouter';
 import bodyParser from 'body-parser'; // Importa bodyParser
-import clientRouter from './ClientRouter';
 
-// Server Instance
+/**
+ * @route  /api/users
+ * @description Users Module Routes
+ * @access Public
+ */
+import helloRouter from '../modules/users/routes/HelloRouter';
+import usersRouter from '../modules/users/routes/UserRouter';
+import authRouter from '../modules/users/routes/AuthRouter'
+import tecnicosRouter from '../modules/users/routes/TecnicoRouter';
+import rolesRouter from '../modules/users/routes/RolesRouter';
+import sedesRouter from '../modules/users/routes/SedeRouter';
+import searchRouter from '../modules/users/routes/SearchRouter';
+import clientRouter from '../modules/users/routes/ClientRouter';
+
+// * Server Instance
 let server = express();
 
-// Configura body-parser antes de las rutas
+// * Configura body-parser antes de las rutas
 server.use(bodyParser.json());
 
-// Router Instance
+// * Router Instance
 let rootRotuer = express.Router();
 
-// Activate request to http://localhost:8000/api
+// * Activate request to http://localhost:8000/api
 rootRotuer.get('/', (req: Request, res: Response) => {
     LogInfo('GET: http://localhost:8000/api')
     // Send Hello World
     res.send('Welcome to API Restful Express + Nodemon + Jest + TS + React + Swagger + Mongoose');
 });
 
-// Redirections to Routers & Controllers
+// * Redirections to Routers & Controllers -- MODULE USERS
 server.use('/', rootRotuer); // http://localhost:8000/api/
 server.use('/hello', helloRouter); // http://localhost:8000/api/hello --> HelloRouter
 // Add more routes to the app
@@ -40,4 +45,9 @@ server.use('/sedes', sedesRouter);
 server.use('/roles', rolesRouter); // http://localhost:8000/api/tecnicos  --> rolesRouter
 server.use('/search', searchRouter);
 server.use('/clients', clientRouter); // http://localhost:8000/api/clients --> clientRouter
+
+// * Redirections to Routers & Controllers -- MODULE EQUIPOS
+
+
+
 export default server;

@@ -9,7 +9,6 @@ const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 // Security
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
-// TODO HTTPS
 // Routes
 const routes_1 = __importDefault(require("../routes"));
 // * Create Express APP
@@ -26,7 +25,7 @@ server.use('/docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.def
 server.use('/api', routes_1.default);
 // Static Server
 server.use(express_1.default.static('public'));
-// TODO Mongoose Connection
+// * MONGOOSE CONNECTION 
 const mongoose_1 = __importDefault(require("mongoose"));
 mongoose_1.default.connect('mongodb+srv://ziriuz:memcodev900454322@generalsziriuz.vpq2tyf.mongodb.net/usersZiriuz?retryWrites=true&w=majority');
 // * Security Connection

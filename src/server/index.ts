@@ -13,7 +13,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 
 
-// TODO HTTPS
 
 // Routes
 import rootRouter from '../routes';
@@ -49,7 +48,7 @@ server.use(
 server.use(express.static('public'))
 
 
-// TODO Mongoose Connection
+// * MONGOOSE CONNECTION 
 import mongoose from "mongoose";
 
 
