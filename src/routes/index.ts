@@ -25,6 +25,9 @@ import clientRouter from '../modules/users/routes/ClientRouter';
 import equiposRouter from '../modules/equipos/routes/EquipoRouter';
 import modeloEquiposRouter from '../modules/equipos/routes/ModeloEquipoRouter';
 import classDeviceRouter from '../modules/equipos/routes/ClassDeviceRouter';
+import marcasEquiposRouter from '../modules/equipos/routes/MarcasEquiposRouter';
+import tiposEquiposRouter from '../modules/equipos/routes/TipoEquipoRouter';
+import areasEquiposRouter from '../modules/equipos/routes/AreaEquipoRouter';
 
 
 // * Server Instance
@@ -62,4 +65,7 @@ server.use('/clients', clientRouter); // http://localhost:8000/api/clients --> c
 server.use('/equipos', equiposRouter) // http://localhost:8000/api/equipos --> equiposRouter
 server.use('/equipos/modelo', modeloEquiposRouter) // http://localhost:8000/api/equipos --> modeloEquiposRouter
 server.use('/equipos/clases', classDeviceRouter) // http://localhost:8000/api/clases --> classDeviceRouter
+server.use ('/equipos/marcas', marcasEquiposRouter) // http://localhost:8000/api/marcas --> marcasEquiposRouter
+server.use ('/equipos/tipos', tiposEquiposRouter) // http://localhost:8000/api/tipos --> tiposEquiposRouter
+server.use ('/equipos/areas', areasEquiposRouter) // http://localhost:8000/api/areas --> areasEquiposRouter
 export default server;

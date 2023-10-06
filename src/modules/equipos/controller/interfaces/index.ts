@@ -24,3 +24,25 @@ export interface IClassDeviceController {
   updateClaseEquipo(id: string, claseEquipo: any): Promise<any>;
   deleteClaseEquipo(id: string): Promise<any>;
 }
+
+
+export interface IMarcaEquipoController {
+  getMarcasEquipos(page: number, limit: number, id?: string): Promise<any>;
+  createMarcaEquipo(marcaEquipo: any): Promise<any>;
+  updateMarcaEquipo(id: string, marcaEquipo: any): Promise<any>;
+  deleteMarcaEquipo(id: string): Promise<any>;
+}
+
+export interface ITipoEquipoController {
+  getTiposEquipos(page: number, limit: number, id?: string): Promise<any>;
+  deleteTipoEquipo(id?: string): Promise<any>;
+  updateTipoEquipo(id: string, tipoEquipo: any): Promise<any>;
+  createTipoEquipo(tipoEquipo: any): Promise<any>;
+}
+
+export interface IAreaEquipoController {
+  getAreasEquipos(page: number, limit: number, id?: string): Promise<any>;
+  deleteAreaEquipo(id?: string): Promise<any>;
+  updateAreaEquipo(id: string, areaEquipo: any): Promise<any>;
+  createAreaEquipo(areaEquipo: any): Promise<any>;
+}

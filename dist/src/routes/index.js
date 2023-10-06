@@ -27,6 +27,9 @@ const ClientRouter_1 = __importDefault(require("../modules/users/routes/ClientRo
 const EquipoRouter_1 = __importDefault(require("../modules/equipos/routes/EquipoRouter"));
 const ModeloEquipoRouter_1 = __importDefault(require("../modules/equipos/routes/ModeloEquipoRouter"));
 const ClassDeviceRouter_1 = __importDefault(require("../modules/equipos/routes/ClassDeviceRouter"));
+const MarcasEquiposRouter_1 = __importDefault(require("../modules/equipos/routes/MarcasEquiposRouter"));
+const TipoEquipoRouter_1 = __importDefault(require("../modules/equipos/routes/TipoEquipoRouter"));
+const AreaEquipoRouter_1 = __importDefault(require("../modules/equipos/routes/AreaEquipoRouter"));
 // * Server Instance
 let server = (0, express_1.default)();
 // * Configura body-parser antes de las rutas
@@ -56,5 +59,8 @@ server.use('/clients', ClientRouter_1.default); // http://localhost:8000/api/cli
 server.use('/equipos', EquipoRouter_1.default); // http://localhost:8000/api/equipos --> equiposRouter
 server.use('/equipos/modelo', ModeloEquipoRouter_1.default); // http://localhost:8000/api/equipos --> modeloEquiposRouter
 server.use('/equipos/clases', ClassDeviceRouter_1.default); // http://localhost:8000/api/clases --> classDeviceRouter
+server.use('/equipos/marcas', MarcasEquiposRouter_1.default); // http://localhost:8000/api/marcas --> marcasEquiposRouter
+server.use('/equipos/tipos', TipoEquipoRouter_1.default); // http://localhost:8000/api/tipos --> tiposEquiposRouter
+server.use('/equipos/areas', AreaEquipoRouter_1.default); // http://localhost:8000/api/areas --> areasEquiposRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map
