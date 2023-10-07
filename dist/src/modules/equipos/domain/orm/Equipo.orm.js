@@ -9,27 +9,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createEquipo = exports.updateEquipoByID = exports.deleteEquipoByID = exports.getEquipoByID = exports.getAllEquipos = void 0;
+exports.createEquipo = exports.getModeloEquipoByName = exports.updateEquipoByID = exports.deleteEquipoByID = exports.getEquipoByID = exports.getAllEquipos = void 0;
 const Equipo_entity_1 = require("../entities/Equipo.entity");
 const logger_1 = require("../../../../utils/logger");
+const ModeloEquipo_entity_1 = require("../entities/ModeloEquipo.entity");
 // CRUD
 /**
  * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
  */
 const getAllEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let equipoModel = (0, Equipo_entity_1.equipoEntity)();
+        const equipoModel = (0, Equipo_entity_1.equipoEntity)();
         let response = {};
-        // Search all equipos (using pagination)
-        yield equipoModel
+        // Search all equipos (using pagination) and populate 'modelo_equipos'
+        const equipos = yield equipoModel
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('serie ubicación frecuencia')
-            .exec()
-            .then((equipos) => {
-            response.equipos = equipos;
-        });
+            .select('serie ubicacion frecuencia modelo_equipos')
+            .populate({
+            path: 'modelo_equipos',
+            model: 'Modelo_Equipos',
+            select: 'modelo precio',
+        })
+            .exec(); // Conversión de tipo
+        response.equipos = equipos;
         // Count total documents in Equipos collection
         yield equipoModel.countDocuments().then((total) => {
             response.totalPages = Math.ceil(total / limit);
@@ -42,14 +46,17 @@ const getAllEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getAllEquipos = getAllEquipos;
-/**
- * Get Equipo by ID
- */
 const getEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let equipoModel = (0, Equipo_entity_1.equipoEntity)();
-        // Search Equipo by ID
-        return yield equipoModel.findById(id).exec();
+        const equipoModel = (0, Equipo_entity_1.equipoEntity)();
+        // Search Equipo by ID and populate 'modelo_equipos'
+        return yield equipoModel.findById(id)
+            .populate({
+            path: 'modelo_equipos',
+            model: 'Modelo_Equipos',
+            select: 'modelo precio',
+        })
+            .exec();
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting Equipo By ID: ${error}`);
@@ -75,15 +82,48 @@ exports.deleteEquipoByID = deleteEquipoByID;
  */
 const updateEquipoByID = (id, equipo) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let equipoModel = (0, Equipo_entity_1.equipoEntity)();
-        // Update Equipo
-        return yield equipoModel.findByIdAndUpdate(id, equipo);
+        let response = {
+            success: false,
+            message: "",
+        };
+        const equipoModel = (0, Equipo_entity_1.equipoEntity)();
+        // Actualizar el equipo por ID
+        yield equipoModel.findByIdAndUpdate(id, equipo);
+        response.success = true;
+        response.message = "Equipo updated successfully";
+        return response;
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Updating Equipo ${id}: ${error}`);
+        return {
+            success: false,
+            message: "An error occurred while updating the equipo",
+        };
     }
 });
 exports.updateEquipoByID = updateEquipoByID;
+/**
+ * Obtener el modelo de equipo por nombre.
+ * @param name Nombre del modelo de equipo.
+ * @returns Modelo de equipo encontrado o nulo si no se encuentra.
+ */
+const getModeloEquipoByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const modeloEquipoModel = (0, ModeloEquipo_entity_1.modeloEquipoEntity)();
+        // Buscar el modelo de equipo por nombre
+        const modelo = yield modeloEquipoModel.findOne({ modelo: name });
+        return modelo;
+    }
+    catch (error) {
+        (0, logger_1.LogError)(`[ORM ERROR]: Getting Modelo Equipo by Name: ${error}`);
+        return null;
+    }
+});
+exports.getModeloEquipoByName = getModeloEquipoByName;
+/**
+ * Create Equipo
+ *
+ * */
 const createEquipo = (equipo) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const equipoModel = (0, Equipo_entity_1.equipoEntity)();

@@ -2,7 +2,8 @@ import { Get, Query, Route, Tags, Delete, Put, Body, Post} from "tsoa";
 import { IEquipoController } from "./interfaces";
 import { LogSuccess, LogError, LogWarning, LogInfo } from "../../../utils/logger";
 import { equipoEntity } from "../../equipos/domain/entities/Equipo.entity"; // Import the equipment model
-import { createEquipo, deleteEquipoByID, getAllEquipos, getEquipoByID, updateEquipoByID } from "../domain/orm/Equipo.orm";
+import { createEquipo, deleteEquipoByID, getAllEquipos, getEquipoByID, getModeloEquipoByName, updateEquipoByID } from "../domain/orm/Equipo.orm";
+import { modeloEquipoEntity } from "../domain/entities/ModeloEquipo.entity";
 
 @Route("/api/equipos")
 @Tags("EquipoController")
@@ -45,8 +46,8 @@ export class EquipoController implements IEquipoController {
     return response;
   }
 
-  @Put("/")
-  public async updateEquipo(@Query() id: string, @Body() equipo: any): Promise<{ success: boolean; message: string }> {
+  @Put("/") // Cambiamos la anotación @Put para que el ID sea parte de la consulta
+  public async updateEquipo(@Query() id: string, @Body() equipoData: any): Promise<any> {
     try {
       let response: { success: boolean; message: string } = {
         success: false,
@@ -59,7 +60,7 @@ export class EquipoController implements IEquipoController {
         return response;
       }
 
-      // Controller Instance to execute a method
+      // Obtener el equipo existente por ID
       const existingEquipo = await getEquipoByID(id);
 
       if (!existingEquipo) {
@@ -67,8 +68,23 @@ export class EquipoController implements IEquipoController {
         return response;
       }
 
-      // Update Equipo
-      await updateEquipoByID(id, equipo);
+      // Actualizar el equipo con los datos proporcionados
+      await updateEquipoByID(id, equipoData);
+
+      // Compruebe si se proporciona un nuevo nombre de modelo
+      if (equipoData.modelo_equipos) {
+        // Buscar el modelo de equipo por nombre
+        const modeloEquipo = await getModeloEquipoByName(equipoData.modelo_equipos);
+
+        if (!modeloEquipo) {
+          response.success = false;
+          response.message = "El modelo de equipo no se encontró en la base de datos.";
+          return response;
+        }
+
+        // Asociar el modelo de equipo actualizado al equipo
+        await updateEquipoByID(id, { modelo_equipos: modeloEquipo._id });
+      }
 
       response.success = true;
       response.message = `Equipo with ID ${id} updated successfully`;
@@ -83,25 +99,39 @@ export class EquipoController implements IEquipoController {
   }
 
   @Post("/")
-public async createEquipo(@Body() equipo: any): Promise<any> {
+  public async createEquipo(@Body() equipoData: any): Promise<any> {
     try {
-        const response = await createEquipo(equipo); // Llama a la función createEquipo del ORM
-
-        if (response.success) {
-            return response;
-        } else {
-            LogError(`[Controller ERROR]: Creating Equipo: ${response.message}`);
-            return response;
-        }
-    } catch (error) {
-        LogError(`[Controller ERROR]: Creating Equipo: ${error}`);
+      // Extrae el nombre del modelo de equipo de los datos del equipo
+      const modeloEquipoNombre: string = equipoData.modelo_equipos;
+      // Busca el modelo de equipo por nombre
+      const modeloEquipo = await modeloEquipoEntity().findOne({ modelo: modeloEquipoNombre });
+      if (!modeloEquipo) {
         return {
-            success: false,
-            message: "An error occurred while creating the equipo",
+          success: false,
+          message: "El modelo de equipo no se encontró en la base de datos.",
         };
-    }
-}
+      }
 
+      // Asocia el modelo de equipo al equipo
+      equipoData.modelo_equipos = modeloEquipo._id;
+
+      // Crea el equipo con la relación establecida
+      const response = await createEquipo(equipoData);
+
+      if (response.success) {
+        return response;
+      } else {
+        LogError(`[Controller ERROR]: Creating Equipo: ${response.message}`);
+        return response;
+      }
+    } catch (error) {
+      LogError(`[Controller ERROR]: Creating Equipo: ${error}`);
+      return {
+        success: false,
+        message: "An error occurred while creating the equipo",
+      };
+    }
+  }
 
 }
 

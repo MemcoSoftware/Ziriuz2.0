@@ -25,6 +25,7 @@ exports.EquipoController = void 0;
 const tsoa_1 = require("tsoa");
 const logger_1 = require("../../../utils/logger");
 const Equipo_orm_1 = require("../domain/orm/Equipo.orm");
+const ModeloEquipo_entity_1 = require("../domain/entities/ModeloEquipo.entity");
 let EquipoController = exports.EquipoController = class EquipoController {
     getEquipos(page, limit, id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -65,7 +66,7 @@ let EquipoController = exports.EquipoController = class EquipoController {
             return response;
         });
     }
-    updateEquipo(id, equipo) {
+    updateEquipo(id, equipoData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let response = {
@@ -77,14 +78,26 @@ let EquipoController = exports.EquipoController = class EquipoController {
                     response.message = "Please, provide an Id to update an existing Equipo";
                     return response;
                 }
-                // Controller Instance to execute a method
+                // Obtener el equipo existente por ID
                 const existingEquipo = yield (0, Equipo_orm_1.getEquipoByID)(id);
                 if (!existingEquipo) {
                     response.message = `Equipo with ID ${id} not found`;
                     return response;
                 }
-                // Update Equipo
-                yield (0, Equipo_orm_1.updateEquipoByID)(id, equipo);
+                // Actualizar el equipo con los datos proporcionados
+                yield (0, Equipo_orm_1.updateEquipoByID)(id, equipoData);
+                // Compruebe si se proporciona un nuevo nombre de modelo
+                if (equipoData.modelo_equipos) {
+                    // Buscar el modelo de equipo por nombre
+                    const modeloEquipo = yield (0, Equipo_orm_1.getModeloEquipoByName)(equipoData.modelo_equipos);
+                    if (!modeloEquipo) {
+                        response.success = false;
+                        response.message = "El modelo de equipo no se encontró en la base de datos.";
+                        return response;
+                    }
+                    // Asociar el modelo de equipo actualizado al equipo
+                    yield (0, Equipo_orm_1.updateEquipoByID)(id, { modelo_equipos: modeloEquipo._id });
+                }
                 response.success = true;
                 response.message = `Equipo with ID ${id} updated successfully`;
                 return response;
@@ -98,10 +111,23 @@ let EquipoController = exports.EquipoController = class EquipoController {
             }
         });
     }
-    createEquipo(equipo) {
+    createEquipo(equipoData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield (0, Equipo_orm_1.createEquipo)(equipo); // Llama a la función createEquipo del ORM
+                // Extrae el nombre del modelo de equipo de los datos del equipo
+                const modeloEquipoNombre = equipoData.modelo_equipos;
+                // Busca el modelo de equipo por nombre
+                const modeloEquipo = yield (0, ModeloEquipo_entity_1.modeloEquipoEntity)().findOne({ modelo: modeloEquipoNombre });
+                if (!modeloEquipo) {
+                    return {
+                        success: false,
+                        message: "El modelo de equipo no se encontró en la base de datos.",
+                    };
+                }
+                // Asocia el modelo de equipo al equipo
+                equipoData.modelo_equipos = modeloEquipo._id;
+                // Crea el equipo con la relación establecida
+                const response = yield (0, Equipo_orm_1.createEquipo)(equipoData);
                 if (response.success) {
                     return response;
                 }
@@ -135,7 +161,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], EquipoController.prototype, "deleteEquipo", null);
 __decorate([
-    (0, tsoa_1.Put)("/"),
+    (0, tsoa_1.Put)("/") // Cambiamos la anotación @Put para que el ID sea parte de la consulta
+    ,
     __param(0, (0, tsoa_1.Query)()),
     __param(1, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
