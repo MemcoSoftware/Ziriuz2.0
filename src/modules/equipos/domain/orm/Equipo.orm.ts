@@ -4,6 +4,7 @@ import { LogError } from "../../../../utils/logger";
 import { LogSuccess } from "../../../../utils/logger";
 import { IEquipo } from "../interfaces/IEquipo.interface";
 import { modeloEquipoEntity } from "../entities/ModeloEquipo.entity";
+import { areaEquipoEntity } from "../entities/AreaEquipo.entity";
 
 // CRUD
 
@@ -15,18 +16,23 @@ export const getAllEquipos = async (page: number, limit: number): Promise<any[] 
     const equipoModel = equipoEntity();
     let response: any = {};
 
-    // Search all equipos (using pagination) and populate 'modelo_equipos'
+    // Search all equipos (using pagination) and populate 'modelo_equipos' and 'id_area'
     const equipos: IEquipo[] = await equipoModel
       .find({}, { _id: 0 })
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('serie ubicacion frecuencia modelo_equipos')
+      .select('serie ubicacion frecuencia modelo_equipos id_area') 
       .populate({
         path: 'modelo_equipos',
         model: 'Modelo_Equipos',
         select: 'modelo precio',
       })
-      .exec() as unknown as IEquipo[]; // Conversión de tipo
+      .populate({
+        path: 'id_area',
+        model: 'Areas_Equipos',
+        select: 'area', 
+      })
+      .exec() as unknown as IEquipo[];
 
     response.equipos = equipos;
 
@@ -42,16 +48,26 @@ export const getAllEquipos = async (page: number, limit: number): Promise<any[] 
   }
 };
 
+/**
+ * Method to obtain a single Equipo by ID from Collection "Equipos" in Mongo Server
+ */
 export const getEquipoByID = async (id: string): Promise<IEquipo | undefined> => {
   try {
     const equipoModel = equipoEntity();
 
-    // Search Equipo by ID and populate 'modelo_equipos'
-    return await equipoModel.findById(id)
+    // Search Equipo by ID and populate 'modelo_equipos' and 'id_area'
+    return await equipoModel
+      .findById(id, { _id: 0 })
+      .select('serie ubicacion frecuencia modelo_equipos id_area') 
       .populate({
         path: 'modelo_equipos',
         model: 'Modelo_Equipos',
         select: 'modelo precio',
+      })
+      .populate({
+        path: 'id_area',
+        model: 'Areas_Equipos',
+        select: 'area', 
       })
       .exec();
   } catch (error) {
@@ -118,6 +134,19 @@ export const getModeloEquipoByName = async (name: string): Promise<any | null> =
   }
 }
 
+export const getAreaEquipoByName = async (name: string): Promise<any | null> => {
+  try {
+    const areaEquipoModel = areaEquipoEntity();
+
+    // Buscar el área de equipo por nombre
+    const area = await areaEquipoModel.findOne({ area: name });
+
+    return area;
+  } catch (error) {
+    LogError(`[ORM ERROR]: Getting Area Equipo by Name: ${error}`);
+    return null;
+  }
+}
 
 /**
  * Create Equipo 

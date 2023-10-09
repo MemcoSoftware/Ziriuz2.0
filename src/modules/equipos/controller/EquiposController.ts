@@ -2,7 +2,7 @@ import { Get, Query, Route, Tags, Delete, Put, Body, Post} from "tsoa";
 import { IEquipoController } from "./interfaces";
 import { LogSuccess, LogError, LogWarning, LogInfo } from "../../../utils/logger";
 import { equipoEntity } from "../../equipos/domain/entities/Equipo.entity"; // Import the equipment model
-import { createEquipo, deleteEquipoByID, getAllEquipos, getEquipoByID, getModeloEquipoByName, updateEquipoByID } from "../domain/orm/Equipo.orm";
+import { createEquipo, deleteEquipoByID, getAllEquipos, getAreaEquipoByName, getEquipoByID, getModeloEquipoByName, updateEquipoByID } from "../domain/orm/Equipo.orm";
 import { modeloEquipoEntity } from "../domain/entities/ModeloEquipo.entity";
 
 @Route("/api/equipos")
@@ -47,91 +47,121 @@ export class EquipoController implements IEquipoController {
   }
 
   @Put("/") // Cambiamos la anotación @Put para que el ID sea parte de la consulta
-  public async updateEquipo(@Query() id: string, @Body() equipoData: any): Promise<any> {
-    try {
-      let response: { success: boolean; message: string } = {
-        success: false,
-        message: "",
-      };
+public async updateEquipo(@Query() id: string, @Body() equipoData: any): Promise<any> {
+  try {
+    let response: { success: boolean; message: string } = {
+      success: false,
+      message: "",
+    };
 
-      if (!id) {
-        LogWarning('[/api/equipos] Update Equipo Request WITHOUT ID');
-        response.message = "Please, provide an Id to update an existing Equipo";
-        return response;
-      }
-
-      // Obtener el equipo existente por ID
-      const existingEquipo = await getEquipoByID(id);
-
-      if (!existingEquipo) {
-        response.message = `Equipo with ID ${id} not found`;
-        return response;
-      }
-
-      // Actualizar el equipo con los datos proporcionados
-      await updateEquipoByID(id, equipoData);
-
-      // Compruebe si se proporciona un nuevo nombre de modelo
-      if (equipoData.modelo_equipos) {
-        // Buscar el modelo de equipo por nombre
-        const modeloEquipo = await getModeloEquipoByName(equipoData.modelo_equipos);
-
-        if (!modeloEquipo) {
-          response.success = false;
-          response.message = "El modelo de equipo no se encontró en la base de datos.";
-          return response;
-        }
-
-        // Asociar el modelo de equipo actualizado al equipo
-        await updateEquipoByID(id, { modelo_equipos: modeloEquipo._id });
-      }
-
-      response.success = true;
-      response.message = `Equipo with ID ${id} updated successfully`;
+    if (!id) {
+      LogWarning('[/api/equipos] Update Equipo Request WITHOUT ID');
+      response.message = "Please, provide an Id to update an existing Equipo";
       return response;
-    } catch (error) {
-      LogError(`[Controller ERROR]: Updating Equipo ${id}: ${error}`);
-      return {
-        success: false,
-        message: "An error occurred while updating the equipo",
-      };
     }
+
+    // Obtener el equipo existente por ID
+    const existingEquipo = await getEquipoByID(id);
+
+    if (!existingEquipo) {
+      response.message = `Equipo with ID ${id} not found`;
+      return response;
+    }
+
+    // Comprueba si se proporciona un nuevo nombre de modelo
+    if (equipoData.modelo_equipos) {
+      // Busca el modelo de equipo por nombre
+      const modeloEquipo = await getModeloEquipoByName(equipoData.modelo_equipos);
+
+      if (!modeloEquipo) {
+        response.success = false;
+        response.message = "El modelo de equipo no se encontró en la base de datos.";
+        return response;
+      }
+
+      // Asocia el modelo de equipo actualizado al equipo
+      equipoData.modelo_equipos = modeloEquipo._id;
+    }
+
+    // Comprueba si se proporciona un nuevo nombre de área
+    if (equipoData.id_area) {
+      // Busca el área de equipo por nombre
+      const areaEquipo = await getAreaEquipoByName(equipoData.id_area);
+
+      if (!areaEquipo) {
+        response.success = false;
+        response.message = "El área de equipo no se encontró en la base de datos.";
+        return response;
+      }
+
+      // Asocia el área de equipo actualizada al equipo
+      equipoData.id_area = areaEquipo._id;
+    }
+
+    // Actualizar el equipo con los datos proporcionados
+    await updateEquipoByID(id, equipoData);
+
+    response.success = true;
+    response.message = `Equipo with ID ${id} updated successfully`;
+    return response;
+  } catch (error) {
+    LogError(`[Controller ERROR]: Updating Equipo ${id}: ${error}`);
+    return {
+      success: false,
+      message: "An error occurred while updating the equipo",
+    };
   }
+}
+
 
   @Post("/")
-  public async createEquipo(@Body() equipoData: any): Promise<any> {
-    try {
-      // Extrae el nombre del modelo de equipo de los datos del equipo
-      const modeloEquipoNombre: string = equipoData.modelo_equipos;
-      // Busca el modelo de equipo por nombre
-      const modeloEquipo = await modeloEquipoEntity().findOne({ modelo: modeloEquipoNombre });
-      if (!modeloEquipo) {
-        return {
-          success: false,
-          message: "El modelo de equipo no se encontró en la base de datos.",
-        };
-      }
+public async createEquipo(@Body() equipoData: any): Promise<any> {
+  try {
+    // Extrae el nombre del modelo de equipo y el área del equipo de los datos del equipo
+    const modeloEquipoNombre: string = equipoData.modelo_equipos;
+    const areaEquipoNombre: string = equipoData.id_area;
 
-      // Asocia el modelo de equipo al equipo
-      equipoData.modelo_equipos = modeloEquipo._id;
-
-      // Crea el equipo con la relación establecida
-      const response = await createEquipo(equipoData);
-
-      if (response.success) {
-        return response;
-      } else {
-        LogError(`[Controller ERROR]: Creating Equipo: ${response.message}`);
-        return response;
-      }
-    } catch (error) {
-      LogError(`[Controller ERROR]: Creating Equipo: ${error}`);
+    // Busca el modelo de equipo por nombre
+    const modeloEquipo = await getModeloEquipoByName(modeloEquipoNombre);
+    if (!modeloEquipo) {
       return {
         success: false,
-        message: "An error occurred while creating the equipo",
+        message: "El modelo de equipo no se encontró en la base de datos.",
       };
     }
+
+    // Asocia el modelo de equipo al equipo
+    equipoData.modelo_equipos = modeloEquipo._id;
+
+    // Busca el área de equipo por nombre
+    const areaEquipo = await getAreaEquipoByName(areaEquipoNombre);
+    if (!areaEquipo) {
+      return {
+        success: false,
+        message: "El área de equipo no se encontró en la base de datos.",
+      };
+    }
+
+    // Asocia el área de equipo al equipo
+    equipoData.id_area = areaEquipo._id;
+
+    // Crea el equipo con las relaciones establecidas
+    const response = await createEquipo(equipoData);
+
+    if (response.success) {
+      return response;
+    } else {
+      LogError(`[Controller ERROR]: Creating Equipo: ${response.message}`);
+      return response;
+    }
+  } catch (error) {
+    LogError(`[Controller ERROR]: Creating Equipo: ${error}`);
+    return {
+      success: false,
+      message: "An error occurred while creating the equipo",
+    };
   }
+}
 
 }
 

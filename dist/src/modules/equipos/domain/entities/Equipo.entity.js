@@ -32,6 +32,11 @@ const equipoEntity = () => {
             ref: "Modelo_Equipos",
             required: true,
         },
+        id_area: {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Areas_Equipos",
+            required: true,
+        },
         serie: { type: String, required: true },
         ubicacion: { type: String, required: true },
         frecuencia: { type: Number, required: true },

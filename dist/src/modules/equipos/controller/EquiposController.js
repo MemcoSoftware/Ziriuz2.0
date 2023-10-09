@@ -25,7 +25,6 @@ exports.EquipoController = void 0;
 const tsoa_1 = require("tsoa");
 const logger_1 = require("../../../utils/logger");
 const Equipo_orm_1 = require("../domain/orm/Equipo.orm");
-const ModeloEquipo_entity_1 = require("../domain/entities/ModeloEquipo.entity");
 let EquipoController = exports.EquipoController = class EquipoController {
     getEquipos(page, limit, id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -84,20 +83,32 @@ let EquipoController = exports.EquipoController = class EquipoController {
                     response.message = `Equipo with ID ${id} not found`;
                     return response;
                 }
-                // Actualizar el equipo con los datos proporcionados
-                yield (0, Equipo_orm_1.updateEquipoByID)(id, equipoData);
-                // Compruebe si se proporciona un nuevo nombre de modelo
+                // Comprueba si se proporciona un nuevo nombre de modelo
                 if (equipoData.modelo_equipos) {
-                    // Buscar el modelo de equipo por nombre
+                    // Busca el modelo de equipo por nombre
                     const modeloEquipo = yield (0, Equipo_orm_1.getModeloEquipoByName)(equipoData.modelo_equipos);
                     if (!modeloEquipo) {
                         response.success = false;
                         response.message = "El modelo de equipo no se encontró en la base de datos.";
                         return response;
                     }
-                    // Asociar el modelo de equipo actualizado al equipo
-                    yield (0, Equipo_orm_1.updateEquipoByID)(id, { modelo_equipos: modeloEquipo._id });
+                    // Asocia el modelo de equipo actualizado al equipo
+                    equipoData.modelo_equipos = modeloEquipo._id;
                 }
+                // Comprueba si se proporciona un nuevo nombre de área
+                if (equipoData.id_area) {
+                    // Busca el área de equipo por nombre
+                    const areaEquipo = yield (0, Equipo_orm_1.getAreaEquipoByName)(equipoData.id_area);
+                    if (!areaEquipo) {
+                        response.success = false;
+                        response.message = "El área de equipo no se encontró en la base de datos.";
+                        return response;
+                    }
+                    // Asocia el área de equipo actualizada al equipo
+                    equipoData.id_area = areaEquipo._id;
+                }
+                // Actualizar el equipo con los datos proporcionados
+                yield (0, Equipo_orm_1.updateEquipoByID)(id, equipoData);
                 response.success = true;
                 response.message = `Equipo with ID ${id} updated successfully`;
                 return response;
@@ -114,10 +125,11 @@ let EquipoController = exports.EquipoController = class EquipoController {
     createEquipo(equipoData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Extrae el nombre del modelo de equipo de los datos del equipo
+                // Extrae el nombre del modelo de equipo y el área del equipo de los datos del equipo
                 const modeloEquipoNombre = equipoData.modelo_equipos;
+                const areaEquipoNombre = equipoData.id_area;
                 // Busca el modelo de equipo por nombre
-                const modeloEquipo = yield (0, ModeloEquipo_entity_1.modeloEquipoEntity)().findOne({ modelo: modeloEquipoNombre });
+                const modeloEquipo = yield (0, Equipo_orm_1.getModeloEquipoByName)(modeloEquipoNombre);
                 if (!modeloEquipo) {
                     return {
                         success: false,
@@ -126,7 +138,17 @@ let EquipoController = exports.EquipoController = class EquipoController {
                 }
                 // Asocia el modelo de equipo al equipo
                 equipoData.modelo_equipos = modeloEquipo._id;
-                // Crea el equipo con la relación establecida
+                // Busca el área de equipo por nombre
+                const areaEquipo = yield (0, Equipo_orm_1.getAreaEquipoByName)(areaEquipoNombre);
+                if (!areaEquipo) {
+                    return {
+                        success: false,
+                        message: "El área de equipo no se encontró en la base de datos.",
+                    };
+                }
+                // Asocia el área de equipo al equipo
+                equipoData.id_area = areaEquipo._id;
+                // Crea el equipo con las relaciones establecidas
                 const response = yield (0, Equipo_orm_1.createEquipo)(equipoData);
                 if (response.success) {
                     return response;

@@ -18,7 +18,7 @@ const verifyToken_middleware_1 = require("../middlewares/verifyToken.middleware"
 const body_parser_1 = __importDefault(require("body-parser"));
 const logger_1 = require("../../../utils/logger");
 const jsonParser = body_parser_1.default.json();
-const marcasEquiposRouter = express_1.default.Router();
+let marcasEquiposRouter = express_1.default.Router();
 marcasEquiposRouter.route("/")
     .get(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;

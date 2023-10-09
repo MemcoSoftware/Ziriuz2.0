@@ -6,7 +6,12 @@ export const equipoEntity = () => {
     {
       modelo_equipos: {
         type: Schema.Types.ObjectId,
-        ref: "Modelo_Equipos", // Referencia al modelo de equipo
+        ref: "Modelo_Equipos",
+        required: true,
+      },
+      id_area: {
+        type: Schema.Types.ObjectId,
+        ref: "Areas_Equipos", 
         required: true,
       },
       serie: { type: String, required: true },

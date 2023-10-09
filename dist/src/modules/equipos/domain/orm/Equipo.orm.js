@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createEquipo = exports.getModeloEquipoByName = exports.updateEquipoByID = exports.deleteEquipoByID = exports.getEquipoByID = exports.getAllEquipos = void 0;
+exports.createEquipo = exports.getAreaEquipoByName = exports.getModeloEquipoByName = exports.updateEquipoByID = exports.deleteEquipoByID = exports.getEquipoByID = exports.getAllEquipos = void 0;
 const Equipo_entity_1 = require("../entities/Equipo.entity");
 const logger_1 = require("../../../../utils/logger");
 const ModeloEquipo_entity_1 = require("../entities/ModeloEquipo.entity");
+const AreaEquipo_entity_1 = require("../entities/AreaEquipo.entity");
 // CRUD
 /**
  * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
@@ -21,18 +22,23 @@ const getAllEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, functio
     try {
         const equipoModel = (0, Equipo_entity_1.equipoEntity)();
         let response = {};
-        // Search all equipos (using pagination) and populate 'modelo_equipos'
+        // Search all equipos (using pagination) and populate 'modelo_equipos' and 'id_area'
         const equipos = yield equipoModel
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('serie ubicacion frecuencia modelo_equipos')
+            .select('serie ubicacion frecuencia modelo_equipos id_area')
             .populate({
             path: 'modelo_equipos',
             model: 'Modelo_Equipos',
             select: 'modelo precio',
         })
-            .exec(); // Conversión de tipo
+            .populate({
+            path: 'id_area',
+            model: 'Areas_Equipos',
+            select: 'area',
+        })
+            .exec();
         response.equipos = equipos;
         // Count total documents in Equipos collection
         yield equipoModel.countDocuments().then((total) => {
@@ -46,15 +52,25 @@ const getAllEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getAllEquipos = getAllEquipos;
+/**
+ * Method to obtain a single Equipo by ID from Collection "Equipos" in Mongo Server
+ */
 const getEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const equipoModel = (0, Equipo_entity_1.equipoEntity)();
-        // Search Equipo by ID and populate 'modelo_equipos'
-        return yield equipoModel.findById(id)
+        // Search Equipo by ID and populate 'modelo_equipos' and 'id_area'
+        return yield equipoModel
+            .findById(id, { _id: 0 })
+            .select('serie ubicacion frecuencia modelo_equipos id_area')
             .populate({
             path: 'modelo_equipos',
             model: 'Modelo_Equipos',
             select: 'modelo precio',
+        })
+            .populate({
+            path: 'id_area',
+            model: 'Areas_Equipos',
+            select: 'area',
         })
             .exec();
     }
@@ -120,6 +136,19 @@ const getModeloEquipoByName = (name) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.getModeloEquipoByName = getModeloEquipoByName;
+const getAreaEquipoByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const areaEquipoModel = (0, AreaEquipo_entity_1.areaEquipoEntity)();
+        // Buscar el área de equipo por nombre
+        const area = yield areaEquipoModel.findOne({ area: name });
+        return area;
+    }
+    catch (error) {
+        (0, logger_1.LogError)(`[ORM ERROR]: Getting Area Equipo by Name: ${error}`);
+        return null;
+    }
+});
+exports.getAreaEquipoByName = getAreaEquipoByName;
 /**
  * Create Equipo
  *

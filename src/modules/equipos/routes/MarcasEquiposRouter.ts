@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import { LogInfo } from "../../../utils/logger";
 
 const jsonParser = bodyParser.json();
-const marcasEquiposRouter = express.Router();
+let marcasEquiposRouter = express.Router();
 
 marcasEquiposRouter.route("/")
   .get(verifyToken, async (req: Request, res: Response) => {
