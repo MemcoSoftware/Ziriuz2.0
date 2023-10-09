@@ -41,19 +41,51 @@ let SedeController = exports.SedeController = class SedeController {
         });
     }
     createSede(sedeData) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            let response = '';
             try {
-                (0, logger_1.LogSuccess)('[/api/sedes] Create Sede Request');
-                response = yield (0, Sede_orm_1.createSede)(sedeData);
+                // Extrae el nombre del cliente de los datos de la sede
+                const clientName = (_a = sedeData.id_client) === null || _a === void 0 ? void 0 : _a.client_name;
+                if (clientName) {
+                    // Busca el cliente por nombre
+                    const client = yield (0, Sede_orm_1.getClientByName)(clientName);
+                    if (!client) {
+                        return {
+                            success: false,
+                            message: "El cliente no se encontró en la base de datos.",
+                        };
+                    }
+                    // Asocia el cliente a la sede
+                    sedeData.id_client = client._id;
+                    // Crea el equipo con las relaciones establecidas
+                    const response = yield (0, Sede_orm_1.createSede)(sedeData);
+                    if (response.success) {
+                        return response;
+                    }
+                    else {
+                        (0, logger_1.LogError)(`[Controller ERROR]: Creating Sede: ${response.message}`);
+                        return response;
+                    }
+                }
+                else {
+                    // Si no se proporcionó un nombre de cliente, simplemente crea la sede
+                    const response = yield (0, Sede_orm_1.createSede)(sedeData);
+                    if (response.success) {
+                        return response;
+                    }
+                    else {
+                        (0, logger_1.LogError)(`[Controller ERROR]: Creating Sede: ${response.message}`);
+                        return response;
+                    }
+                }
             }
             catch (error) {
-                (0, logger_1.LogError)('[ORM ERROR]: Creating Sede');
-                response = {
-                    message: 'Invalid format/entity'
+                (0, logger_1.LogError)(`[Controller ERROR]: Creating Sede: ${error}`);
+                return {
+                    success: false,
+                    message: "An error occurred while creating the sede",
                 };
             }
-            return response;
         });
     }
     deleteSede(id) {
@@ -82,10 +114,25 @@ let SedeController = exports.SedeController = class SedeController {
         });
     }
     updateSede(id, sedeData) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let response = '';
             if (id) {
                 (0, logger_1.LogSuccess)(`[/api/sedes] Update Sede By ID: ${id}`);
+                // Agrega la búsqueda de cliente por nombre si se proporciona el nombre del cliente
+                if ((_a = sedeData.id_client) === null || _a === void 0 ? void 0 : _a.client_name) {
+                    const client = yield (0, Sede_orm_1.getClientByName)(sedeData.id_client.client_name);
+                    if (client) {
+                        sedeData.id_client = client._id; // Asocia el cliente encontrado
+                    }
+                    else {
+                        (0, logger_1.LogWarning)('[/api/sedes] Client not found by name');
+                        response = {
+                            message: 'Client not found by name'
+                        };
+                        return response;
+                    }
+                }
                 yield (0, Sede_orm_1.updateSedeByID)(id, sedeData).then((r) => {
                     response = {
                         message: `Sede with ID ${id} updated successfully`

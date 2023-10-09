@@ -1,4 +1,4 @@
-export interface IModeloEquipo {
+export interface IModeloEquipo extends Document {
     modelo: string;
     precio: number;
   }

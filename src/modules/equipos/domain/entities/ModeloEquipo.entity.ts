@@ -1,11 +1,14 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { IModeloEquipo } from "../interfaces/IModeloEquipo.interface";
 
 export const modeloEquipoEntity = () => {
-  let modeloEquipoSchema = new mongoose.Schema<IModeloEquipo>(
+  const modeloEquipoSchema = new mongoose.Schema<IModeloEquipo>(
     {
-      modelo: { type: String, required: true },
-      precio: { type: Number, required: true }
+      modelo: {
+        type: String,
+        required: true
+      },
+      precio: { type: Number, required: true },
     },
     { versionKey: false }
   );

@@ -5,32 +5,43 @@ import { LogSuccess } from "../../../../utils/logger";
 import { IEquipo } from "../interfaces/IEquipo.interface";
 import { modeloEquipoEntity } from "../entities/ModeloEquipo.entity";
 import { areaEquipoEntity } from "../entities/AreaEquipo.entity";
+import { tipoEquipoEntity } from "../entities/TipoEquipo.entity";
 
 // CRUD
 
 /**
  * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
  */
+/**
+ * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
+ */
 export const getAllEquipos = async (page: number, limit: number): Promise<any[] | undefined> => {
   try {
-    const equipoModel = equipoEntity();
+    let equipoModel = equipoEntity();
+    let equipoModeloModel = modeloEquipoEntity();
+    let areaEquipoModel = areaEquipoEntity();
+    let tipoEquipoModel = tipoEquipoEntity();
     let response: any = {};
-
-    // Search all equipos (using pagination) and populate 'modelo_equipos' and 'id_area'
+    // Search all equipos (using pagination) and populate 'modelo_equipos', 'id_area', and 'id_tipo'
     const equipos: IEquipo[] = await equipoModel
       .find({}, { _id: 0 })
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('serie ubicacion frecuencia modelo_equipos id_area') 
+      .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo')
       .populate({
         path: 'modelo_equipos',
-        model: 'Modelo_Equipos',
+        model: equipoModeloModel,
         select: 'modelo precio',
       })
       .populate({
         path: 'id_area',
-        model: 'Areas_Equipos',
-        select: 'area', 
+        model: areaEquipoModel,
+        select: 'area',
+      })
+      .populate({
+        path: 'id_tipo',
+        model: tipoEquipoModel,
+        select: 'tipo', 
       })
       .exec() as unknown as IEquipo[];
 
@@ -53,21 +64,29 @@ export const getAllEquipos = async (page: number, limit: number): Promise<any[] 
  */
 export const getEquipoByID = async (id: string): Promise<IEquipo | undefined> => {
   try {
-    const equipoModel = equipoEntity();
+    let equipoModel = equipoEntity();
+    let equipoModeloModel = modeloEquipoEntity();
+    let areaEquipoModel = areaEquipoEntity();
+    let tipoEquipoModel = tipoEquipoEntity();
 
-    // Search Equipo by ID and populate 'modelo_equipos' and 'id_area'
+    // Search Equipo by ID and populate 'modelo_equipos', 'id_area', and 'id_tipo'
     return await equipoModel
       .findById(id, { _id: 0 })
-      .select('serie ubicacion frecuencia modelo_equipos id_area') 
+      .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo')
       .populate({
         path: 'modelo_equipos',
-        model: 'Modelo_Equipos',
+        model: equipoModeloModel,
         select: 'modelo precio',
       })
       .populate({
         path: 'id_area',
-        model: 'Areas_Equipos',
-        select: 'area', 
+        model: areaEquipoModel,
+        select: 'area',
+      })
+      .populate({
+        path: 'id_tipo',
+        model: tipoEquipoModel,
+        select: 'tipo', // Selecciona el campo 'tipo'
       })
       .exec();
   } catch (error) {
@@ -147,6 +166,21 @@ export const getAreaEquipoByName = async (name: string): Promise<any | null> => 
     return null;
   }
 }
+
+export const getTipoEquipoByName = async (name: string): Promise<any | null> => {
+  try {
+    const tipoEquipoModel = tipoEquipoEntity();
+
+    // Buscar el tipo de equipo por nombre
+    const tipo = await tipoEquipoModel.findOne({ tipo: name });
+
+    return tipo;
+  } catch (error) {
+    LogError(`[ORM ERROR]: Getting Tipo Equipo by Name: ${error}`);
+    return null;
+  }
+}
+
 
 /**
  * Create Equipo 

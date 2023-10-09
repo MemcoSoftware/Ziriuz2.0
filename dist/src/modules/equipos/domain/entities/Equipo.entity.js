@@ -37,10 +37,31 @@ const equipoEntity = () => {
             ref: "Areas_Equipos",
             required: true,
         },
+        id_tipo: {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Tipos_Equipos",
+            required: true,
+        },
         serie: { type: String, required: true },
         ubicacion: { type: String, required: true },
         frecuencia: { type: Number, required: true },
-    }, { versionKey: false });
+    }, { versionKey: false, toJSON: { virtuals: true } });
+    // Define relaciones virtuales
+    equipoSchema.virtual("modeloEquipo", {
+        ref: "Modelo_Equipos",
+        localField: "modelo_equipos",
+        foreignField: "_id",
+    });
+    equipoSchema.virtual("areaEquipo", {
+        ref: "Areas_Equipos",
+        localField: "id_area",
+        foreignField: "_id",
+    });
+    equipoSchema.virtual("tipoEquipo", {
+        ref: "Tipos_Equipos",
+        localField: "id_tipo",
+        foreignField: "_id",
+    });
     return mongoose_1.default.models.Equipos || mongoose_1.default.model("Equipos", equipoSchema);
 };
 exports.equipoEntity = equipoEntity;

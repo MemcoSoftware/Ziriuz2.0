@@ -9,18 +9,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSedeByID = exports.deleteSedeByID = exports.createSede = exports.getSedeByID = exports.getAllSedes = void 0;
+exports.getClientByName = exports.createSede = exports.updateSedeByID = exports.deleteSedeByID = exports.getSedeByID = exports.getAllSedes = void 0;
 const Sede_entity_1 = require("../entities/Sede.entity");
 const logger_1 = require("../../../../utils/logger");
+const Client_entity_1 = require("../entities/Client.entity");
 const getAllSedes = (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let sedeModel = (0, Sede_entity_1.sedeEntity)();
+        let clientModel = (0, Client_entity_1.clientEntity)();
         let response = {};
         yield sedeModel
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('_id sede_nombre sede_address sede_telefono sede_email')
+            .select('_id sede_nombre sede_address sede_telefono sede_email id_client') // Agrega el campo id_client para la referencia
+            .populate({
+            path: 'id_client',
+            model: clientModel,
+            select: 'client_name client_nit client_address client_telefono client_email', // Campos que deseas seleccionar
+        })
             .exec()
             .then((sedes) => {
             response.sedes = sedes;
@@ -39,8 +46,14 @@ exports.getAllSedes = getAllSedes;
 const getSedeByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let sedeModel = (0, Sede_entity_1.sedeEntity)();
+        let clientModel = (0, Client_entity_1.clientEntity)();
         return yield sedeModel.findById(id)
-            .select('_id sede_nombre sede_address sede_telefono sede_email')
+            .select('_id sede_nombre sede_address sede_telefono sede_email id_client') // Agrega el campo id_client para la referencia
+            .populate({
+            path: 'id_client',
+            model: clientModel,
+            select: 'client_name client_nit client_address client_telefono client_email', // Campos que deseas seleccionar
+        })
             .exec();
     }
     catch (error) {
@@ -48,16 +61,6 @@ const getSedeByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getSedeByID = getSedeByID;
-const createSede = (sedeData) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let sedeModel = (0, Sede_entity_1.sedeEntity)();
-        return yield sedeModel.create(sedeData);
-    }
-    catch (error) {
-        (0, logger_1.LogError)('[ORM ERROR]: Creating Sede');
-    }
-});
-exports.createSede = createSede;
 const deleteSedeByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let sedeModel = (0, Sede_entity_1.sedeEntity)();
@@ -78,4 +81,28 @@ const updateSedeByID = (id, sedeData) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.updateSedeByID = updateSedeByID;
+const createSede = (sedeData) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let sedeModel = (0, Sede_entity_1.sedeEntity)();
+        return yield sedeModel.create(sedeData);
+    }
+    catch (error) {
+        (0, logger_1.LogError)(`[ORM ERROR]: Creating Sede: ${error}`);
+    }
+});
+exports.createSede = createSede;
+// * THIS PART BELOW COMPLEMENTS CREATESEDE FUNCTION
+const getClientByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const clientModel = (0, Client_entity_1.clientEntity)();
+        // Buscar el cliente por nombre
+        const client = yield clientModel.findOne({ client_name: name });
+        return client;
+    }
+    catch (error) {
+        (0, logger_1.LogError)(`[ORM ERROR]: Getting Client by Name: ${error}`);
+        return null;
+    }
+});
+exports.getClientByName = getClientByName;
 //# sourceMappingURL=Sede.orm.js.map

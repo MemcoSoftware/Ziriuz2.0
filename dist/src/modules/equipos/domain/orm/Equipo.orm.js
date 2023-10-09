@@ -9,34 +9,46 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createEquipo = exports.getAreaEquipoByName = exports.getModeloEquipoByName = exports.updateEquipoByID = exports.deleteEquipoByID = exports.getEquipoByID = exports.getAllEquipos = void 0;
+exports.createEquipo = exports.getTipoEquipoByName = exports.getAreaEquipoByName = exports.getModeloEquipoByName = exports.updateEquipoByID = exports.deleteEquipoByID = exports.getEquipoByID = exports.getAllEquipos = void 0;
 const Equipo_entity_1 = require("../entities/Equipo.entity");
 const logger_1 = require("../../../../utils/logger");
 const ModeloEquipo_entity_1 = require("../entities/ModeloEquipo.entity");
 const AreaEquipo_entity_1 = require("../entities/AreaEquipo.entity");
+const TipoEquipo_entity_1 = require("../entities/TipoEquipo.entity");
 // CRUD
+/**
+ * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
+ */
 /**
  * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
  */
 const getAllEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const equipoModel = (0, Equipo_entity_1.equipoEntity)();
+        let equipoModel = (0, Equipo_entity_1.equipoEntity)();
+        let equipoModeloModel = (0, ModeloEquipo_entity_1.modeloEquipoEntity)();
+        let areaEquipoModel = (0, AreaEquipo_entity_1.areaEquipoEntity)();
+        let tipoEquipoModel = (0, TipoEquipo_entity_1.tipoEquipoEntity)();
         let response = {};
-        // Search all equipos (using pagination) and populate 'modelo_equipos' and 'id_area'
+        // Search all equipos (using pagination) and populate 'modelo_equipos', 'id_area', and 'id_tipo'
         const equipos = yield equipoModel
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('serie ubicacion frecuencia modelo_equipos id_area')
+            .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo')
             .populate({
             path: 'modelo_equipos',
-            model: 'Modelo_Equipos',
+            model: equipoModeloModel,
             select: 'modelo precio',
         })
             .populate({
             path: 'id_area',
-            model: 'Areas_Equipos',
+            model: areaEquipoModel,
             select: 'area',
+        })
+            .populate({
+            path: 'id_tipo',
+            model: tipoEquipoModel,
+            select: 'tipo',
         })
             .exec();
         response.equipos = equipos;
@@ -57,20 +69,28 @@ exports.getAllEquipos = getAllEquipos;
  */
 const getEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const equipoModel = (0, Equipo_entity_1.equipoEntity)();
-        // Search Equipo by ID and populate 'modelo_equipos' and 'id_area'
+        let equipoModel = (0, Equipo_entity_1.equipoEntity)();
+        let equipoModeloModel = (0, ModeloEquipo_entity_1.modeloEquipoEntity)();
+        let areaEquipoModel = (0, AreaEquipo_entity_1.areaEquipoEntity)();
+        let tipoEquipoModel = (0, TipoEquipo_entity_1.tipoEquipoEntity)();
+        // Search Equipo by ID and populate 'modelo_equipos', 'id_area', and 'id_tipo'
         return yield equipoModel
             .findById(id, { _id: 0 })
-            .select('serie ubicacion frecuencia modelo_equipos id_area')
+            .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo')
             .populate({
             path: 'modelo_equipos',
-            model: 'Modelo_Equipos',
+            model: equipoModeloModel,
             select: 'modelo precio',
         })
             .populate({
             path: 'id_area',
-            model: 'Areas_Equipos',
+            model: areaEquipoModel,
             select: 'area',
+        })
+            .populate({
+            path: 'id_tipo',
+            model: tipoEquipoModel,
+            select: 'tipo', // Selecciona el campo 'tipo'
         })
             .exec();
     }
@@ -149,6 +169,19 @@ const getAreaEquipoByName = (name) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getAreaEquipoByName = getAreaEquipoByName;
+const getTipoEquipoByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const tipoEquipoModel = (0, TipoEquipo_entity_1.tipoEquipoEntity)();
+        // Buscar el tipo de equipo por nombre
+        const tipo = yield tipoEquipoModel.findOne({ tipo: name });
+        return tipo;
+    }
+    catch (error) {
+        (0, logger_1.LogError)(`[ORM ERROR]: Getting Tipo Equipo by Name: ${error}`);
+        return null;
+    }
+});
+exports.getTipoEquipoByName = getTipoEquipoByName;
 /**
  * Create Equipo
  *
