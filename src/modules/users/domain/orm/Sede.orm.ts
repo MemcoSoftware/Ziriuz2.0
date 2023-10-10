@@ -78,12 +78,29 @@ export const updateSedeByID = async (id: string, sedeData: ISede): Promise<any |
 export const createSede = async (sedeData: ISede): Promise<any | undefined> => {
     try {
         let sedeModel = sedeEntity();
+        const createdSede = await sedeModel.create(sedeData);
 
-        return await sedeModel.create(sedeData);
+        if (createdSede) {
+            return {
+                success: true,
+                message: "Sede created successfully",
+                sedeData: createdSede // Devolver la sede recién creada
+            };
+        } else {
+            return {
+                success: false,
+                message: "An error occurred while creating the sede"
+            };
+        }
     } catch (error) {
         LogError(`[ORM ERROR]: Creating Sede: ${error}`);
+        return {
+            success: false,
+            message: "An error occurred while creating the sede"
+        };
     }
 };
+
 
 // * THIS PART BELOW COMPLEMENTS CREATESEDE FUNCTION
 

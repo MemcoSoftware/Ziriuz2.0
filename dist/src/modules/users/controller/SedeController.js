@@ -41,49 +41,42 @@ let SedeController = exports.SedeController = class SedeController {
         });
     }
     createSede(sedeData) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Extrae el nombre del cliente de los datos de la sede
-                const clientName = (_a = sedeData.id_client) === null || _a === void 0 ? void 0 : _a.client_name;
-                if (clientName) {
-                    // Busca el cliente por nombre
-                    const client = yield (0, Sede_orm_1.getClientByName)(clientName);
-                    if (!client) {
-                        return {
-                            success: false,
-                            message: "El cliente no se encontró en la base de datos.",
-                        };
-                    }
-                    // Asocia el cliente a la sede
-                    sedeData.id_client = client._id;
-                    // Crea el equipo con las relaciones establecidas
-                    const response = yield (0, Sede_orm_1.createSede)(sedeData);
-                    if (response.success) {
-                        return response;
-                    }
-                    else {
-                        (0, logger_1.LogError)(`[Controller ERROR]: Creating Sede: ${response.message}`);
-                        return response;
-                    }
+                // Extraer el nombre del cliente de los datos de la sede
+                const clientName = sedeData.id_client;
+                // Buscar el cliente por nombre
+                const client = yield (0, Sede_orm_1.getClientByName)(clientName);
+                if (!client) {
+                    return {
+                        success: false,
+                        message: "El cliente no se encontró en la base de datos."
+                    };
+                }
+                // Asociar el cliente a la sede
+                sedeData.id_client = client._id;
+                // Crear la sede con las relaciones establecidas
+                const response = yield (0, Sede_orm_1.createSede)(sedeData);
+                if (response.success) {
+                    return {
+                        success: true,
+                        message: "Sede created successfully",
+                        sedeData: response // Devolver la sede recién creada
+                    };
                 }
                 else {
-                    // Si no se proporcionó un nombre de cliente, simplemente crea la sede
-                    const response = yield (0, Sede_orm_1.createSede)(sedeData);
-                    if (response.success) {
-                        return response;
-                    }
-                    else {
-                        (0, logger_1.LogError)(`[Controller ERROR]: Creating Sede: ${response.message}`);
-                        return response;
-                    }
+                    (0, logger_1.LogError)(`[Controller ERROR]: Creating Sede: ${response.message}`);
+                    return {
+                        success: false,
+                        message: "An error occurred while creating the sede"
+                    };
                 }
             }
             catch (error) {
                 (0, logger_1.LogError)(`[Controller ERROR]: Creating Sede: ${error}`);
                 return {
                     success: false,
-                    message: "An error occurred while creating the sede",
+                    message: "An error occurred while creating the sede"
                 };
             }
         });

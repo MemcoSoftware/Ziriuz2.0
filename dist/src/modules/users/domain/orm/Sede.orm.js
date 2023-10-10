@@ -84,10 +84,27 @@ exports.updateSedeByID = updateSedeByID;
 const createSede = (sedeData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let sedeModel = (0, Sede_entity_1.sedeEntity)();
-        return yield sedeModel.create(sedeData);
+        const createdSede = yield sedeModel.create(sedeData);
+        if (createdSede) {
+            return {
+                success: true,
+                message: "Sede created successfully",
+                sedeData: createdSede // Devolver la sede recién creada
+            };
+        }
+        else {
+            return {
+                success: false,
+                message: "An error occurred while creating the sede"
+            };
+        }
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Creating Sede: ${error}`);
+        return {
+            success: false,
+            message: "An error occurred while creating the sede"
+        };
     }
 });
 exports.createSede = createSede;

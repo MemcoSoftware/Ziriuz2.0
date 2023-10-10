@@ -23,52 +23,51 @@ export class SedeController implements ISedeController {
     }
 
     @Post("/")
-    public async createSede(@Body() sedeData: any): Promise<any> {
-      try {
-        // Extrae el nombre del cliente de los datos de la sede
-        const clientName: string = sedeData.id_client?.client_name;
-    
-        if (clientName) {
-          // Busca el cliente por nombre
-          const client = await getClientByName(clientName);
-    
-          if (!client) {
-            return {
-              success: false,
-              message: "El cliente no se encontró en la base de datos.",
-            };
-          }
-    
-          // Asocia el cliente a la sede
-          sedeData.id_client = client._id;
-    
-          // Crea el equipo con las relaciones establecidas
-          const response = await createSede(sedeData);
-    
-          if (response.success) {
-            return response;
-          } else {
-            LogError(`[Controller ERROR]: Creating Sede: ${response.message}`);
-            return response;
-          }
-        } else {
-          // Si no se proporcionó un nombre de cliente, simplemente crea la sede
-          const response = await createSede(sedeData);
-          if (response.success) {
-            return response;
-          } else {
-            LogError(`[Controller ERROR]: Creating Sede: ${response.message}`);
-            return response;
-          }
-        }
-      } catch (error) {
-        LogError(`[Controller ERROR]: Creating Sede: ${error}`);
-        return {
-          success: false,
-          message: "An error occurred while creating the sede",
-        };
-      }
+public async createSede(@Body() sedeData: any): Promise<any> {
+  try {
+    // Extraer el nombre del cliente de los datos de la sede
+    const clientName: string = sedeData.id_client;
+
+    // Buscar el cliente por nombre
+    const client = await getClientByName(clientName);
+
+    if (!client) {
+      return {
+        success: false,
+        message: "El cliente no se encontró en la base de datos."
+      };
     }
+
+    // Asociar el cliente a la sede
+    sedeData.id_client = client._id;
+
+    // Crear la sede con las relaciones establecidas
+    const response = await createSede(sedeData);
+
+    if (response.success) {
+      return {
+        success: true,
+        message: "Sede created successfully",
+        sedeData: response // Devolver la sede recién creada
+      };
+    } else {
+      LogError(`[Controller ERROR]: Creating Sede: ${response.message}`);
+      return {
+        success: false,
+        message: "An error occurred while creating the sede"
+      };
+    }
+  } catch (error) {
+    LogError(`[Controller ERROR]: Creating Sede: ${error}`);
+    return {
+      success: false,
+      message: "An error occurred while creating the sede"
+    };
+  }
+}
+
+    
+
     
     
 
