@@ -3,7 +3,13 @@ import { IEquipo } from "../../domain/interfaces/IEquipo.interface";
 
 export const equipoEntity = () => {
   const equipoSchema = new mongoose.Schema<IEquipo>(
+    
     {
+      id_sede: {
+        type: Schema.Types.ObjectId,
+        ref: "Sedes", 
+        required: false,
+      },
       modelo_equipos: {
         type: Schema.Types.ObjectId,
         ref: "Modelo_Equipos",
@@ -42,6 +48,11 @@ export const equipoEntity = () => {
   equipoSchema.virtual("tipoEquipo", {
     ref: "Tipos_Equipos",
     localField: "id_tipo",
+    foreignField: "_id",
+  });
+  equipoSchema.virtual("sedeEquipo", {
+    ref: "Sedes",
+    localField: "id_sede",
     foreignField: "_id",
   });
 

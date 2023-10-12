@@ -27,6 +27,11 @@ exports.equipoEntity = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const equipoEntity = () => {
     const equipoSchema = new mongoose_1.default.Schema({
+        id_sede: {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: "Sedes",
+            required: false,
+        },
         modelo_equipos: {
             type: mongoose_1.Schema.Types.ObjectId,
             ref: "Modelo_Equipos",
@@ -60,6 +65,11 @@ const equipoEntity = () => {
     equipoSchema.virtual("tipoEquipo", {
         ref: "Tipos_Equipos",
         localField: "id_tipo",
+        foreignField: "_id",
+    });
+    equipoSchema.virtual("sedeEquipo", {
+        ref: "Sedes",
+        localField: "id_sede",
         foreignField: "_id",
     });
     return mongoose_1.default.models.Equipos || mongoose_1.default.model("Equipos", equipoSchema);

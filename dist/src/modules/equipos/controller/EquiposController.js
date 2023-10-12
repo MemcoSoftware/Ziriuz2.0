@@ -119,6 +119,18 @@ let EquipoController = exports.EquipoController = class EquipoController {
                     // Asociar el tipo de equipo actualizado al equipo
                     equipoData.id_tipo = tipoEquipo._id;
                 }
+                // Comprobar si se proporciona un nuevo nombre de sede
+                if (equipoData.id_sede) {
+                    // Buscar la sede por nombre
+                    const sede = yield (0, Equipo_orm_1.getSedeByName)(equipoData.id_sede);
+                    if (!sede.success) {
+                        response.success = false;
+                        response.message = sede.message; // Devolvemos el mensaje de error
+                        return response;
+                    }
+                    // Asociar la sede actualizada al equipo
+                    equipoData.id_sede = sede._id;
+                }
                 // Actualizar el equipo con los datos proporcionados
                 yield (0, Equipo_orm_1.updateEquipoByID)(id, equipoData);
                 response.success = true;
@@ -137,10 +149,11 @@ let EquipoController = exports.EquipoController = class EquipoController {
     createEquipo(equipoData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Extrae el nombre del modelo de equipo, área de equipo y tipo de equipo de los datos del equipo
+                // Extrae el nombre del modelo de equipo, área de equipo, tipo de equipo y sede de los datos del equipo
                 const modeloEquipoNombre = equipoData.modelo_equipos;
                 const areaEquipoNombre = equipoData.id_area;
                 const tipoEquipoNombre = equipoData.id_tipo;
+                const sedeNombre = equipoData.id_sede;
                 // Busca el modelo de equipo por nombre
                 const modeloEquipo = yield (0, Equipo_orm_1.getModeloEquipoByName)(modeloEquipoNombre);
                 if (!modeloEquipo) {
@@ -171,6 +184,16 @@ let EquipoController = exports.EquipoController = class EquipoController {
                 }
                 // Asocia el tipo de equipo al equipo
                 equipoData.id_tipo = tipoEquipo._id;
+                // Busca la sede por nombre
+                const sede = yield (0, Equipo_orm_1.getSedeByName)(sedeNombre);
+                if (!sede) {
+                    return {
+                        success: false,
+                        message: "La sede perteneciente a el equipo no se encontró en la base de datos",
+                    };
+                }
+                // Asocia la sede al equipo
+                equipoData.id_sede = sede._id;
                 // Crea el equipo con las relaciones establecidas
                 const response = yield (0, Equipo_orm_1.createEquipo)(equipoData);
                 if (response.success) {

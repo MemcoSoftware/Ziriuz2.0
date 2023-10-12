@@ -9,13 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createEquipo = exports.getTipoEquipoByName = exports.getAreaEquipoByName = exports.getModeloEquipoByName = exports.updateEquipoByID = exports.deleteEquipoByID = exports.getEquipoByID = exports.getAllEquipos = void 0;
+exports.getSedeByName = exports.getTipoEquipoByName = exports.getAreaEquipoByName = exports.getModeloEquipoByName = exports.createEquipo = exports.updateEquipoByID = exports.deleteEquipoByID = exports.getEquipoByID = exports.getAllEquipos = void 0;
 const Equipo_entity_1 = require("../entities/Equipo.entity");
 const logger_1 = require("../../../../utils/logger");
 const ModeloEquipo_entity_1 = require("../entities/ModeloEquipo.entity");
 const AreaEquipo_entity_1 = require("../entities/AreaEquipo.entity");
 const TipoEquipo_entity_1 = require("../entities/TipoEquipo.entity");
+const Sede_entity_1 = require("../../../users/domain/entities/Sede.entity");
+const Client_entity_1 = require("../../../users/domain/entities/Client.entity");
 // CRUD
+/**
+ * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
+ */
 /**
  * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
  */
@@ -28,13 +33,15 @@ const getAllEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, functio
         let equipoModeloModel = (0, ModeloEquipo_entity_1.modeloEquipoEntity)();
         let areaEquipoModel = (0, AreaEquipo_entity_1.areaEquipoEntity)();
         let tipoEquipoModel = (0, TipoEquipo_entity_1.tipoEquipoEntity)();
+        let sedeModel = (0, Sede_entity_1.sedeEntity)(); // Import the Sede entity
+        let clientModel = (0, Client_entity_1.clientEntity)(); // Import the Client entity
         let response = {};
-        // Search all equipos (using pagination) and populate 'modelo_equipos', 'id_area', and 'id_tipo'
+        // Search all equipos (using pagination) and populate 'modelo_equipos', 'id_area', 'id_tipo', 'id_sede', and 'id_client'
         const equipos = yield equipoModel
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo')
+            .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo id_sede') // Include id_sede
             .populate({
             path: 'modelo_equipos',
             model: equipoModeloModel,
@@ -49,6 +56,16 @@ const getAllEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, functio
             path: 'id_tipo',
             model: tipoEquipoModel,
             select: 'tipo',
+        })
+            .populate({
+            path: 'id_sede',
+            model: sedeModel,
+            select: 'sede_nombre sede_address sede_telefono sede_email id_client', // Include id_client for Clients
+        })
+            .populate({
+            path: 'id_sede.id_client',
+            model: clientModel,
+            select: 'client_name client_nit client_address client_telefono client_email',
         })
             .exec();
         response.equipos = equipos;
@@ -73,10 +90,12 @@ const getEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
         let equipoModeloModel = (0, ModeloEquipo_entity_1.modeloEquipoEntity)();
         let areaEquipoModel = (0, AreaEquipo_entity_1.areaEquipoEntity)();
         let tipoEquipoModel = (0, TipoEquipo_entity_1.tipoEquipoEntity)();
-        // Search Equipo by ID and populate 'modelo_equipos', 'id_area', and 'id_tipo'
+        let sedeModel = (0, Sede_entity_1.sedeEntity)();
+        let clientModel = (0, Client_entity_1.clientEntity)();
+        // Search Equipo by ID and populate 'modelo_equipos', 'id_area', 'id_tipo', 'id_sede', and 'id_client'
         return yield equipoModel
             .findById(id, { _id: 0 })
-            .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo')
+            .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo id_sede') // Include id_sede
             .populate({
             path: 'modelo_equipos',
             model: equipoModeloModel,
@@ -90,7 +109,17 @@ const getEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
             .populate({
             path: 'id_tipo',
             model: tipoEquipoModel,
-            select: 'tipo', // Selecciona el campo 'tipo'
+            select: 'tipo',
+        })
+            .populate({
+            path: 'id_sede',
+            model: sedeModel,
+            select: 'sede_nombre sede_address sede_telefono sede_email id_client', // Include id_client for Clients
+        })
+            .populate({
+            path: 'id_sede.id_client',
+            model: clientModel,
+            select: 'client_name client_nit client_address client_telefono client_email',
         })
             .exec();
     }
@@ -139,6 +168,29 @@ const updateEquipoByID = (id, equipo) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.updateEquipoByID = updateEquipoByID;
 /**
+ * Create Equipo
+ *
+ * */
+const createEquipo = (equipo) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const equipoModel = (0, Equipo_entity_1.equipoEntity)();
+        const newEquipo = new equipoModel(equipo);
+        yield newEquipo.save();
+        return {
+            success: true,
+            message: "Equipo created successfully",
+        };
+    }
+    catch (error) {
+        (0, logger_1.LogError)(`[ORM ERROR]: Creating Equipo: ${error}`);
+        return {
+            success: false,
+            message: "An error occurred while creating the equipo",
+        };
+    }
+});
+exports.createEquipo = createEquipo;
+/**
  * Obtener el modelo de equipo por nombre.
  * @param name Nombre del modelo de equipo.
  * @returns Modelo de equipo encontrado o nulo si no se encuentra.
@@ -182,27 +234,17 @@ const getTipoEquipoByName = (name) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getTipoEquipoByName = getTipoEquipoByName;
-/**
- * Create Equipo
- *
- * */
-const createEquipo = (equipo) => __awaiter(void 0, void 0, void 0, function* () {
+const getSedeByName = (name) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const equipoModel = (0, Equipo_entity_1.equipoEntity)();
-        const newEquipo = new equipoModel(equipo);
-        yield newEquipo.save();
-        return {
-            success: true,
-            message: "Equipo created successfully",
-        };
+        const sedeModel = (0, Sede_entity_1.sedeEntity)();
+        // Buscar el modelo de equipo por nombre
+        const sede = yield sedeModel.findOne({ sede_nombre: name });
+        return sede;
     }
     catch (error) {
-        (0, logger_1.LogError)(`[ORM ERROR]: Creating Equipo: ${error}`);
-        return {
-            success: false,
-            message: "An error occurred while creating the equipo",
-        };
+        (0, logger_1.LogError)(`[ORM ERROR]: Getting Sede by Name: ${error}`);
+        return null;
     }
 });
-exports.createEquipo = createEquipo;
+exports.getSedeByName = getSedeByName;
 //# sourceMappingURL=Equipo.orm.js.map

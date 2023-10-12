@@ -6,9 +6,14 @@ import { IEquipo } from "../interfaces/IEquipo.interface";
 import { modeloEquipoEntity } from "../entities/ModeloEquipo.entity";
 import { areaEquipoEntity } from "../entities/AreaEquipo.entity";
 import { tipoEquipoEntity } from "../entities/TipoEquipo.entity";
+import { sedeEntity } from "../../../users/domain/entities/Sede.entity";
+import { clientEntity } from "../../../users/domain/entities/Client.entity";
 
 // CRUD
 
+/**
+ * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
+ */
 /**
  * Method to obtain all Equipos from Collection "Equipos" in Mongo Server
  */
@@ -21,13 +26,16 @@ export const getAllEquipos = async (page: number, limit: number): Promise<any[] 
     let equipoModeloModel = modeloEquipoEntity();
     let areaEquipoModel = areaEquipoEntity();
     let tipoEquipoModel = tipoEquipoEntity();
+    let sedeModel = sedeEntity(); // Import the Sede entity
+    let clientModel = clientEntity(); // Import the Client entity
     let response: any = {};
-    // Search all equipos (using pagination) and populate 'modelo_equipos', 'id_area', and 'id_tipo'
+
+    // Search all equipos (using pagination) and populate 'modelo_equipos', 'id_area', 'id_tipo', 'id_sede', and 'id_client'
     const equipos: IEquipo[] = await equipoModel
       .find({}, { _id: 0 })
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo')
+      .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo id_sede') // Include id_sede
       .populate({
         path: 'modelo_equipos',
         model: equipoModeloModel,
@@ -41,7 +49,17 @@ export const getAllEquipos = async (page: number, limit: number): Promise<any[] 
       .populate({
         path: 'id_tipo',
         model: tipoEquipoModel,
-        select: 'tipo', 
+        select: 'tipo',
+      })
+      .populate({
+        path: 'id_sede',
+        model: sedeModel, // Populate 'Sedes'
+        select: 'sede_nombre sede_address sede_telefono sede_email id_client', // Include id_client for Clients
+      })
+      .populate({
+        path: 'id_sede.id_client', // Populate 'Clients' within 'Sedes'
+        model: clientModel,
+        select: 'client_name client_nit client_address client_telefono client_email',
       })
       .exec() as unknown as IEquipo[];
 
@@ -59,6 +77,7 @@ export const getAllEquipos = async (page: number, limit: number): Promise<any[] 
   }
 };
 
+
 /**
  * Method to obtain a single Equipo by ID from Collection "Equipos" in Mongo Server
  */
@@ -68,11 +87,13 @@ export const getEquipoByID = async (id: string): Promise<IEquipo | undefined> =>
     let equipoModeloModel = modeloEquipoEntity();
     let areaEquipoModel = areaEquipoEntity();
     let tipoEquipoModel = tipoEquipoEntity();
+    let sedeModel = sedeEntity(); 
+    let clientModel = clientEntity(); 
 
-    // Search Equipo by ID and populate 'modelo_equipos', 'id_area', and 'id_tipo'
+    // Search Equipo by ID and populate 'modelo_equipos', 'id_area', 'id_tipo', 'id_sede', and 'id_client'
     return await equipoModel
       .findById(id, { _id: 0 })
-      .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo')
+      .select('_id serie ubicacion frecuencia modelo_equipos id_area id_tipo id_sede') // Include id_sede
       .populate({
         path: 'modelo_equipos',
         model: equipoModeloModel,
@@ -86,13 +107,24 @@ export const getEquipoByID = async (id: string): Promise<IEquipo | undefined> =>
       .populate({
         path: 'id_tipo',
         model: tipoEquipoModel,
-        select: 'tipo', // Selecciona el campo 'tipo'
+        select: 'tipo',
+      })
+      .populate({
+        path: 'id_sede',
+        model: sedeModel, 
+        select: 'sede_nombre sede_address sede_telefono sede_email id_client', // Include id_client for Clients
+      })
+      .populate({
+        path: 'id_sede.id_client',
+        model: clientModel,
+        select: 'client_name client_nit client_address client_telefono client_email',
       })
       .exec();
   } catch (error) {
     LogError(`[ORM ERROR]: Getting Equipo By ID: ${error}`);
   }
 };
+
 /**
  * Delete Equipo by ID
  */
@@ -133,6 +165,31 @@ export const updateEquipoByID = async (id: string, equipo: any): Promise<{ succe
     };
   }
 };
+
+/**
+ * Create Equipo 
+ * 
+ * */
+export const createEquipo = async (equipo: any): Promise<any | undefined> => {
+  try {
+      const equipoModel = equipoEntity();
+
+      const newEquipo = new equipoModel(equipo);
+      await newEquipo.save();
+
+      return {
+          success: true,
+          message: "Equipo created successfully",
+      };
+  } catch (error) {
+      LogError(`[ORM ERROR]: Creating Equipo: ${error}`);
+      return {
+          success: false,
+          message: "An error occurred while creating the equipo",
+      };
+  }
+};
+
 
 /**
  * Obtener el modelo de equipo por nombre.
@@ -181,28 +238,24 @@ export const getTipoEquipoByName = async (name: string): Promise<any | null> => 
   }
 }
 
-
-/**
- * Create Equipo 
- * 
- * */
-export const createEquipo = async (equipo: any): Promise<any | undefined> => {
+export const getSedeByName = async (name: string): Promise<any | null> => {
   try {
-      const equipoModel = equipoEntity();
+    const sedeModel = sedeEntity();
 
-      const newEquipo = new equipoModel(equipo);
-      await newEquipo.save();
+    // Buscar el modelo de equipo por nombre
+    const sede = await sedeModel.findOne({ sede_nombre: name });
 
-      return {
-          success: true,
-          message: "Equipo created successfully",
-      };
+    return sede;
   } catch (error) {
-      LogError(`[ORM ERROR]: Creating Equipo: ${error}`);
-      return {
-          success: false,
-          message: "An error occurred while creating the equipo",
-      };
+    LogError(`[ORM ERROR]: Getting Sede by Name: ${error}`);
+    return null;
   }
-};
+}
+
+
+
+
+
+
+
 
