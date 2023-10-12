@@ -99,37 +99,51 @@ public async createSede(@Body() sedeData: any): Promise<any> {
     }
 
     @Put("/")
-public async updateSede(@Query() id: string, @Body() sedeData: ISede): Promise<any> {
-    let response: any = '';
-    if (id) {
+public async updateSede(@Query() id: string, @Body() sedeData: any): Promise<any> {
+    try {
         LogSuccess(`[/api/sedes] Update Sede By ID: ${id}`);
-        // Agrega la búsqueda de cliente por nombre si se proporciona el nombre del cliente
-        if (sedeData.id_client?.client_name) {
-            const client = await getClientByName(sedeData.id_client.client_name);
-            if (client) {
-                sedeData.id_client = client._id; // Asocia el cliente encontrado
-            } else {
-                LogWarning('[/api/sedes] Client not found by name');
-                response = {
-                    message: 'Client not found by name'
-                };
-                return response;
-            }
+
+        // Extraer el nombre del cliente de los datos de la sede
+        const clientName: string = sedeData.id_client;
+
+        // Buscar el cliente por nombre
+        const client = await getClientByName(clientName);
+
+        if (!client) {
+            return {
+                success: false,
+                message: "El cliente no se encontró en la base de datos."
+            };
         }
 
-        await updateSedeByID(id, sedeData).then((r) => {
-            response = {
+        // Asociar el cliente a la sede
+        sedeData.id_client = client._id;
+
+        const response = await updateSedeByID(id, sedeData);
+
+        if (response) {
+            return {
+                success: true,
                 message: `Sede with ID ${id} updated successfully`
             };
-        });
-    } else {
-        LogWarning('[/api/sedes] Update Sede Request WITHOUT ID');
-        response = {
-            message: 'Please, provide an Id to update an existing Sede'
+        } else {
+            LogError(`[Controller ERROR]: Updating Sede: ${id}`);
+            return {
+                success: false,
+                message: `Error updating sede with ID: ${id}`
+            };
+        }
+    } catch (error) {
+        LogError(`[Controller ERROR]: Updating Sede: ${error}`);
+        return {
+            success: false,
+            message: "An error occurred while updating the sede"
         };
     }
-    return response;
 }
+
+    
+
 
 }
 

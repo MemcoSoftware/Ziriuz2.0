@@ -107,38 +107,43 @@ let SedeController = exports.SedeController = class SedeController {
         });
     }
     updateSede(id, sedeData) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            let response = '';
-            if (id) {
+            try {
                 (0, logger_1.LogSuccess)(`[/api/sedes] Update Sede By ID: ${id}`);
-                // Agrega la búsqueda de cliente por nombre si se proporciona el nombre del cliente
-                if ((_a = sedeData.id_client) === null || _a === void 0 ? void 0 : _a.client_name) {
-                    const client = yield (0, Sede_orm_1.getClientByName)(sedeData.id_client.client_name);
-                    if (client) {
-                        sedeData.id_client = client._id; // Asocia el cliente encontrado
-                    }
-                    else {
-                        (0, logger_1.LogWarning)('[/api/sedes] Client not found by name');
-                        response = {
-                            message: 'Client not found by name'
-                        };
-                        return response;
-                    }
+                // Extraer el nombre del cliente de los datos de la sede
+                const clientName = sedeData.id_client;
+                // Buscar el cliente por nombre
+                const client = yield (0, Sede_orm_1.getClientByName)(clientName);
+                if (!client) {
+                    return {
+                        success: false,
+                        message: "El cliente no se encontró en la base de datos."
+                    };
                 }
-                yield (0, Sede_orm_1.updateSedeByID)(id, sedeData).then((r) => {
-                    response = {
+                // Asociar el cliente a la sede
+                sedeData.id_client = client._id;
+                const response = yield (0, Sede_orm_1.updateSedeByID)(id, sedeData);
+                if (response) {
+                    return {
+                        success: true,
                         message: `Sede with ID ${id} updated successfully`
                     };
-                });
+                }
+                else {
+                    (0, logger_1.LogError)(`[Controller ERROR]: Updating Sede: ${id}`);
+                    return {
+                        success: false,
+                        message: `Error updating sede with ID: ${id}`
+                    };
+                }
             }
-            else {
-                (0, logger_1.LogWarning)('[/api/sedes] Update Sede Request WITHOUT ID');
-                response = {
-                    message: 'Please, provide an Id to update an existing Sede'
+            catch (error) {
+                (0, logger_1.LogError)(`[Controller ERROR]: Updating Sede: ${error}`);
+                return {
+                    success: false,
+                    message: "An error occurred while updating the sede"
                 };
             }
-            return response;
         });
     }
 };
