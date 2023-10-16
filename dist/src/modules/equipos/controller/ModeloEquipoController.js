@@ -74,13 +74,33 @@ let ModeloEquipoController = exports.ModeloEquipoController = class ModeloEquipo
                 };
                 if (!id) {
                     (0, logger_1.LogWarning)('[/api/modeloEquipos] Update ModeloEquipo Request WITHOUT ID');
-                    response.message = "Please, provide an Id to update an existing ModeloEquipo";
+                    response.message = "Please, provide an ID to update an existing ModeloEquipo";
                     return response;
                 }
                 const existingModeloEquipo = yield (0, ModeloEquipo_orm_1.getModeloEquipoByID)(id);
                 if (!existingModeloEquipo) {
                     response.message = `ModeloEquipo with ID ${id} not found`;
                     return response;
+                }
+                // Comprueba si se proporciona un nuevo nombre de marca de equipo
+                if (equipo.id_marca) {
+                    const marcaEquipo = yield (0, ModeloEquipo_orm_1.getMarcaEquipoByName)(equipo.id_marca);
+                    if (!marcaEquipo) {
+                        response.success = false;
+                        response.message = "La marca de equipo no se encontró en la base de datos.";
+                        return response;
+                    }
+                    equipo.id_marca = marcaEquipo._id;
+                }
+                // Comprueba si se proporciona un nuevo nombre de clase de equipo
+                if (equipo.id_clase) {
+                    const claseEquipo = yield (0, ModeloEquipo_orm_1.getClaseEquipoByName)(equipo.id_clase);
+                    if (!claseEquipo) {
+                        response.success = false;
+                        response.message = "La clase de equipo no se encontró en la base de datos.";
+                        return response;
+                    }
+                    equipo.id_clase = claseEquipo._id;
                 }
                 yield (0, ModeloEquipo_orm_1.updateModeloEquipoByID)(id, equipo);
                 response.success = true;
@@ -99,6 +119,32 @@ let ModeloEquipoController = exports.ModeloEquipoController = class ModeloEquipo
     createModeloEquipo(equipo) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                // Comprueba si se proporciona un nuevo nombre de marca de equipo
+                if (equipo.id_marca) {
+                    const marcaEquipo = yield (0, ModeloEquipo_orm_1.getMarcaEquipoByName)(equipo.id_marca);
+                    if (marcaEquipo) {
+                        equipo.id_marca = marcaEquipo._id;
+                    }
+                    else {
+                        return {
+                            success: false,
+                            message: "La marca de equipo no se encontró en la base de datos.",
+                        };
+                    }
+                }
+                // Comprueba si se proporciona un nuevo nombre de clase de equipo
+                if (equipo.id_clase) {
+                    const claseEquipo = yield (0, ModeloEquipo_orm_1.getClaseEquipoByName)(equipo.id_clase);
+                    if (claseEquipo) {
+                        equipo.id_clase = claseEquipo._id;
+                    }
+                    else {
+                        return {
+                            success: false,
+                            message: "La clase de equipo no se encontró en la base de datos.",
+                        };
+                    }
+                }
                 const response = yield (0, ModeloEquipo_orm_1.createModeloEquipo)(equipo);
                 if (response.success) {
                     return response;

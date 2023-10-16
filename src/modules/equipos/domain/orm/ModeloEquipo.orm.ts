@@ -3,6 +3,8 @@ import { modeloEquipoEntity } from "../entities/ModeloEquipo.entity";
 import { LogError } from "../../../../utils/logger";
 import { LogSuccess } from "../../../../utils/logger";
 import { IModeloEquipo } from "../interfaces/IModeloEquipo.interface";
+import { marcaEquipoEntity } from "../entities/MarcasEquipos.entity";
+import { classDeviceEntity } from "../entities/ClassDevice.entity";
 
 // CRUD
 
@@ -10,21 +12,31 @@ export const getAllModeloEquipos = async (page: number, limit: number): Promise<
   try {
     let modeloEquipoModel = modeloEquipoEntity();
     let response: any = {};
+    const marcaEquipo = marcaEquipoEntity();
+    const claseEquipo = classDeviceEntity();
 
-    await modeloEquipoModel
+    const modeloEquipos: IModeloEquipo[] = await modeloEquipoModel
       .find({}, { _id: 0 })
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('modelo precio')
-      .exec()
-      .then((modeloEquipos: IModeloEquipo[]) => {
-        response.modeloEquipos = modeloEquipos;
-      });
+      .select('modelo precio id_marca id_clase')
+      .populate({
+        path: 'id_marca',
+        model: marcaEquipo,
+        select: 'marca',
+      }) // Populate de la relación con Marcas_Equipos
+      .populate({
+        path: 'id_clase',
+        model: claseEquipo,
+        select: 'clase',
+      }) // Populate de la relación con Clases_Equipos
+      .exec() as IModeloEquipo[];
 
-    await modeloEquipoModel.countDocuments().then((total: number) => {
-      response.totalPages = Math.ceil(total / limit);
-      response.currentPage = page;
-    });
+    response.modeloEquipos = modeloEquipos;
+
+    const total = await modeloEquipoModel.countDocuments();
+    response.totalPages = Math.ceil(total / limit);
+    response.currentPage = page;
 
     return response;
   } catch (error) {
@@ -32,11 +44,25 @@ export const getAllModeloEquipos = async (page: number, limit: number): Promise<
   }
 };
 
+
 export const getModeloEquipoByID = async (id: string): Promise<IModeloEquipo | undefined> => {
   try {
     let modeloEquipoModel = modeloEquipoEntity();
-
-    return await modeloEquipoModel.findById(id).exec();
+    const marcaEquipo = marcaEquipoEntity();
+    const claseEquipo = classDeviceEntity();
+    return await modeloEquipoModel.findById(id, { _id: 0 })
+      .select('modelo precio id_marca id_clase') // Include id_marca y id_clase
+      .populate({
+        path: 'id_marca',
+        model: marcaEquipo,
+        select: 'marca',
+      }) // Populate de la relación con Marcas_Equipos
+      .populate({
+        path: 'id_clase',
+        model: claseEquipo,
+        select: 'clase',
+      }) // Populate de la relación con Clases_Equipos
+      .exec();
   } catch (error) {
     LogError(`[ORM ERROR]: Getting ModeloEquipo By ID: ${error}`);
   }
@@ -78,5 +104,35 @@ export const createModeloEquipo = async (equipo: any): Promise<any | undefined> 
       success: false,
       message: "An error occurred while creating the ModeloEquipo",
     };
+  }
+};
+
+// Función para obtener una Clase de Equipo por nombre
+export const getClaseEquipoByName = async (name: string): Promise<any | null> => {
+  try {
+    const claseEquipoModel = classDeviceEntity();
+
+    // Buscar la clase de equipo por nombre
+    const clase = await claseEquipoModel.findOne({ clase: name });
+
+    return clase;
+  } catch (error) {
+    LogError(`[ORM ERROR]: Getting Clase de Equipo by Name: ${error}`);
+    return null;
+  }
+};
+
+// Función para obtener una Marca de Equipo por nombre
+export const getMarcaEquipoByName = async (name: string): Promise<any | null> => {
+  try {
+    const marcaEquipoModel = marcaEquipoEntity();
+
+    // Buscar la marca de equipo por nombre
+    const marca = await marcaEquipoModel.findOne({ marca: name });
+
+    return marca;
+  } catch (error) {
+    LogError(`[ORM ERROR]: Getting Marca de Equipo by Name: ${error}`);
+    return null;
   }
 };

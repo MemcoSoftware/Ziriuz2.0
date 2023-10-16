@@ -57,10 +57,10 @@ server.use('/search', SearchRouter_1.default);
 server.use('/clients', ClientRouter_1.default); // http://localhost:8000/api/clients --> clientRouter
 // * Redirections to Routers & Controllers -- MODULE EQUIPOS
 server.use('/equipos', EquipoRouter_1.default); // http://localhost:8000/api/equipos --> equiposRouter
-server.use('/equipos/modelo', ModeloEquipoRouter_1.default); // http://localhost:8000/api/equipos --> modeloEquiposRouter
-server.use('/equipos/clases', ClassDeviceRouter_1.default); // http://localhost:8000/api/clases --> classDeviceRouter
-server.use('/equipos/marcas', MarcasEquiposRouter_1.default); // http://localhost:8000/api/marcas --> marcasEquiposRouter
-server.use('/equipos/tipos', TipoEquipoRouter_1.default); // http://localhost:8000/api/tipos --> tiposEquiposRouter
-server.use('/equipos/areas', AreaEquipoRouter_1.default); // http://localhost:8000/api/areas --> areasEquiposRouter
+server.use('/equipos/modelo', ModeloEquipoRouter_1.default); // http://localhost:8000/api/equipos/modelo --> modeloEquiposRouter
+server.use('/equipos/clases', ClassDeviceRouter_1.default); // http://localhost:8000/api/equipos/clases --> classDeviceRouter
+server.use('/equipos/marcas', MarcasEquiposRouter_1.default); // http://localhost:8000/api/equipos/marcas --> marcasEquiposRouter
+server.use('/equipos/tipos', TipoEquipoRouter_1.default); // http://localhost:8000/api/equipos/tipos --> tiposEquiposRouter
+server.use('/equipos/areas', AreaEquipoRouter_1.default); // http://localhost:8000/api/equipos/areas --> areasEquiposRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map

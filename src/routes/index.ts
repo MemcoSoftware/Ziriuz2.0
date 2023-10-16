@@ -63,9 +63,9 @@ server.use('/clients', clientRouter); // http://localhost:8000/api/clients --> c
 // * Redirections to Routers & Controllers -- MODULE EQUIPOS
 
 server.use('/equipos', equiposRouter) // http://localhost:8000/api/equipos --> equiposRouter
-server.use('/equipos/modelo', modeloEquiposRouter) // http://localhost:8000/api/equipos --> modeloEquiposRouter
-server.use('/equipos/clases', classDeviceRouter) // http://localhost:8000/api/clases --> classDeviceRouter
-server.use ('/equipos/marcas', marcasEquiposRouter) // http://localhost:8000/api/marcas --> marcasEquiposRouter
-server.use ('/equipos/tipos', tiposEquiposRouter) // http://localhost:8000/api/tipos --> tiposEquiposRouter
-server.use ('/equipos/areas', areasEquiposRouter) // http://localhost:8000/api/areas --> areasEquiposRouter
+server.use('/equipos/modelo', modeloEquiposRouter) // http://localhost:8000/api/equipos/modelo --> modeloEquiposRouter
+server.use('/equipos/clases', classDeviceRouter) // http://localhost:8000/api/equipos/clases --> classDeviceRouter
+server.use ('/equipos/marcas', marcasEquiposRouter) // http://localhost:8000/api/equipos/marcas --> marcasEquiposRouter
+server.use ('/equipos/tipos', tiposEquiposRouter) // http://localhost:8000/api/equipos/tipos --> tiposEquiposRouter
+server.use ('/equipos/areas', areasEquiposRouter) // http://localhost:8000/api/equipos/areas --> areasEquiposRouter
 export default server;
