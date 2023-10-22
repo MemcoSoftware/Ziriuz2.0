@@ -123,9 +123,9 @@ let EquipoController = exports.EquipoController = class EquipoController {
                 if (equipoData.id_sede) {
                     // Buscar la sede por nombre
                     const sede = yield (0, Equipo_orm_1.getSedeByName)(equipoData.id_sede);
-                    if (!sede.success) {
+                    if (!sede) {
                         response.success = false;
-                        response.message = sede.message; // Devolvemos el mensaje de error
+                        response.message = "La sede no se encontró en la base de datos."; // Devolvemos el mensaje de error
                         return response;
                     }
                     // Asociar la sede actualizada al equipo
