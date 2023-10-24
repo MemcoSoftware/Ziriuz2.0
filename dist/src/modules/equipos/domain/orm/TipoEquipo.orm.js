@@ -20,7 +20,7 @@ const getAllTiposEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, fu
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('tipo')
+            .select('_id tipo')
             .exec()
             .then((tiposEquipos) => {
             response.tiposEquipos = tiposEquipos;
@@ -39,7 +39,7 @@ exports.getAllTiposEquipos = getAllTiposEquipos;
 const getTipoEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let tipoEquipoModel = (0, TipoEquipo_entity_1.tipoEquipoEntity)();
-        return yield tipoEquipoModel.findById(id).exec();
+        return yield tipoEquipoModel.findById(id).select('_id tipo').exec();
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting TipoEquipo By ID: ${error}`);

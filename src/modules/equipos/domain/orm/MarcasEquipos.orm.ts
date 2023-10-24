@@ -12,7 +12,7 @@ export const getAllMarcasEquipos = async (page: number, limit: number): Promise<
       .find({}, { _id: 0 })
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('marca')
+      .select('_id marca')
       .exec()
       .then((marcasEquipos: IMarcaEquipo[]) => {
         response.marcasEquipos = marcasEquipos;
@@ -33,7 +33,7 @@ export const getMarcaEquipoByID = async (id: string): Promise<IMarcaEquipo | und
   try {
     let marcaEquipoModel = marcaEquipoEntity();
 
-    return await marcaEquipoModel.findById(id).exec();
+    return await marcaEquipoModel.findById(id).select('_id marca').exec();
   } catch (error) {
     LogError(`[ORM ERROR]: Getting MarcaEquipo By ID: ${error}`);
   }

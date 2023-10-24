@@ -20,7 +20,7 @@ const getAllMarcasEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, f
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('marca')
+            .select('_id marca')
             .exec()
             .then((marcasEquipos) => {
             response.marcasEquipos = marcasEquipos;
@@ -39,7 +39,7 @@ exports.getAllMarcasEquipos = getAllMarcasEquipos;
 const getMarcaEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let marcaEquipoModel = (0, MarcasEquipos_entity_1.marcaEquipoEntity)();
-        return yield marcaEquipoModel.findById(id).exec();
+        return yield marcaEquipoModel.findById(id).select('_id marca').exec();
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting MarcaEquipo By ID: ${error}`);
