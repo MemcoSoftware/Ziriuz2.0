@@ -28,6 +28,7 @@ import classDeviceRouter from '../modules/equipos/routes/ClassDeviceRouter';
 import marcasEquiposRouter from '../modules/equipos/routes/MarcasEquiposRouter';
 import tiposEquiposRouter from '../modules/equipos/routes/TipoEquipoRouter';
 import areasEquiposRouter from '../modules/equipos/routes/AreaEquipoRouter';
+import searchEquiposRouter from '../modules/equipos/routes/SearchEquiposRouter';
 
 
 // * Server Instance
@@ -68,4 +69,6 @@ server.use('/equipos/clases', classDeviceRouter) // http://localhost:8000/api/eq
 server.use ('/equipos/marcas', marcasEquiposRouter) // http://localhost:8000/api/equipos/marcas --> marcasEquiposRouter
 server.use ('/equipos/tipos', tiposEquiposRouter) // http://localhost:8000/api/equipos/tipos --> tiposEquiposRouter
 server.use ('/equipos/areas', areasEquiposRouter) // http://localhost:8000/api/equipos/areas --> areasEquiposRouter
+server.use('/search/equipos', searchEquiposRouter) // http://localhost:8000/api/equipos --> equiposRouter
+
 export default server;
