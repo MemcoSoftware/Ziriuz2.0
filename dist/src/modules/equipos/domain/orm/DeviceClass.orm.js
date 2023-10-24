@@ -24,7 +24,7 @@ const getAllClasesEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, f
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('clase')
+            .select('_id clase')
             .exec()
             .then((clasesEquipos) => {
             response.clasesEquipos = clasesEquipos;
@@ -48,7 +48,7 @@ const getClaseEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* (
     try {
         let claseEquipoModel = (0, ClassDevice_entity_1.classDeviceEntity)();
         // Search ClaseEquipo by ID
-        return yield claseEquipoModel.findById(id).exec();
+        return yield claseEquipoModel.findById(id).select('_id clase').exec();
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting ClaseEquipo By ID: ${error}`);

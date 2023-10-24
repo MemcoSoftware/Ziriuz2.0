@@ -16,7 +16,7 @@ export const getAllClasesEquipos = async (page: number, limit: number): Promise<
       .find({}, { _id: 0 })
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('clase')
+      .select('_id clase')
       .exec()
       .then((clasesEquipos: IClassDevice[]) => {
         response.clasesEquipos = clasesEquipos;
@@ -42,7 +42,7 @@ export const getClaseEquipoByID = async (id: string): Promise<IClassDevice | und
     let claseEquipoModel = classDeviceEntity();
 
     // Search ClaseEquipo by ID
-    return await claseEquipoModel.findById(id).exec();
+    return await claseEquipoModel.findById(id).select('_id clase').exec();
   } catch (error) {
     LogError(`[ORM ERROR]: Getting ClaseEquipo By ID: ${error}`);
   }

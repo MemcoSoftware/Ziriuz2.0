@@ -13,7 +13,7 @@ export const getAllAreasEquipos = async (page: number, limit: number): Promise<a
       .find({}, { _id: 0 })
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('area')
+      .select('_id area')
       .exec()
       .then((areasEquipos: IAreaEquipo[]) => {
         response.areasEquipos = areasEquipos;
@@ -34,7 +34,7 @@ export const getAreaEquipoByID = async (id: string): Promise<IAreaEquipo | undef
   try {
     let areaEquipoModel = areaEquipoEntity();
 
-    return await areaEquipoModel.findById(id).exec();
+    return await areaEquipoModel.findById(id).select('_id area').exec();
   } catch (error) {
     LogError(`[ORM ERROR]: Getting AreaEquipo By ID: ${error}`);
   }

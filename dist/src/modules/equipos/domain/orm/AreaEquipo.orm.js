@@ -20,7 +20,7 @@ const getAllAreasEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, fu
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('area')
+            .select('_id area')
             .exec()
             .then((areasEquipos) => {
             response.areasEquipos = areasEquipos;
@@ -39,7 +39,7 @@ exports.getAllAreasEquipos = getAllAreasEquipos;
 const getAreaEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let areaEquipoModel = (0, AreaEquipo_entity_1.areaEquipoEntity)();
-        return yield areaEquipoModel.findById(id).exec();
+        return yield areaEquipoModel.findById(id).select('_id area').exec();
     }
     catch (error) {
         (0, logger_1.LogError)(`[ORM ERROR]: Getting AreaEquipo By ID: ${error}`);
