@@ -25,7 +25,7 @@ const getAllModeloEquipos = (page, limit) => __awaiter(void 0, void 0, void 0, f
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('modelo precio id_marca id_clase')
+            .select('_id modelo precio id_marca id_clase')
             .populate({
             path: 'id_marca',
             model: marcaEquipo,
@@ -54,7 +54,7 @@ const getModeloEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* 
         const marcaEquipo = (0, MarcasEquipos_entity_1.marcaEquipoEntity)();
         const claseEquipo = (0, ClassDevice_entity_1.classDeviceEntity)();
         return yield modeloEquipoModel.findById(id, { _id: 0 })
-            .select('modelo precio id_marca id_clase') // Include id_marca y id_clase
+            .select('_id modelo precio id_marca id_clase') // Include id_marca y id_clase
             .populate({
             path: 'id_marca',
             model: marcaEquipo,
