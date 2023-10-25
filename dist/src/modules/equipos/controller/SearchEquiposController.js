@@ -59,22 +59,22 @@ class SearchEquiposController {
                     .select('serie ubicacion frecuencia id_sede modelo_equipos id_area id_tipo') // Puedes seleccionar los campos que desees
                     // Popula las relaciones virtuales, si es necesario
                     .populate({
-                    path: 'modeloEquipo',
+                    path: 'modelo_equipos',
                     model: equipoModeloModel,
                     select: 'modelo',
                 })
                     .populate({
-                    path: 'areaEquipo',
+                    path: 'id_area',
                     model: areaEquipoModel,
                     select: 'area',
                 })
                     .populate({
-                    path: 'tipoEquipo',
+                    path: 'id_tipo',
                     model: tipoEquipoModel,
                     select: 'tipo',
                 })
                     .populate({
-                    path: 'sedeEquipo',
+                    path: 'id_sede',
                     model: sedeModel,
                     select: 'sede_nombre',
                 });
@@ -114,12 +114,12 @@ class SearchEquiposController {
                     .select('modelo precio id_marca id_clase') // Puedes seleccionar los campos que desees
                     // Popula las relaciones virtuales, si es necesario
                     .populate({
-                    path: 'marcaEquipo',
+                    path: 'id_marca',
                     model: marcaEquipoModel,
                     select: 'marca',
                 })
                     .populate({
-                    path: 'claseEquipo',
+                    path: 'id_clase',
                     model: claseEquipoModel,
                     select: 'clase',
                 });

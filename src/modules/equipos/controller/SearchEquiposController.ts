@@ -57,22 +57,22 @@ class SearchEquiposController {
 
       // Popula las relaciones virtuales, si es necesario
       .populate({
-        path: 'modeloEquipo',
+        path: 'modelo_equipos',
         model: equipoModeloModel,
         select: 'modelo',
       })
       .populate({
-        path: 'areaEquipo',
+        path: 'id_area',
         model: areaEquipoModel,
         select: 'area',
       })
       .populate({
-        path: 'tipoEquipo',
+        path: 'id_tipo',
         model: tipoEquipoModel,
         select: 'tipo',
       })
       .populate({
-        path: 'sedeEquipo',
+        path: 'id_sede',
         model: sedeModel,
         select: 'sede_nombre',
       });
@@ -116,12 +116,12 @@ class SearchEquiposController {
 
         // Popula las relaciones virtuales, si es necesario
         .populate({
-          path: 'marcaEquipo',
+          path: 'id_marca',
           model: marcaEquipoModel,
           select: 'marca',
         })
         .populate({
-          path: 'claseEquipo',
+          path: 'id_clase',
           model: claseEquipoModel,
           select: 'clase',
         });
