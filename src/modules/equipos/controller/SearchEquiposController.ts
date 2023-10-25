@@ -1,11 +1,13 @@
 import { LogInfo } from '../../../utils/logger';
-import { equipoEntity } from '../domain/entities/Equipo.entity'; // Asegúrate de importar el modelo correcto
+import { equipoEntity } from '../domain/entities/Equipo.entity';
 import mongoose from 'mongoose';
-import { modeloEquipoEntity } from '../domain/entities/ModeloEquipo.entity';
-import { areaEquipoEntity } from '../domain/entities/AreaEquipo.entity';
 import { tipoEquipoEntity } from '../domain/entities/TipoEquipo.entity';
 import { sedeEntity } from '../../../modules/users/domain/entities/Sede.entity';
 import { clientEntity } from '../../../modules/users/domain/entities/Client.entity';
+import { modeloEquipoEntity } from '../domain/entities/ModeloEquipo.entity';
+import { areaEquipoEntity } from '../domain/entities/AreaEquipo.entity';
+import { marcaEquipoEntity } from '../domain/entities/MarcasEquipos.entity';
+import { classDeviceEntity } from '../domain/entities/ClassDevice.entity';
 
 class SearchEquiposController {
   public async searchEquiposByKeyword(keyword: string): Promise<any> {
@@ -16,20 +18,39 @@ class SearchEquiposController {
 
       LogInfo(`Search for equipos with keyword: ${keyword}`);
 
-        const equipoModel = equipoEntity();
-        let equipoModeloModel = modeloEquipoEntity();
-        let areaEquipoModel = areaEquipoEntity();
-        let tipoEquipoModel = tipoEquipoEntity();
-        let sedeModel = sedeEntity(); // Import the Sede entity
-        let clientModel = clientEntity(); // Import the Client entity
-      // Realiza la búsqueda de equipos por palabra clave en campos relevantes
+      const equipoModel = equipoEntity();
+      const equipoModeloModel = modeloEquipoEntity();
+      const areaEquipoModel = areaEquipoEntity();
+      const tipoEquipoModel = tipoEquipoEntity();
+      const sedeModel = sedeEntity(); // Import the Sede entity
+      const clientModel = clientEntity(); // Import the Client entity
+
+      // Primero, busca el ID de la sede por palabra clave en campos relevantes
+      const sedes = await sedeModel.find({ sede_nombre: { $regex: keyword, $options: 'i' } }).select('_id');
+      const sedeIds = sedes.map(sede => sede._id);
+
+      // Luego, busca el ID del modelo de equipo por palabra clave en campos relevantes
+      const modelos = await equipoModeloModel.find({ modelo: { $regex: keyword, $options: 'i' } }).select('_id');
+      const modeloIds = modelos.map(modelo => modelo._id);
+
+      // Luego, busca el ID del área de equipo por palabra clave en campos relevantes
+      const areas = await areaEquipoModel.find({ area: { $regex: keyword, $options: 'i' } }).select('_id');
+      const areaIds = areas.map(area => area._id);
+
+      // Luego, busca el ID del tipo de equipo por palabra clave en campos relevantes
+      const tipos = await tipoEquipoModel.find({ tipo: { $regex: keyword, $options: 'i' } }).select('_id');
+      const tipoIds = tipos.map(tipo => tipo._id);
+
+      // Realiza la búsqueda de equipos por la palabra clave y las asociaciones
       const equipos = await equipoModel
         .find({
           $or: [
             { serie: { $regex: keyword, $options: 'i' } },
             { ubicacion: { $regex: keyword, $options: 'i' } },
-            // { frecuencia: { $regex: keyword, $options: 'i' } },
-            // Agrega otros campos para buscar según sea necesario
+            { id_sede: { $in: sedeIds } },
+            { modelo_equipos: { $in: modeloIds } },
+            { id_area: { $in: areaIds } },
+            { id_tipo: { $in: tipoIds } },
           ],
         })
         .select('serie ubicacion frecuencia id_sede modelo_equipos id_area id_tipo') // Puedes seleccionar los campos que desees
@@ -37,23 +58,23 @@ class SearchEquiposController {
       // Popula las relaciones virtuales, si es necesario
       .populate({
         path: 'modeloEquipo',
-        model: equipoModeloModel, // Ajusta el nombre del modelo de Modelo_Equipos
-        select: 'modelo', // Selecciona los campos que desees
+        model: equipoModeloModel,
+        select: 'modelo',
       })
       .populate({
         path: 'areaEquipo',
-        model: areaEquipoModel, // Ajusta el nombre del modelo de Areas_Equipos
-        select: 'area', // Selecciona los campos que desees
+        model: areaEquipoModel,
+        select: 'area',
       })
       .populate({
         path: 'tipoEquipo',
-        model: tipoEquipoModel, // Ajusta el nombre del modelo de Tipos_Equipos
-        select: 'tipo', // Selecciona los campos que desees
+        model: tipoEquipoModel,
+        select: 'tipo',
       })
       .populate({
         path: 'sedeEquipo',
-        model: sedeModel, // Ajusta el nombre del modelo de Sedes
-        select: 'sede_nombre', // Selecciona los campos que desees
+        model: sedeModel,
+        select: 'sede_nombre',
       });
 
       return equipos;
@@ -62,6 +83,135 @@ class SearchEquiposController {
       throw new Error('Error en la búsqueda de equipos.');
     }
   }
+    public async searchModelosEquiposByKeyword(keyword: string): Promise<any> {
+      try {
+        if (typeof keyword !== 'string') {
+          throw new Error('El parámetro keyword es inválido.');
+        }
+
+        LogInfo(`Search for modelos de equipos with keyword: ${keyword}`);
+
+        const modeloEquipoModel = modeloEquipoEntity();
+        const marcaEquipoModel = marcaEquipoEntity();
+        const claseEquipoModel = classDeviceEntity();
+
+        // Primero, busca el ID de la marca de equipo por palabra clave en campos relevantes
+        const marcas = await marcaEquipoModel.find({ marca: { $regex: keyword, $options: 'i' } }).select('_id');
+        const marcaIds = marcas.map(marca => marca._id);
+
+        // Luego, busca el ID de la clase de equipo por palabra clave en campos relevantes
+        const clases = await claseEquipoModel.find({ clase: { $regex: keyword, $options: 'i' } }).select('_id');
+        const claseIds = clases.map(clase => clase._id);
+
+        // Realiza la búsqueda de modelos de equipos por la palabra clave y las asociaciones
+        const modelosEquipos = await modeloEquipoModel
+          .find({
+            $or: [
+              { modelo: { $regex: keyword, $options: 'i' } },
+              { id_marca: { $in: marcaIds } },
+              { id_clase: { $in: claseIds } },
+            ],
+          })
+          .select('modelo precio id_marca id_clase') // Puedes seleccionar los campos que desees
+
+        // Popula las relaciones virtuales, si es necesario
+        .populate({
+          path: 'marcaEquipo',
+          model: marcaEquipoModel,
+          select: 'marca',
+        })
+        .populate({
+          path: 'claseEquipo',
+          model: claseEquipoModel,
+          select: 'clase',
+        });
+
+        return modelosEquipos;
+      } catch (error) {
+        console.error(error);
+        throw new Error('Error en la búsqueda de modelos de equipos.');
+      }
+    }
+    public async searchAreasEquiposByKeyword(keyword: string): Promise<any> {
+      try {
+        if (typeof keyword !== 'string') {
+          throw new Error('El parámetro keyword es inválido.');
+        }
+  
+        LogInfo(`Search for áreas de equipos with keyword: ${keyword}`);
+  
+        const areaEquipoModel = areaEquipoEntity();
+  
+        // Realiza la búsqueda de áreas de equipos por la palabra clave
+        const areasEquipos = await areaEquipoModel.find({ area: { $regex: keyword, $options: 'i' } });
+  
+        return areasEquipos;
+      } catch (error) {
+        console.error(error);
+        throw new Error('Error en la búsqueda de áreas de equipos.');
+      }
+    }
+    public async searchClasesEquiposByKeyword(keyword: string): Promise<any> {
+      try {
+        if (typeof keyword !== 'string') {
+          throw new Error('El parámetro keyword es inválido.');
+        }
+    
+        LogInfo(`Search for clases de equipos with keyword: ${keyword}`);
+    
+        const claseEquipoModel = classDeviceEntity();
+    
+        // Realiza la búsqueda de clases de equipos por la palabra clave
+        const clasesEquipos = await claseEquipoModel.find({ clase: { $regex: keyword, $options: 'i' }});
+    
+        return clasesEquipos;
+      } catch (error) {
+        console.error(error);
+        throw new Error('Error en la búsqueda de clases de equipos.');
+      }
+    }
+
+    public async searchMarcasEquiposByKeyword(keyword: string): Promise<any> {
+      try {
+        if (typeof keyword !== 'string') {
+          throw new Error('El parámetro keyword es inválido.');
+        }
+    
+        LogInfo(`Search for marcas de equipos with keyword: ${keyword}`);
+    
+        const marcaEquipoModel = marcaEquipoEntity();
+    
+        // Realiza la búsqueda de marcas de equipos por la palabra clave en el campo 'marca'
+        const marcasEquipos = await marcaEquipoModel.find({ marca: { $regex: keyword, $options: 'i' }});
+    
+        return marcasEquipos;
+      } catch (error) {
+        console.error(error);
+        throw new Error('Error en la búsqueda de marcas de equipos.');
+      }
+    }
+    
+    public async searchTiposEquiposByKeyword(keyword: string): Promise<any> {
+      try {
+        if (typeof keyword !== 'string') {
+          throw new Error('El parámetro keyword es inválido.');
+        }
+    
+        LogInfo(`Search for tipos de equipos with keyword: ${keyword}`);
+    
+        const tipoEquipoModel = tipoEquipoEntity();
+    
+        // Realiza la búsqueda de tipos de equipos por la palabra clave en el campo 'tipo'
+        const tiposEquipos = await tipoEquipoModel.find({ tipo: { $regex: keyword, $options: 'i' }});
+    
+        return tiposEquipos;
+      } catch (error) {
+        console.error(error);
+        throw new Error('Error en la búsqueda de tipos de equipos.');
+      }
+    }
+    
 }
+
 
 export default new SearchEquiposController();

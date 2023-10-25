@@ -16,4 +16,59 @@ searchEquiposRouter.route('/')
     }
   });
 
+searchEquiposRouter.route('/modelos')
+.post(verifyToken, async (req: Request, res: Response) => {
+  const { keyword } = req.body;
+  try {
+    const results = await SearchEquiposController.searchModelosEquiposByKeyword(keyword); // Utiliza el controlador correcto
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: 'Error en la búsqueda de Modelos de Equipos.' });
+  }
+});
+
+searchEquiposRouter.route('/areas')
+.post(verifyToken, async (req: Request, res: Response) => {
+  const { keyword } = req.body;
+  try {
+    const results = await SearchEquiposController.searchAreasEquiposByKeyword(keyword); // Utiliza el controlador correcto
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: 'Error en la búsqueda de áreas de Equipos.' });
+  }
+});
+
+searchEquiposRouter.route('/clases')
+.post(verifyToken, async (req: Request, res: Response) => {
+  const { keyword } = req.body;
+  try {
+    const results = await SearchEquiposController.searchClasesEquiposByKeyword(keyword); // Utiliza el controlador correcto
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: 'Error en la búsqueda de clases de Equipos.' });
+  }
+});
+
+searchEquiposRouter.route('/marcas')
+.post(verifyToken, async (req: Request, res: Response) => {
+  const { keyword } = req.body;
+  try {
+    const results = await SearchEquiposController.searchMarcasEquiposByKeyword(keyword); // Utiliza el controlador correcto
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: 'Error en la búsqueda de Marcas de Equipos.' });
+  }
+});
+
+searchEquiposRouter.route('/tipos')
+.post(verifyToken, async (req: Request, res: Response) => {
+  const { keyword } = req.body;
+  try {
+    const results = await SearchEquiposController.searchTiposEquiposByKeyword(keyword); // Utiliza el controlador correcto
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ error: 'Error en la búsqueda de Tipos de Equipos.' });
+  }
+});
+
 export default searchEquiposRouter;

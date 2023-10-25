@@ -28,5 +28,60 @@ searchEquiposRouter.route('/')
         res.status(500).json({ error: 'Error en la búsqueda de equipos.' });
     }
 }));
+searchEquiposRouter.route('/modelos')
+    .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword } = req.body;
+    try {
+        const results = yield SearchEquiposController_1.default.searchModelosEquiposByKeyword(keyword); // Utiliza el controlador correcto
+        res.status(200).json(results);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Error en la búsqueda de Modelos de Equipos.' });
+    }
+}));
+searchEquiposRouter.route('/areas')
+    .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword } = req.body;
+    try {
+        const results = yield SearchEquiposController_1.default.searchAreasEquiposByKeyword(keyword); // Utiliza el controlador correcto
+        res.status(200).json(results);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Error en la búsqueda de áreas de Equipos.' });
+    }
+}));
+searchEquiposRouter.route('/clases')
+    .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword } = req.body;
+    try {
+        const results = yield SearchEquiposController_1.default.searchClasesEquiposByKeyword(keyword); // Utiliza el controlador correcto
+        res.status(200).json(results);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Error en la búsqueda de clases de Equipos.' });
+    }
+}));
+searchEquiposRouter.route('/marcas')
+    .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword } = req.body;
+    try {
+        const results = yield SearchEquiposController_1.default.searchMarcasEquiposByKeyword(keyword); // Utiliza el controlador correcto
+        res.status(200).json(results);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Error en la búsqueda de Marcas de Equipos.' });
+    }
+}));
+searchEquiposRouter.route('/tipos')
+    .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword } = req.body;
+    try {
+        const results = yield SearchEquiposController_1.default.searchTiposEquiposByKeyword(keyword); // Utiliza el controlador correcto
+        res.status(200).json(results);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Error en la búsqueda de Tipos de Equipos.' });
+    }
+}));
 exports.default = searchEquiposRouter;
 //# sourceMappingURL=SearchEquiposRouter.js.map
