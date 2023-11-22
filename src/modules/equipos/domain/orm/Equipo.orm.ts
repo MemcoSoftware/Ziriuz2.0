@@ -97,7 +97,7 @@ export const getEquipoByID = async (id: string): Promise<IEquipo | undefined> =>
       .populate({
         path: 'modelo_equipos',
         model: equipoModeloModel,
-        select: 'modelo precio',
+        select: 'modelo precio id_marca id_clase',
       })
       .populate({
         path: 'id_area',

@@ -99,7 +99,7 @@ const getEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
             .populate({
             path: 'modelo_equipos',
             model: equipoModeloModel,
-            select: 'modelo precio',
+            select: 'modelo precio id_marca id_clase',
         })
             .populate({
             path: 'id_area',
