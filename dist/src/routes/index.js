@@ -31,6 +31,7 @@ const MarcasEquiposRouter_1 = __importDefault(require("../modules/equipos/routes
 const TipoEquipoRouter_1 = __importDefault(require("../modules/equipos/routes/TipoEquipoRouter"));
 const AreaEquipoRouter_1 = __importDefault(require("../modules/equipos/routes/AreaEquipoRouter"));
 const SearchEquiposRouter_1 = __importDefault(require("../modules/equipos/routes/SearchEquiposRouter"));
+const RepuestosEquiposRouter_1 = __importDefault(require("../modules/equipos/routes/RepuestosEquiposRouter"));
 // * Server Instance
 let server = (0, express_1.default)();
 // * Configura body-parser antes de las rutas
@@ -63,6 +64,7 @@ server.use('/equipos/clases', ClassDeviceRouter_1.default); // http://localhost:
 server.use('/equipos/marcas', MarcasEquiposRouter_1.default); // http://localhost:8000/api/equipos/marcas --> marcasEquiposRouter
 server.use('/equipos/tipos', TipoEquipoRouter_1.default); // http://localhost:8000/api/equipos/tipos --> tiposEquiposRouter
 server.use('/equipos/areas', AreaEquipoRouter_1.default); // http://localhost:8000/api/equipos/areas --> areasEquiposRouter
+server.use('/equipos/repuestos', RepuestosEquiposRouter_1.default); // http://localhost:8000/api/equipos/repuestos --> areasEquiposRouter
 server.use('/search/equipos', SearchEquiposRouter_1.default); // http://localhost:8000/api/equipos --> equiposRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map
