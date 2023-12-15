@@ -94,6 +94,16 @@ const updateRepuestoEquipoByID = (id, repuestoEquipo) => __awaiter(void 0, void 
             message: "",
         };
         const repuestoEquipoModel = (0, RepuestoEquipo_entity_1.repuestoEquipoEntity)();
+        // Buscar el cliente por nombre
+        const client = yield (0, Client_entity_1.clientEntity)().findOne({ client_name: repuestoEquipo.id_cliente });
+        if (!client) {
+            return {
+                success: false,
+                message: "El cliente no se encontró en la base de datos.",
+            };
+        }
+        // Asociar el cliente al repuestoEquipo
+        repuestoEquipo.id_cliente = client._id;
         // Actualizar Repuesto_Equipo por ID
         yield repuestoEquipoModel.findByIdAndUpdate(id, repuestoEquipo);
         response.success = true;
@@ -115,6 +125,16 @@ exports.updateRepuestoEquipoByID = updateRepuestoEquipoByID;
 const createRepuestoEquipo = (repuestoEquipo) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const repuestoEquipoModel = (0, RepuestoEquipo_entity_1.repuestoEquipoEntity)();
+        // Buscar el cliente por nombre
+        const client = yield (0, Client_entity_1.clientEntity)().findOne({ client_name: repuestoEquipo.id_cliente });
+        if (!client) {
+            return {
+                success: false,
+                message: "El cliente no se encontró en la base de datos.",
+            };
+        }
+        // Asociar el cliente al repuestoEquipo
+        repuestoEquipo.id_cliente = client._id;
         const newRepuestoEquipo = new repuestoEquipoModel(repuestoEquipo);
         yield newRepuestoEquipo.save();
         return {
@@ -123,7 +143,7 @@ const createRepuestoEquipo = (repuestoEquipo) => __awaiter(void 0, void 0, void 
         };
     }
     catch (error) {
-        (0, logger_1.LogError)(`[ORM ERROR]: Creando Repuesto_Equipo: ${error}`);
+        (0, logger_1.LogError)(`[ORM ERROR]: Creating Repuesto_Equipo: ${error}`);
         return {
             success: false,
             message: "Ocurrió un error al crear el repuesto_equipo",

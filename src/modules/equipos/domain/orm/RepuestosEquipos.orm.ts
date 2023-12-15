@@ -91,6 +91,19 @@ export const updateRepuestoEquipoByID = async (id: string, repuestoEquipo: any):
 
     const repuestoEquipoModel = repuestoEquipoEntity();
 
+    // Buscar el cliente por nombre
+    const client = await clientEntity().findOne({ client_name: repuestoEquipo.id_cliente });
+
+    if (!client) {
+      return {
+        success: false,
+        message: "El cliente no se encontró en la base de datos.",
+      };
+    }
+
+    // Asociar el cliente al repuestoEquipo
+    repuestoEquipo.id_cliente = client._id;
+
     // Actualizar Repuesto_Equipo por ID
     await repuestoEquipoModel.findByIdAndUpdate(id, repuestoEquipo);
 
@@ -106,12 +119,26 @@ export const updateRepuestoEquipoByID = async (id: string, repuestoEquipo: any):
   }
 };
 
+
 /**
  * Método para crear Repuesto_Equipo
  */
 export const createRepuestoEquipo = async (repuestoEquipo: any): Promise<any | undefined> => {
   try {
     const repuestoEquipoModel = repuestoEquipoEntity();
+
+    // Buscar el cliente por nombre
+    const client = await clientEntity().findOne({ client_name: repuestoEquipo.id_cliente });
+
+    if (!client) {
+      return {
+        success: false,
+        message: "El cliente no se encontró en la base de datos.",
+      };
+    }
+
+    // Asociar el cliente al repuestoEquipo
+    repuestoEquipo.id_cliente = client._id;
 
     const newRepuestoEquipo = new repuestoEquipoModel(repuestoEquipo);
     await newRepuestoEquipo.save();
@@ -121,10 +148,11 @@ export const createRepuestoEquipo = async (repuestoEquipo: any): Promise<any | u
       message: "Repuesto_Equipo creado exitosamente",
     };
   } catch (error) {
-    LogError(`[ORM ERROR]: Creando Repuesto_Equipo: ${error}`);
+    LogError(`[ORM ERROR]: Creating Repuesto_Equipo: ${error}`);
     return {
       success: false,
       message: "Ocurrió un error al crear el repuesto_equipo",
     };
   }
 };
+

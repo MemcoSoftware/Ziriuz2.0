@@ -17,7 +17,7 @@ export const repuestoEquipoEntity = () => {
   );
 
   return (
-    mongoose.models.RepuestoEquipos ||
-    mongoose.model<IRepuestoEquipo>("RepuestoEquipos", repuestoEquipoSchema)
+    mongoose.models.Repuestos_Equipos ||
+    mongoose.model<IRepuestoEquipo>("Repuestos_Equipos", repuestoEquipoSchema)
   );
 };

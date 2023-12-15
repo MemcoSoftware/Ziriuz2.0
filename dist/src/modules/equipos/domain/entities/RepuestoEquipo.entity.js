@@ -36,8 +36,8 @@ const repuestoEquipoEntity = () => {
         repuesto_cantidad: { type: Number, required: true },
         repuesto_precio: { type: Number, required: true },
     }, { versionKey: false });
-    return (mongoose_1.default.models.RepuestoEquipos ||
-        mongoose_1.default.model("RepuestoEquipos", repuestoEquipoSchema));
+    return (mongoose_1.default.models.Repuestos_Equipos ||
+        mongoose_1.default.model("Repuestos_Equipos", repuestoEquipoSchema));
 };
 exports.repuestoEquipoEntity = repuestoEquipoEntity;
 //# sourceMappingURL=RepuestoEquipo.entity.js.map
