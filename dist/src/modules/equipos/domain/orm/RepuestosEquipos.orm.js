@@ -27,11 +27,11 @@ const getAllRepuestoEquipos = (page, limit) => __awaiter(void 0, void 0, void 0,
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('id_cliente repuesto_name repuesto_cantidad repuesto_precio')
+            .select('_id id_cliente repuesto_name repuesto_cantidad repuesto_precio')
             .populate({
             path: 'id_cliente',
             model: clientModel,
-            select: 'client_name client_nit client_address client_telefono client_email',
+            select: '_id client_name client_nit client_address client_telefono client_email',
         })
             .exec();
         response.repuestoEquipos = repuestoEquipos;
@@ -57,11 +57,11 @@ const getRepuestoEquipoByID = (id) => __awaiter(void 0, void 0, void 0, function
         // Buscar Repuesto_Equipo por ID y poblar 'id_cliente'
         return yield repuestoEquipoModel
             .findById(id, { _id: 0 })
-            .select('id_cliente repuesto_name repuesto_cantidad repuesto_precio')
+            .select('_id id_cliente repuesto_name repuesto_cantidad repuesto_precio')
             .populate({
             path: 'id_cliente',
             model: clientModel,
-            select: 'client_name client_nit client_address client_telefono client_email',
+            select: '_id client_name client_nit client_address client_telefono client_email',
         })
             .exec();
     }

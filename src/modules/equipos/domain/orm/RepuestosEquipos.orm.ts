@@ -20,11 +20,11 @@ export const getAllRepuestoEquipos = async (page: number, limit: number): Promis
       .find({}, { _id: 0 })
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('id_cliente repuesto_name repuesto_cantidad repuesto_precio')
+      .select('_id id_cliente repuesto_name repuesto_cantidad repuesto_precio')
       .populate({
         path: 'id_cliente',
         model: clientModel,
-        select: 'client_name client_nit client_address client_telefono client_email',
+        select: '_id client_name client_nit client_address client_telefono client_email',
       })
       .exec() as unknown as IRepuestoEquipo[];
 
@@ -53,11 +53,11 @@ export const getRepuestoEquipoByID = async (id: string): Promise<IRepuestoEquipo
     // Buscar Repuesto_Equipo por ID y poblar 'id_cliente'
     return await repuestoEquipoModel
       .findById(id, { _id: 0 })
-      .select('id_cliente repuesto_name repuesto_cantidad repuesto_precio')
+      .select('_id id_cliente repuesto_name repuesto_cantidad repuesto_precio')
       .populate({
         path: 'id_cliente',
         model: clientModel,
-        select: 'client_name client_nit client_address client_telefono client_email',
+        select: '_id client_name client_nit client_address client_telefono client_email',
       })
       .exec();
   } catch (error) {
