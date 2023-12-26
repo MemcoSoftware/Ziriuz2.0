@@ -8,6 +8,7 @@ import { modeloEquipoEntity } from '../domain/entities/ModeloEquipo.entity';
 import { areaEquipoEntity } from '../domain/entities/AreaEquipo.entity';
 import { marcaEquipoEntity } from '../domain/entities/MarcasEquipos.entity';
 import { classDeviceEntity } from '../domain/entities/ClassDevice.entity';
+import { repuestoEquipoEntity } from '../domain/entities/RepuestoEquipo.entity';
 
 class SearchEquiposController {
   public async searchEquiposByKeyword(keyword: string): Promise<any> {
@@ -211,7 +212,46 @@ class SearchEquiposController {
       }
     }
     
-}
 
+    public async searchRepuestosEquiposByKeyword(keyword: string): Promise<any> {
+      try {
+        if (typeof keyword !== 'string') {
+          throw new Error('El parámetro keyword es inválido.');
+        }
+  
+        LogInfo(`Search for Repuestos_Equipos with keyword: ${keyword}`);
+  
+        const repuestoEquipoModel = repuestoEquipoEntity();
+        const clientModel = clientEntity(); // Import the Client entity
+  
+        // Busca el ID del cliente por palabra clave en campos relevantes
+        const clientes = await clientModel.find({ client_name: { $regex: keyword, $options: 'i' } }).select('_id');
+        const clienteIds = clientes.map(cliente => cliente._id);
+  
+        // Realiza la búsqueda de Repuestos_Equipos por la palabra clave y las asociaciones
+        const repuestosEquipos = await repuestoEquipoModel
+          .find({
+            $or: [
+              { repuesto_name: { $regex: keyword, $options: 'i' } },
+              { id_cliente: { $in: clienteIds } },
+            ],
+          })
+          .select('repuesto_name repuesto_cantidad repuesto_precio') // Puedes seleccionar los campos que desees
+  
+        // Popula las relaciones virtuales, si es necesario
+        .populate({
+          path: 'id_cliente',
+          model: clientModel,
+          select: 'client_name',
+        });
+  
+        return repuestosEquipos;
+      } catch (error) {
+        console.error(error);
+        throw new Error('Error en la búsqueda de Repuestos_Equipos.');
+      }
+    }
+  }
+  
 
 export default new SearchEquiposController();

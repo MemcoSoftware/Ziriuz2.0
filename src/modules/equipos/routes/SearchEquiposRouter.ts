@@ -71,4 +71,15 @@ searchEquiposRouter.route('/tipos')
   }
 });
 
+searchEquiposRouter.route('/repuestos')
+  .post(verifyToken, async (req: Request, res: Response) => {
+    const { keyword } = req.body;
+    try {
+      const results = await SearchEquiposController.searchRepuestosEquiposByKeyword(keyword);
+      res.status(200).json(results);
+    } catch (error) {
+      res.status(500).json({ error: 'Error en la búsqueda de Repuestos_Equipos.' });
+    }
+  });
+
 export default searchEquiposRouter;

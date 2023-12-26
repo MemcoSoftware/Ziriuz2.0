@@ -18,6 +18,7 @@ const ModeloEquipo_entity_1 = require("../domain/entities/ModeloEquipo.entity");
 const AreaEquipo_entity_1 = require("../domain/entities/AreaEquipo.entity");
 const MarcasEquipos_entity_1 = require("../domain/entities/MarcasEquipos.entity");
 const ClassDevice_entity_1 = require("../domain/entities/ClassDevice.entity");
+const RepuestoEquipo_entity_1 = require("../domain/entities/RepuestoEquipo.entity");
 class SearchEquiposController {
     searchEquiposByKeyword(keyword) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -200,6 +201,41 @@ class SearchEquiposController {
             catch (error) {
                 console.error(error);
                 throw new Error('Error en la búsqueda de tipos de equipos.');
+            }
+        });
+    }
+    searchRepuestosEquiposByKeyword(keyword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (typeof keyword !== 'string') {
+                    throw new Error('El parámetro keyword es inválido.');
+                }
+                (0, logger_1.LogInfo)(`Search for Repuestos_Equipos with keyword: ${keyword}`);
+                const repuestoEquipoModel = (0, RepuestoEquipo_entity_1.repuestoEquipoEntity)();
+                const clientModel = (0, Client_entity_1.clientEntity)(); // Import the Client entity
+                // Busca el ID del cliente por palabra clave en campos relevantes
+                const clientes = yield clientModel.find({ client_name: { $regex: keyword, $options: 'i' } }).select('_id');
+                const clienteIds = clientes.map(cliente => cliente._id);
+                // Realiza la búsqueda de Repuestos_Equipos por la palabra clave y las asociaciones
+                const repuestosEquipos = yield repuestoEquipoModel
+                    .find({
+                    $or: [
+                        { repuesto_name: { $regex: keyword, $options: 'i' } },
+                        { id_cliente: { $in: clienteIds } },
+                    ],
+                })
+                    .select('repuesto_name repuesto_cantidad repuesto_precio') // Puedes seleccionar los campos que desees
+                    // Popula las relaciones virtuales, si es necesario
+                    .populate({
+                    path: 'id_cliente',
+                    model: clientModel,
+                    select: 'client_name',
+                });
+                return repuestosEquipos;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error('Error en la búsqueda de Repuestos_Equipos.');
             }
         });
     }
