@@ -1,9 +1,7 @@
 import { Get, Query, Route, Tags, Delete, Put, Body, Post} from "tsoa";
 import { IEquipoController } from "./interfaces";
 import { LogSuccess, LogError, LogWarning, LogInfo } from "../../../utils/logger";
-import { equipoEntity } from "../../equipos/domain/entities/Equipo.entity"; // Import the equipment model
 import { createEquipo, deleteEquipoByID, getAllEquipos, getAreaEquipoByName, getEquipoByID, getModeloEquipoByName, getSedeByName, getTipoEquipoByName, updateEquipoByID } from "../domain/orm/Equipo.orm";
-import { modeloEquipoEntity } from "../domain/entities/ModeloEquipo.entity";
 
 @Route("/api/equipos")
 @Tags("EquipoController")

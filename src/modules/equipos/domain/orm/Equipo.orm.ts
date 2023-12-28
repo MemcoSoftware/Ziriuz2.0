@@ -251,11 +251,3 @@ export const getSedeByName = async (name: string): Promise<any | null> => {
     return null;
   }
 }
-
-
-
-
-
-
-
-

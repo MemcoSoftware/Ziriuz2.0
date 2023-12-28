@@ -30,6 +30,8 @@ import tiposEquiposRouter from '../modules/equipos/routes/TipoEquipoRouter';
 import areasEquiposRouter from '../modules/equipos/routes/AreaEquipoRouter';
 import searchEquiposRouter from '../modules/equipos/routes/SearchEquiposRouter';
 import repuestosEquiposRouter from '../modules/equipos/routes/RepuestosEquiposRouter';
+import camposTiposRouter from '../modules/procesos_&_protocolos/routes/CamposTiposRouter';
+import camposRouter from '../modules/procesos_&_protocolos/routes/CamposRouter';
 
 
 // * Server Instance
@@ -70,6 +72,15 @@ server.use('/equipos/clases', classDeviceRouter) // http://localhost:8000/api/eq
 server.use ('/equipos/marcas', marcasEquiposRouter) // http://localhost:8000/api/equipos/marcas --> marcasEquiposRouter
 server.use ('/equipos/tipos', tiposEquiposRouter) // http://localhost:8000/api/equipos/tipos --> tiposEquiposRouter
 server.use ('/equipos/areas', areasEquiposRouter) // http://localhost:8000/api/equipos/areas --> areasEquiposRouter
-server.use ('/equipos/repuestos', repuestosEquiposRouter) // http://localhost:8000/api/equipos/repuestos --> areasEquiposRouter
-server.use('/search/equipos', searchEquiposRouter) // http://localhost:8000/api/equipos --> equiposRouter
+server.use ('/equipos/repuestos', repuestosEquiposRouter) // http://localhost:8000/api/equipos/repuestos --> repuestosEquiposRouter
+server.use('/search/equipos', searchEquiposRouter) // http://localhost:8000/api/equipos --> SearchEquiposRouter
+
+// * Redirections to Routers & Controllers -- MODULE EQUIPOS
+
+server.use('/campos-tipos', camposTiposRouter) // http://localhost:8000/api/campos-tipos --> camposTiposRouter
+server.use('/campos', camposRouter) // http://localhost:8000/api/campos --> camposRouter
+
+
+
+
 export default server;
