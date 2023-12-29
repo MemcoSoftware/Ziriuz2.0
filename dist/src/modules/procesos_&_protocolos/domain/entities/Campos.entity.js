@@ -33,7 +33,7 @@ const camposEntity = () => {
             required: true,
         },
         title: { type: String, required: true },
-        valor: { type: Number, required: true },
+        // Elimina la línea relacionada con 'valor'
     }, { versionKey: false, toJSON: { virtuals: true } });
     // Define la relación virtual si es necesaria
     camposSchema.virtual("tipoCampo", {

@@ -27,7 +27,7 @@ const getAllCampos = (page, limit) => __awaiter(void 0, void 0, void 0, function
             .find({}, { _id: 0 })
             .limit(limit)
             .skip((page - 1) * limit)
-            .select('_id id_tipo title valor')
+            .select('_id id_tipo title')
             .populate({
             path: 'id_tipo',
             model: camposTiposModel,
@@ -57,7 +57,7 @@ const getCamposByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
         // Buscar Campo por ID y poblar 'id_tipo'
         return yield camposModel
             .findById(id, { _id: 0 })
-            .select('_id id_tipo title valor')
+            .select('_id id_tipo title')
             .populate({
             path: 'id_tipo',
             model: camposTiposModel,

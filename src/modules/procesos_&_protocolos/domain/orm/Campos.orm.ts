@@ -21,7 +21,7 @@ export const getAllCampos = async (page: number, limit: number): Promise<any[] |
       .find({}, { _id: 0 })
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('_id id_tipo title valor')
+      .select('_id id_tipo title')
       .populate({
         path: 'id_tipo',
         model: camposTiposModel,
@@ -54,7 +54,7 @@ export const getCamposByID = async (id: string): Promise<ICampos | undefined> =>
     // Buscar Campo por ID y poblar 'id_tipo'
     return await camposModel
       .findById(id, { _id: 0 })
-      .select('_id id_tipo title valor')
+      .select('_id id_tipo title')
       .populate({
         path: 'id_tipo',
         model: camposTiposModel,

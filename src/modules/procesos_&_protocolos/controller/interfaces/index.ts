@@ -12,3 +12,11 @@ export interface ICamposController {
     updateCampos(id: string, camposData: any): Promise<any>;
     createCampos(camposData: any): Promise<any>;
 }
+
+
+export interface IPreventivosController {
+    getPreventivos(page: number, limit: number, id?: string): Promise<any>;
+    deletePreventivos(id?: string): Promise<any>;
+    updatePreventivos(id: string, preventivosData: any): Promise<any>;
+    createPreventivos(preventivosData: any): Promise<any>;
+}

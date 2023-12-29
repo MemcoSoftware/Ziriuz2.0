@@ -34,6 +34,7 @@ const SearchEquiposRouter_1 = __importDefault(require("../modules/equipos/routes
 const RepuestosEquiposRouter_1 = __importDefault(require("../modules/equipos/routes/RepuestosEquiposRouter"));
 const CamposTiposRouter_1 = __importDefault(require("../modules/procesos_&_protocolos/routes/CamposTiposRouter"));
 const CamposRouter_1 = __importDefault(require("../modules/procesos_&_protocolos/routes/CamposRouter"));
+const PreventivosRouter_1 = __importDefault(require("../modules/procesos_&_protocolos/routes/PreventivosRouter"));
 // * Server Instance
 let server = (0, express_1.default)();
 // * Configura body-parser antes de las rutas
@@ -71,5 +72,6 @@ server.use('/search/equipos', SearchEquiposRouter_1.default); // http://localhos
 // * Redirections to Routers & Controllers -- MODULE EQUIPOS
 server.use('/campos-tipos', CamposTiposRouter_1.default); // http://localhost:8000/api/campos-tipos --> camposTiposRouter
 server.use('/campos', CamposRouter_1.default); // http://localhost:8000/api/campos --> camposRouter
+server.use('/preventivos', PreventivosRouter_1.default); // http://localhost:8000/api/preventivos --> preventivosRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map
