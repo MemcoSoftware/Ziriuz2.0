@@ -33,6 +33,7 @@ import repuestosEquiposRouter from '../modules/equipos/routes/RepuestosEquiposRo
 import camposTiposRouter from '../modules/procesos_&_protocolos/routes/CamposTiposRouter';
 import camposRouter from '../modules/procesos_&_protocolos/routes/CamposRouter';
 import preventivosRouter from '../modules/procesos_&_protocolos/routes/PreventivosRouter';
+import searchProcesosProtocolosRouter from '../modules/procesos_&_protocolos/routes/SearchProcesos&ProtocolosRouter';
 
 
 // * Server Instance
@@ -76,11 +77,12 @@ server.use ('/equipos/areas', areasEquiposRouter) // http://localhost:8000/api/e
 server.use ('/equipos/repuestos', repuestosEquiposRouter) // http://localhost:8000/api/equipos/repuestos --> repuestosEquiposRouter
 server.use('/search/equipos', searchEquiposRouter) // http://localhost:8000/api/equipos --> SearchEquiposRouter
 
-// * Redirections to Routers & Controllers -- MODULE EQUIPOS
+// * Redirections to Routers & Controllers -- MODULE PROCESOS & PROTOCOLOS
 
 server.use('/campos-tipos', camposTiposRouter) // http://localhost:8000/api/campos-tipos --> camposTiposRouter
 server.use('/campos', camposRouter) // http://localhost:8000/api/campos --> camposRouter
 server.use('/preventivos', preventivosRouter) // http://localhost:8000/api/preventivos --> preventivosRouter
+server.use('/search/', searchProcesosProtocolosRouter) // http://localhost:8000/api/search/ --> searchProcesosProtocolosRouter
 
 
 

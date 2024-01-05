@@ -35,6 +35,7 @@ const RepuestosEquiposRouter_1 = __importDefault(require("../modules/equipos/rou
 const CamposTiposRouter_1 = __importDefault(require("../modules/procesos_&_protocolos/routes/CamposTiposRouter"));
 const CamposRouter_1 = __importDefault(require("../modules/procesos_&_protocolos/routes/CamposRouter"));
 const PreventivosRouter_1 = __importDefault(require("../modules/procesos_&_protocolos/routes/PreventivosRouter"));
+const SearchProcesos_ProtocolosRouter_1 = __importDefault(require("../modules/procesos_&_protocolos/routes/SearchProcesos&ProtocolosRouter"));
 // * Server Instance
 let server = (0, express_1.default)();
 // * Configura body-parser antes de las rutas
@@ -69,9 +70,10 @@ server.use('/equipos/tipos', TipoEquipoRouter_1.default); // http://localhost:80
 server.use('/equipos/areas', AreaEquipoRouter_1.default); // http://localhost:8000/api/equipos/areas --> areasEquiposRouter
 server.use('/equipos/repuestos', RepuestosEquiposRouter_1.default); // http://localhost:8000/api/equipos/repuestos --> repuestosEquiposRouter
 server.use('/search/equipos', SearchEquiposRouter_1.default); // http://localhost:8000/api/equipos --> SearchEquiposRouter
-// * Redirections to Routers & Controllers -- MODULE EQUIPOS
+// * Redirections to Routers & Controllers -- MODULE PROCESOS & PROTOCOLOS
 server.use('/campos-tipos', CamposTiposRouter_1.default); // http://localhost:8000/api/campos-tipos --> camposTiposRouter
 server.use('/campos', CamposRouter_1.default); // http://localhost:8000/api/campos --> camposRouter
 server.use('/preventivos', PreventivosRouter_1.default); // http://localhost:8000/api/preventivos --> preventivosRouter
+server.use('/search/', SearchProcesos_ProtocolosRouter_1.default); // http://localhost:8000/api/search/ --> searchProcesosProtocolosRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map
