@@ -82,7 +82,7 @@ server.use('/search/equipos', searchEquiposRouter) // http://localhost:8000/api/
 server.use('/campos-tipos', camposTiposRouter) // http://localhost:8000/api/campos-tipos --> camposTiposRouter
 server.use('/campos', camposRouter) // http://localhost:8000/api/campos --> camposRouter
 server.use('/preventivos', preventivosRouter) // http://localhost:8000/api/preventivos --> preventivosRouter
-server.use('/search/', searchProcesosProtocolosRouter) // http://localhost:8000/api/search/ --> searchProcesosProtocolosRouter
+server.use('/search/procesos&protocolos/', searchProcesosProtocolosRouter) // http://localhost:8000/api/search/ --> searchProcesosProtocolosRouter
 
 
 

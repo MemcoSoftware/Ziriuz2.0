@@ -74,6 +74,6 @@ server.use('/search/equipos', SearchEquiposRouter_1.default); // http://localhos
 server.use('/campos-tipos', CamposTiposRouter_1.default); // http://localhost:8000/api/campos-tipos --> camposTiposRouter
 server.use('/campos', CamposRouter_1.default); // http://localhost:8000/api/campos --> camposRouter
 server.use('/preventivos', PreventivosRouter_1.default); // http://localhost:8000/api/preventivos --> preventivosRouter
-server.use('/search/', SearchProcesos_ProtocolosRouter_1.default); // http://localhost:8000/api/search/ --> searchProcesosProtocolosRouter
+server.use('/search/procesos&protocolos/', SearchProcesos_ProtocolosRouter_1.default); // http://localhost:8000/api/search/ --> searchProcesosProtocolosRouter
 exports.default = server;
 //# sourceMappingURL=index.js.map
