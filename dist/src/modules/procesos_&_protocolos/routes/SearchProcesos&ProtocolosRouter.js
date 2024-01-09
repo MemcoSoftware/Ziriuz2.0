@@ -28,6 +28,17 @@ searchProcesosProtocolosRouter.route('/preventivos')
         res.status(500).json({ error: 'Error en la búsqueda de preventivos.' });
     }
 }));
+searchProcesosProtocolosRouter.route('/campos')
+    .post(verifyToken_middleware_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword } = req.body;
+    try {
+        const results = yield SearchProcesos_ProtocolosController_1.default.searchCamposByKeyword(keyword);
+        res.status(200).json(results);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Error en la búsqueda de campos.' });
+    }
+}));
 // Puedes agregar rutas adicionales según sea necesario para otras entidades
 exports.default = searchProcesosProtocolosRouter;
 //# sourceMappingURL=SearchProcesos&ProtocolosRouter.js.map

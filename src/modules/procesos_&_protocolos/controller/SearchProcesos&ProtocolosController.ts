@@ -2,6 +2,7 @@ import { LogInfo } from '../../../utils/logger';
 import mongoose from 'mongoose';
 import { preventivosEntity } from '../domain/entities/Preventivos.entity';
 import { camposEntity } from '../domain/entities/Campos.entity';
+import { camposTiposEntity } from '../domain/entities/Campos_Tipos.entity';
 
 class SearchProcesosProtocolosController {
   public async searchPreventivosByKeyword(keyword: string): Promise<any> {
@@ -70,6 +71,42 @@ class SearchProcesosProtocolosController {
       throw new Error('Error en la búsqueda de preventivos.');
     }
   }
+
+  public async searchCamposByKeyword(keyword: string): Promise<any> {
+    try {
+      if (typeof keyword !== 'string') {
+        throw new Error('El parámetro keyword es inválido.');
+      }
+
+      LogInfo(`Search for campos with keyword: ${keyword}`);
+
+      const camposModel = camposEntity();
+      const camposTiposModel = camposTiposEntity();
+      const camposTipos = await camposTiposModel.find({ nombre: { $regex: keyword, $options: 'i' } }).select('_id');
+      const camposTiposIds = camposTipos.map(campoTipo => campoTipo._id);
+      // Busca campos por palabra clave en 'title' e 'id_tipo'
+      const campos = await camposModel
+        .find({
+          $or: [
+            { title: { $regex: keyword, $options: 'i' } },
+            { id_tipo: { $in: camposTiposIds } },
+          ],
+        })
+        .select('id title id_tipo')
+        .populate({
+          path: 'tipoCampo',
+          model: 'Campos_Tipos', // Asegúrate de que sea el nombre correcto de la entidad Campos_Tipos
+          select: 'tipo nombre',
+        });
+      return campos;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error en la búsqueda de campos.');
+    }
+  }
+
+
+
 }
 
 export default new SearchProcesosProtocolosController();

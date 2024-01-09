@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const logger_1 = require("../../../utils/logger");
 const Preventivos_entity_1 = require("../domain/entities/Preventivos.entity");
 const Campos_entity_1 = require("../domain/entities/Campos.entity");
+const Campos_Tipos_entity_1 = require("../domain/entities/Campos_Tipos.entity");
 class SearchProcesosProtocolosController {
     searchPreventivosByKeyword(keyword) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -72,6 +73,39 @@ class SearchProcesosProtocolosController {
             catch (error) {
                 console.error(error);
                 throw new Error('Error en la búsqueda de preventivos.');
+            }
+        });
+    }
+    searchCamposByKeyword(keyword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (typeof keyword !== 'string') {
+                    throw new Error('El parámetro keyword es inválido.');
+                }
+                (0, logger_1.LogInfo)(`Search for campos with keyword: ${keyword}`);
+                const camposModel = (0, Campos_entity_1.camposEntity)();
+                const camposTiposModel = (0, Campos_Tipos_entity_1.camposTiposEntity)();
+                const camposTipos = yield camposTiposModel.find({ nombre: { $regex: keyword, $options: 'i' } }).select('_id');
+                const camposTiposIds = camposTipos.map(campoTipo => campoTipo._id);
+                // Busca campos por palabra clave en 'title' e 'id_tipo'
+                const campos = yield camposModel
+                    .find({
+                    $or: [
+                        { title: { $regex: keyword, $options: 'i' } },
+                        { id_tipo: { $in: camposTiposIds } },
+                    ],
+                })
+                    .select('id title id_tipo')
+                    .populate({
+                    path: 'tipoCampo',
+                    model: 'Campos_Tipos',
+                    select: 'tipo nombre',
+                });
+                return campos;
+            }
+            catch (error) {
+                console.error(error);
+                throw new Error('Error en la búsqueda de campos.');
             }
         });
     }

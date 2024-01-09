@@ -16,6 +16,18 @@ searchProcesosProtocolosRouter.route('/preventivos')
     }
   });
 
+  searchProcesosProtocolosRouter.route('/campos')
+  .post(verifyToken, async (req: Request, res: Response) => {
+    const { keyword } = req.body;
+    try {
+      const results = await SearchProcesosProtocolosController.searchCamposByKeyword(keyword);
+      res.status(200).json(results);
+    } catch (error) {
+      res.status(500).json({ error: 'Error en la búsqueda de campos.' });
+    }
+  });
+
+
 // Puedes agregar rutas adicionales según sea necesario para otras entidades
 
 export default searchProcesosProtocolosRouter;
