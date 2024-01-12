@@ -88,7 +88,7 @@ let PreventivosController = exports.PreventivosController = class PreventivosCon
                 }
                 // Verificar si se proporciona un nuevo nombre de tipo para campos cuantitativos
                 if (preventivosData.cuantitativo) {
-                    preventivosData.cuantitativo = yield asociarCampos(preventivosData.cuantitativo, "cuantitativo");
+                    preventivosData.cuantitativo = yield asociarCamposCuantitativos(preventivosData.cuantitativo);
                 }
                 // Verificar si se proporciona un nuevo nombre de tipo para campos otros
                 if (preventivosData.otros) {
@@ -120,6 +120,18 @@ let PreventivosController = exports.PreventivosController = class PreventivosCon
                     return camposIds;
                 });
             }
+            function asociarCamposCuantitativos(cuantitativos) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    return yield Promise.all(cuantitativos.map((campo) => __awaiter(this, void 0, void 0, function* () {
+                        return ({
+                            campo: (yield asociarCampos([campo.title], "cuantitativo"))[0],
+                            minimo: campo.minimo,
+                            maximo: campo.maximo,
+                            unidad: campo.unidad,
+                        });
+                    })));
+                });
+            }
         });
     }
     createPreventivos(preventivosData) {
@@ -128,9 +140,9 @@ let PreventivosController = exports.PreventivosController = class PreventivosCon
                 // Extraer los nombres de los tipos de campo cualitativo, de mantenimiento, cuantitativo y otros
                 const tipoCampoCualitativoNombre = preventivosData.cualitativo || [];
                 const tipoCampoMantenimientoNombre = preventivosData.mantenimiento || [];
-                const tipoCampoCuantitativoNombre = preventivosData.cuantitativo || [];
+                const tipoCampoCuantitativo = preventivosData.cuantitativo || [];
                 const tipoCampoOtrosNombre = preventivosData.otros || [];
-                // Buscar y asociar el tipo de campo actualizado al preventivo
+                // Función asíncrona para asociar campos
                 const asociarCampos = (nombres) => __awaiter(this, void 0, void 0, function* () {
                     const camposIds = [];
                     for (const nombre of nombres) {
@@ -145,10 +157,19 @@ let PreventivosController = exports.PreventivosController = class PreventivosCon
                     }
                     return camposIds;
                 });
+                // Asociar los campos cualitativos, de mantenimiento y otros
                 preventivosData.cualitativo = yield asociarCampos(tipoCampoCualitativoNombre);
                 preventivosData.mantenimiento = yield asociarCampos(tipoCampoMantenimientoNombre);
-                preventivosData.cuantitativo = yield asociarCampos(tipoCampoCuantitativoNombre);
                 preventivosData.otros = yield asociarCampos(tipoCampoOtrosNombre);
+                // Asociar los campos cuantitativos usando Promise.all
+                preventivosData.cuantitativo = yield Promise.all(tipoCampoCuantitativo.map((campo) => __awaiter(this, void 0, void 0, function* () {
+                    return ({
+                        campo: (yield asociarCampos([campo.title]))[0],
+                        minimo: campo.minimo,
+                        maximo: campo.maximo,
+                        unidad: campo.unidad,
+                    });
+                })));
                 // Crear el preventivo
                 const response = yield (0, Preventivos_orm_1.createPreventivo)(preventivosData);
                 if (response.success) {

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { IPreventivo } from "../../domain/interfaces/IPreventivo.interface";
 import { camposEntity } from "./Campos.entity";
 
@@ -23,8 +23,13 @@ export const preventivosEntity = () => {
       ],
       cuantitativo: [
         {
-          type: Schema.Types.ObjectId,
-          ref: "Campos",
+          campo: {
+            type: Schema.Types.ObjectId,
+            ref: "Campos",
+          },
+          minimo: { type: Number},
+          maximo: { type: Number},
+          unidad: { type: String},
         },
       ],
       otros: [
@@ -52,7 +57,7 @@ export const preventivosEntity = () => {
 
   preventivosSchema.virtual("camposCuantitativos", {
     ref: "Campos",
-    localField: "cuantitativo",
+    localField: "cuantitativo.campo",
     foreignField: "_id",
   });
 

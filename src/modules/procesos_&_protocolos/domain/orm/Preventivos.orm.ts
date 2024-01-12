@@ -24,7 +24,7 @@ export const getAllPreventivos = async (page: number, limit: number): Promise<an
       .skip((page - 1) * limit)
       .select('_id title codigo version fecha cualitativo mantenimiento cuantitativo otros')
       .populate({
-        path: 'cualitativo mantenimiento cuantitativo otros',
+        path: 'cualitativo mantenimiento cuantitativo.campo otros',
         model: camposModel,
         select: '_id id_tipo title valor',
       })
@@ -57,7 +57,7 @@ export const getPreventivoByID = async (id: string): Promise<IPreventivo | undef
       .findById(id, { _id: 0 })
       .select('_id title codigo version fecha cualitativo mantenimiento cuantitativo otros')
       .populate({
-        path: 'cualitativo mantenimiento cuantitativo otros',
+        path: 'cualitativo mantenimiento cuantitativo.campo otros',
         model: camposModel,
         select: '_id id_tipo title valor',
       })
@@ -66,7 +66,6 @@ export const getPreventivoByID = async (id: string): Promise<IPreventivo | undef
     LogError(`[ORM ERROR]: Obtaining Preventivo By ID: ${error}`);
   }
 };
-
 /**
  * Método para eliminar Preventivo por ID
  */

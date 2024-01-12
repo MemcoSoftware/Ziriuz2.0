@@ -45,8 +45,13 @@ const preventivosEntity = () => {
         ],
         cuantitativo: [
             {
-                type: mongoose_1.Schema.Types.ObjectId,
-                ref: "Campos",
+                campo: {
+                    type: mongoose_1.Schema.Types.ObjectId,
+                    ref: "Campos",
+                },
+                minimo: { type: Number },
+                maximo: { type: Number },
+                unidad: { type: String },
             },
         ],
         otros: [
@@ -69,7 +74,7 @@ const preventivosEntity = () => {
     });
     preventivosSchema.virtual("camposCuantitativos", {
         ref: "Campos",
-        localField: "cuantitativo",
+        localField: "cuantitativo.campo",
         foreignField: "_id",
     });
     preventivosSchema.virtual("camposOtros", {

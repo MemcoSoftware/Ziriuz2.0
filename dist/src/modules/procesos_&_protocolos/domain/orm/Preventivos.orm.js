@@ -29,7 +29,7 @@ const getAllPreventivos = (page, limit) => __awaiter(void 0, void 0, void 0, fun
             .skip((page - 1) * limit)
             .select('_id title codigo version fecha cualitativo mantenimiento cuantitativo otros')
             .populate({
-            path: 'cualitativo mantenimiento cuantitativo otros',
+            path: 'cualitativo mantenimiento cuantitativo.campo otros',
             model: camposModel,
             select: '_id id_tipo title valor',
         })
@@ -59,7 +59,7 @@ const getPreventivoByID = (id) => __awaiter(void 0, void 0, void 0, function* ()
             .findById(id, { _id: 0 })
             .select('_id title codigo version fecha cualitativo mantenimiento cuantitativo otros')
             .populate({
-            path: 'cualitativo mantenimiento cuantitativo otros',
+            path: 'cualitativo mantenimiento cuantitativo.campo otros',
             model: camposModel,
             select: '_id id_tipo title valor',
         })

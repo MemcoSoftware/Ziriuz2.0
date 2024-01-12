@@ -1,4 +1,4 @@
-import { ObjectId, Document } from "mongoose";
+import { ObjectId, Document, Schema } from "mongoose";
 import { ICampos } from "./ICampos.interface";
 
 export interface IPreventivo extends Document {
@@ -8,6 +8,11 @@ export interface IPreventivo extends Document {
   fecha: string;
   cualitativo: ICampos[];
   mantenimiento: ICampos[];
-  cuantitativo: ICampos[];
-  otros: ICampos[]; 
+  cuantitativo?: {
+    campo?: Schema.Types.ObjectId;
+    minimo?: number;
+    maximo?: number;
+    unidad?: string;
+  }[];
+  otros?: ICampos[];
 }

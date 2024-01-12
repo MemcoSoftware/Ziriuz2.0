@@ -71,7 +71,7 @@ public async updatePreventivos(@Query() id: string, @Body() preventivosData: any
 
     // Verificar si se proporciona un nuevo nombre de tipo para campos cuantitativos
     if (preventivosData.cuantitativo) {
-      preventivosData.cuantitativo = await asociarCampos(preventivosData.cuantitativo, "cuantitativo");
+      preventivosData.cuantitativo = await asociarCamposCuantitativos(preventivosData.cuantitativo);
     }
 
     // Verificar si se proporciona un nuevo nombre de tipo para campos otros
@@ -104,55 +104,74 @@ public async updatePreventivos(@Query() id: string, @Body() preventivosData: any
     }
     return camposIds;
   }
+
+  async function asociarCamposCuantitativos(cuantitativos: any[]) {
+    return await Promise.all(cuantitativos.map(async (campo: any) => ({
+      campo: (await asociarCampos([campo.title], "cuantitativo"))[0],
+      minimo: campo.minimo,
+      maximo: campo.maximo,
+      unidad: campo.unidad,
+    })));
+  }
 }
 
 
-  @Post("/")
-  public async createPreventivos(@Body() preventivosData: any): Promise<any> {
-    try {
-      // Extraer los nombres de los tipos de campo cualitativo, de mantenimiento, cuantitativo y otros
-      const tipoCampoCualitativoNombre: string[] = preventivosData.cualitativo || [];
-      const tipoCampoMantenimientoNombre: string[] = preventivosData.mantenimiento || [];
-      const tipoCampoCuantitativoNombre: string[] = preventivosData.cuantitativo || [];
-      const tipoCampoOtrosNombre: string[] = preventivosData.otros || [];
-  
-      // Buscar y asociar el tipo de campo actualizado al preventivo
-      const asociarCampos = async (nombres: string[]) => {
-        const camposIds = [];
-        for (const nombre of nombres) {
-          const tipoCampo = await camposEntity().findOne({ title: nombre });
-          if (!tipoCampo) {
-            return {
-              success: false,
-              message: `El tipo de campo '${nombre}' no se encontró en la base de datos.`,
-            };
-          }
-          camposIds.push(tipoCampo._id);
+@Post("/")
+public async createPreventivos(@Body() preventivosData: any): Promise<any> {
+  try {
+    // Extraer los nombres de los tipos de campo cualitativo, de mantenimiento, cuantitativo y otros
+    const tipoCampoCualitativoNombre: string[] = preventivosData.cualitativo || [];
+    const tipoCampoMantenimientoNombre: string[] = preventivosData.mantenimiento || [];
+    const tipoCampoCuantitativo: any[] = preventivosData.cuantitativo || [];
+    const tipoCampoOtrosNombre: string[] = preventivosData.otros || [];
+
+    // Función asíncrona para asociar campos
+    const asociarCampos = async (nombres: string[]): Promise<any> => {
+      const camposIds = [];
+      for (const nombre of nombres) {
+        const tipoCampo = await camposEntity().findOne({ title: nombre });
+        if (!tipoCampo) {
+          return {
+            success: false,
+            message: `El tipo de campo '${nombre}' no se encontró en la base de datos.`,
+          };
         }
-        return camposIds;
-      };
-  
-      preventivosData.cualitativo = await asociarCampos(tipoCampoCualitativoNombre);
-      preventivosData.mantenimiento = await asociarCampos(tipoCampoMantenimientoNombre);
-      preventivosData.cuantitativo = await asociarCampos(tipoCampoCuantitativoNombre);
-      preventivosData.otros = await asociarCampos(tipoCampoOtrosNombre);
-  
-      // Crear el preventivo
-      const response = await createPreventivo(preventivosData);
-  
-      if (response.success) {
-        return response;
-      } else {
-        LogError(`[Controller ERROR]: Creating Preventivo: ${response.message}`);
-        return response;
+        camposIds.push(tipoCampo._id);
       }
-    } catch (error) {
-      LogError(`[Controller ERROR]: Creating Preventivo: ${error}`);
-      return {
-        success: false,
-        message: "An error occurred while creating the preventivo",
-      };
+      return camposIds;
+    };
+
+    // Asociar los campos cualitativos, de mantenimiento y otros
+    preventivosData.cualitativo = await asociarCampos(tipoCampoCualitativoNombre);
+    preventivosData.mantenimiento = await asociarCampos(tipoCampoMantenimientoNombre);
+    preventivosData.otros = await asociarCampos(tipoCampoOtrosNombre);
+
+    // Asociar los campos cuantitativos usando Promise.all
+    preventivosData.cuantitativo = await Promise.all(tipoCampoCuantitativo.map(async (campo: any) => ({
+      campo: (await asociarCampos([campo.title]))[0],  // Asociar el campo cuantitativo
+      minimo: campo.minimo,
+      maximo: campo.maximo,
+      unidad: campo.unidad,
+    })));
+
+    // Crear el preventivo
+    const response = await createPreventivo(preventivosData);
+
+    if (response.success) {
+      return response;
+    } else {
+      LogError(`[Controller ERROR]: Creating Preventivo: ${response.message}`);
+      return response;
     }
+  } catch (error) {
+    LogError(`[Controller ERROR]: Creating Preventivo: ${error}`);
+    return {
+      success: false,
+      message: "An error occurred while creating the preventivo",
+    };
   }
+}
+
+
   
 }
