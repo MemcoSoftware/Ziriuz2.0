@@ -97,7 +97,7 @@ class SearchProcesosProtocolosController {
                 })
                     .select('id title id_tipo')
                     .populate({
-                    path: 'tipoCampo',
+                    path: 'id_tipo',
                     model: 'Campos_Tipos',
                     select: 'tipo nombre',
                 });
