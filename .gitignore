@@ -101,5 +101,5 @@ node_modules
 coverage
 *.lcov
 
-
+dist/
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,windows,linux,macos

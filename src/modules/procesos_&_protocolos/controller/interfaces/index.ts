@@ -20,3 +20,17 @@ export interface IPreventivosController {
     updatePreventivos(id: string, preventivosData: any): Promise<any>;
     createPreventivos(preventivosData: any): Promise<any>;
 }
+
+export interface IServiciosController {
+    getServicios(page: number, limit: number, id?: string): Promise<any>;
+    deleteServicios(id?: string): Promise<any>;
+    updateServicios(id: string, serviciosData: any): Promise<any>;
+    createServicios(serviciosData: any): Promise<any>;
+}
+
+export interface IProtocolosController {
+    getProtocolos(page: number, limit: number, id?: string): Promise<any>;
+    deleteProtocolos(id?: string): Promise<any>;
+    updateProtocolos(id: string, protocolosData: any): Promise<any>;
+    createProtocolos(protocolosData: any): Promise<any>;
+}
