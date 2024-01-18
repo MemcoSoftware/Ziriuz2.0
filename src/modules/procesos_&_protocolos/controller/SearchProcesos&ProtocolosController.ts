@@ -94,8 +94,8 @@ class SearchProcesosProtocolosController {
         })
         .select('id title id_tipo')
         .populate({
-          path: 'tipoCampo',
-          model: 'Campos_Tipos', // Asegúrate de que sea el nombre correcto de la entidad Campos_Tipos
+          path: 'id_tipo',
+          model: 'Campos_Tipos', 
           select: 'tipo nombre',
         });
       return campos;
