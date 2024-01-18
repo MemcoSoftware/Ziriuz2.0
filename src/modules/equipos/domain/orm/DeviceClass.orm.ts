@@ -1,87 +1,103 @@
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 import { classDeviceEntity } from "../entities/ClassDevice.entity";
 import { LogError } from "../../../../utils/logger";
 import { IClassDevice } from "../interfaces/IClassDevice.interface";
+import { preventivosEntity } from "../../../procesos_&_protocolos/domain/entities/Preventivos.entity";
 
-/**
- * Method to obtain all ClasesEquipos from Collection "Modelo_ClasesEquipos" in Mongo Server
- */
+// Método para obtener todos los ClasesEquipos de la colección "Modelo_ClasesEquipos" en el servidor Mongo
 export const getAllClasesEquipos = async (page: number, limit: number): Promise<any | undefined> => {
   try {
     let claseEquipoModel = classDeviceEntity();
     let response: any = {};
-
-    // Search all clases equipos (using pagination)
-    await claseEquipoModel
-      .find({}, { _id: 0 })
+    let preventivoModel = preventivosEntity();
+    // Buscar todas las clases de equipos (usando paginación)
+    const clasesEquipos = await claseEquipoModel
+      .find()
       .limit(limit)
       .skip((page - 1) * limit)
-      .select('_id clase')
-      .exec()
-      .then((clasesEquipos: IClassDevice[]) => {
-        response.clasesEquipos = clasesEquipos;
-      });
+      .populate({
+        path: 'id_preventivo',
+        model: preventivoModel,
+        select: 'title codigo version fecha cualitativo mantenimiento cuantitativo otros'
+      }
+        )
+      .exec();
 
-    // Count total documents in ClasesEquipos collection
-    await claseEquipoModel.countDocuments().then((total: number) => {
-      response.totalPages = Math.ceil(total / limit);
-      response.currentPage = page;
-    });
+    response.clasesEquipos = clasesEquipos;
+    response.totalPages = Math.ceil(await claseEquipoModel.countDocuments() / limit);
+    response.currentPage = page;
 
     return response;
   } catch (error) {
-    LogError(`[ORM ERROR]: Getting All ClasesEquipos: ${error}`);
+    LogError(`[ORM ERROR]: Obtaining All ClasesEquipos: ${error}`);
   }
 };
 
-/**
- * Get ClaseEquipo by ID
- */
+// Obtener ClaseEquipo por ID
 export const getClaseEquipoByID = async (id: string): Promise<IClassDevice | undefined> => {
   try {
     let claseEquipoModel = classDeviceEntity();
-
-    // Search ClaseEquipo by ID
-    return await claseEquipoModel.findById(id).select('_id clase').exec();
+    let preventivoModel = preventivosEntity();
+    return await claseEquipoModel.findById(id)
+    .populate({
+      path: 'id_preventivo',
+      model: preventivoModel,
+      select: 'title codigo version fecha cualitativo mantenimiento cuantitativo otros'
+    }
+      )
+    .exec();
   } catch (error) {
-    LogError(`[ORM ERROR]: Getting ClaseEquipo By ID: ${error}`);
+    LogError(`[ORM ERROR]: Obtaining ClaseEquipo By ID: ${error}`);
   }
 };
 
-/**
- * Delete ClaseEquipo by ID
- */
+// Eliminar ClaseEquipo por ID
 export const deleteClaseEquipoByID = async (id: string): Promise<any | undefined> => {
   try {
     let claseEquipoModel = classDeviceEntity();
-
-    // Delete ClaseEquipo by ID
     return await claseEquipoModel.deleteOne({ _id: id });
   } catch (error) {
     LogError('[ORM ERROR]: Deleting ClaseEquipo By ID');
   }
 };
 
-/**
- * Update ClaseEquipo by ID
- */
+// Actualizar ClaseEquipo por ID
 export const updateClaseEquipoByID = async (id: string, claseEquipo: any): Promise<any | undefined> => {
   try {
     let claseEquipoModel = classDeviceEntity();
+    let preventivoModel = preventivosEntity();
 
-    // Update ClaseEquipo
+    // Buscar el preventivo por título si se proporciona
+    if (claseEquipo.id_preventivo) {
+      const preventivo = await preventivoModel.findOne({ title: claseEquipo.id_preventivo });
+      if (preventivo) {
+        claseEquipo.id_preventivo = preventivo._id;
+      } else {
+        throw new Error("Preventivo not found");
+      }
+    }
+
     return await claseEquipoModel.findByIdAndUpdate(id, claseEquipo);
   } catch (error) {
     LogError(`[ORM ERROR]: Updating ClaseEquipo ${id}: ${error}`);
   }
 };
 
-/**
- * Create ClaseEquipo
- */
+// Crear ClaseEquipo
 export const createClaseEquipo = async (claseEquipo: any): Promise<any | undefined> => {
   try {
     const claseEquipoModel = classDeviceEntity();
+    const preventivoModel = preventivosEntity();
+
+    // Buscar el preventivo por título si se proporciona
+    if (claseEquipo.id_preventivo) {
+      const preventivo = await preventivoModel.findOne({ title: claseEquipo.id_preventivo });
+      if (preventivo) {
+        claseEquipo.id_preventivo = preventivo._id;
+      } else {
+        throw new Error("Preventivo not found");
+      }
+    }
 
     const newClaseEquipo = new claseEquipoModel(claseEquipo);
     await newClaseEquipo.save();
