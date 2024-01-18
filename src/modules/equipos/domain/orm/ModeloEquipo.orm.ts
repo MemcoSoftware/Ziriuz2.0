@@ -5,6 +5,7 @@ import { LogSuccess } from "../../../../utils/logger";
 import { IModeloEquipo } from "../interfaces/IModeloEquipo.interface";
 import { marcaEquipoEntity } from "../entities/MarcasEquipos.entity";
 import { classDeviceEntity } from "../entities/ClassDevice.entity";
+import { preventivosEntity } from "../../../procesos_&_protocolos/domain/entities/Preventivos.entity";
 
 // CRUD
 
@@ -14,7 +15,7 @@ export const getAllModeloEquipos = async (page: number, limit: number): Promise<
     let response: any = {};
     const marcaEquipo = marcaEquipoEntity();
     const claseEquipo = classDeviceEntity();
-
+    const preventivoModel = preventivosEntity();
     const modeloEquipos: IModeloEquipo[] = await modeloEquipoModel
       .find({}, { _id: 0 })
       .limit(limit)
@@ -28,8 +29,13 @@ export const getAllModeloEquipos = async (page: number, limit: number): Promise<
       .populate({
         path: 'id_clase',
         model: claseEquipo,
-        select: 'clase',
+        select: '_id clase id_preventivo', 
       }) // Populate de la relación con Clases_Equipos
+      .populate({
+        path: 'id_preventivo',
+        model: preventivoModel,
+        select: 'title codigo version fecha cualitativo mantenimiento cuantitativo otros',
+      }) // Populate de la relación con Preventivos
       .exec() as IModeloEquipo[];
 
     response.modeloEquipos = modeloEquipos;
@@ -50,6 +56,8 @@ export const getModeloEquipoByID = async (id: string): Promise<IModeloEquipo | u
     let modeloEquipoModel = modeloEquipoEntity();
     const marcaEquipo = marcaEquipoEntity();
     const claseEquipo = classDeviceEntity();
+    const preventivoModel = preventivosEntity();
+
     return await modeloEquipoModel.findById(id, { _id: 0 })
       .select('_id modelo precio id_marca id_clase') // Include id_marca y id_clase
       .populate({
@@ -60,8 +68,13 @@ export const getModeloEquipoByID = async (id: string): Promise<IModeloEquipo | u
       .populate({
         path: 'id_clase',
         model: claseEquipo,
-        select: 'clase',
+        select: '_id clase id_preventivo',
       }) // Populate de la relación con Clases_Equipos
+      .populate({
+        path: 'id_preventivo',
+        model: preventivoModel,
+        select: 'title codigo version fecha cualitativo mantenimiento cuantitativo otros',
+      }) // Populate de la relación con Preventivos
       .exec();
   } catch (error) {
     LogError(`[ORM ERROR]: Getting ModeloEquipo By ID: ${error}`);
@@ -78,19 +91,17 @@ export const deleteModeloEquipoByID = async (id: string): Promise<any | undefine
   }
 };
 
-export const updateModeloEquipoByID = async (id: string, equipo: any): Promise<any | undefined> => {
-  try {
-    let modeloEquipoModel = modeloEquipoEntity();
-
-    return await modeloEquipoModel.findByIdAndUpdate(id, equipo);
-  } catch (error) {
-    LogError(`[ORM ERROR]: Updating ModeloEquipo ${id}: ${error}`);
-  }
-};
-
 export const createModeloEquipo = async (equipo: any): Promise<any | undefined> => {
   try {
     const modeloEquipoModel = modeloEquipoEntity();
+    const preventivoModel = preventivosEntity();
+
+    // Buscar el preventivo por título si se proporciona
+    if (equipo.id_preventivo) {
+      const preventivo = await preventivoModel.findOne({ title: equipo.id_preventivo });
+      equipo.id_preventivo = preventivo ? preventivo._id : null;
+    }
+
     const newModeloEquipo = new modeloEquipoModel(equipo);
     await newModeloEquipo.save();
 
@@ -106,6 +117,24 @@ export const createModeloEquipo = async (equipo: any): Promise<any | undefined> 
     };
   }
 };
+
+export const updateModeloEquipoByID = async (id: string, equipo: any): Promise<any | undefined> => {
+  try {
+    const modeloEquipoModel = modeloEquipoEntity();
+    const preventivoModel = preventivosEntity();
+
+    // Buscar el preventivo por título si se proporciona
+    if (equipo.id_preventivo) {
+      const preventivo = await preventivoModel.findOne({ title: equipo.id_preventivo });
+      equipo.id_preventivo = preventivo ? preventivo._id : null;
+    }
+
+    return await modeloEquipoModel.findByIdAndUpdate(id, equipo, { new: true });
+  } catch (error) {
+    LogError(`[ORM ERROR]: Updating ModeloEquipo ${id}: ${error}`);
+  }
+};
+
 
 // Función para obtener una Clase de Equipo por nombre
 export const getClaseEquipoByName = async (name: string): Promise<any | null> => {

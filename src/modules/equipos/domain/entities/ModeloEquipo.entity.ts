@@ -19,8 +19,12 @@ export const modeloEquipoEntity = () => {
         ref: "Clases_Equipos", 
         required: false,
       },
+      id_preventivo: { // Añade el campo id_preventivo
+        type: Schema.Types.ObjectId,
+        ref: "Preventivos", 
+        required: false,
+      }
     },
-    
     { versionKey: false }
   );
 
@@ -33,6 +37,13 @@ export const modeloEquipoEntity = () => {
   modeloEquipoSchema.virtual("claseEquipo", {
     ref: "Clases_Equipos",
     localField: "id_clase",
+    foreignField: "_id",
+  });
+
+  // Añade la relación virtual para id_preventivo si es necesaria
+  modeloEquipoSchema.virtual("preventivoEquipo", {
+    ref: "Preventivos",
+    localField: "id_preventivo",
     foreignField: "_id",
   });
 
