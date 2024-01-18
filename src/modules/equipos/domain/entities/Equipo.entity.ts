@@ -28,6 +28,8 @@ export const equipoEntity = () => {
       serie: { type: String, required: true },
       ubicacion: { type: String, required: true },
       frecuencia: { type: Number, required: true },
+      activo_fijo: { type: String, required: false },
+      mtto: { type: String, required: false },
     },
     { versionKey: false, toJSON: { virtuals: true } }
   );

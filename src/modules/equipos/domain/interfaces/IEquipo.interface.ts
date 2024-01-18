@@ -12,4 +12,6 @@ export interface IEquipo extends Document {
   serie: string;
   ubicacion: string;
   frecuencia: number;
+  activo_fijo?: string;
+  mtto?: string;
 }
