@@ -36,6 +36,7 @@ import preventivosRouter from '../modules/procesos_&_protocolos/routes/Preventiv
 import searchProcesosProtocolosRouter from '../modules/procesos_&_protocolos/routes/SearchProcesos&ProtocolosRouter';
 import serviciosRouter from '../modules/procesos_&_protocolos/routes/ServiciosRouter';
 import protocolosRouter from '../modules/procesos_&_protocolos/routes/ProtocolosRouter';
+import solicitudesEstadosRouter from '../modules/procesos_&_protocolos/routes/SolicitudesEstadosRouter';
 
 
 // * Server Instance
@@ -86,6 +87,7 @@ server.use('/campos', camposRouter) // http://localhost:8000/api/campos --> camp
 server.use('/preventivos', preventivosRouter) // http://localhost:8000/api/preventivos --> preventivosRouter
 server.use('/servicios', serviciosRouter) // http://localhost:8000/api/servicios --> serviciosRouter
 server.use('/protocolos', protocolosRouter) // http://localhost:8000/api/protocolos --> protocolosRouter
+server.use('/solicitudes-estados', solicitudesEstadosRouter) // http://localhost:8000/api/protocolos --> solicitudesEstadosRouter
 
 
 server.use('/search/procesos&protocolos', searchProcesosProtocolosRouter) // http://localhost:8000/api/search/ --> searchProcesosProtocolosRouter
