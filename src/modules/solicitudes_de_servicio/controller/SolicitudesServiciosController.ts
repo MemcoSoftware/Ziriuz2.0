@@ -16,27 +16,42 @@ import {
 export class SolicitudesServiciosController implements ISolicitudesServiciosController {
   @Get("/")
   public async getSolicitudesServicios(page: number, limit: number, @Query() id?: string): Promise<any> {
+    let response: any = '';
     if (id) {
       LogSuccess(`[/api/solicitudes-servicios] Get Solicitud Servicio By ID: ${id}`);
-      return await getSolicitudServicioByID(id);
+      response = getSolicitudServicioByID(id);
     } else {
       LogSuccess('[/api/solicitudes-servicios] Get All Solicitudes Servicios Request');
-      return await getAllSolicitudesServicios(page, limit);
+      response = getAllSolicitudesServicios(page, limit);
     }
+    return response;
   }
 
   @Delete("/")
   public async deleteSolicitudServicio(@Query() id?: string): Promise<any> {
+    let response: any = '';
+  
     if (id) {
-      LogSuccess(`[/api/solicitudes-servicios] Delete Solicitud Servicio ID: ${id}`);
-      return await deleteSolicitudServicioByID(id);
+      try {
+        await deleteSolicitudServicioByID(id);
+        response = {
+          message: `Solicitud Servicio with ID: ${id} deleted successfully`
+        };
+      } catch (error) {
+        LogError(`[api/solicitudes-servicios] Error deleting Solicitud Servicio with ID: ${id}: ${error}`);
+        response = {
+          message: `Error deleting Solicitud Servicio with ID: ${id}`
+        };
+      }
     } else {
       LogWarning('[/api/solicitudes-servicios] Delete Solicitud Servicio Request WITHOUT ID');
-      return {
+      response = {
         message: 'Please, provide an ID to remove from DB'
       };
     }
+    return response;
   }
+  
 
   @Put("/")
   public async updateSolicitudServicio(@Query() id: string, @Body() solicitudServicioData: any, @Query() cambiadorId: string): Promise<any> {
@@ -55,7 +70,7 @@ export class SolicitudesServiciosController implements ISolicitudesServiciosCont
       return { message: "Please provide a Creador Id in the request body to create a new Solicitud Servicio" };
     }
   
-    return await createSolicitudServicio(solicitudServicioData, solicitudServicioData.id_creador);
+    return await createSolicitudServicio(solicitudServicioData);
   }
   
 }

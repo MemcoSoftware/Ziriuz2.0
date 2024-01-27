@@ -52,17 +52,17 @@ solicitudesServiciosRouter.route('/')
   // CREATE:
   .post(verifyToken, jsonParser, async (req: Request, res: Response) => {
     const solicitudServicioData: any = req.body;
-    const creadorId: any = req.query.creadorId; // Asegúrate de recibir el creadorId como parte de la solicitud
-
+  
     const controller: SolicitudesServiciosController = new SolicitudesServiciosController();
-    const response: any | undefined = await controller.createSolicitudServicio(solicitudServicioData, creadorId);
-
+    const response: any | undefined = await controller.createSolicitudServicio(solicitudServicioData);
+  
     if (response.success) {
       return res.status(201).send(response);
     } else {
       return res.status(500).send(response);
     }
   });
+  
 
 // Exportar solicitudesServiciosRouter
 export default solicitudesServiciosRouter;

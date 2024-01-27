@@ -62,37 +62,33 @@ export const solicitudesServiciosEntity = () => {
     ref: "Users",
     localField: "id_creador",
     foreignField: "_id",
-    justOne: true
   });
   
   solicitudServicioSchema.virtual("servicio", {
     ref: "Servicios",
     localField: "id_servicio",
     foreignField: "_id",
-    justOne: true
   });
   
   solicitudServicioSchema.virtual("solicitudEstado", {
     ref: "Solicitudes_Estados",
     localField: "id_solicitud_estado",
     foreignField: "_id",
-    justOne: true
   });
   
   solicitudServicioSchema.virtual("equipo", {
     ref: "Equipos",
     localField: "id_equipo",
     foreignField: "_id",
-    justOne: true
   });
   
   solicitudServicioSchema.virtual("cambiador", {
     ref: "Users",
     localField: "id_cambiador",
     foreignField: "_id",
-    justOne: true
   });
   
   // Exporta el modelo de solicitud de servicio
-    return  mongoose.models.SolicitudServicio || mongoose.model<ISolicitudServicio>("Solicitudes_Servicios", solicitudServicioSchema);
+    return  mongoose.models.Solicitudes_Servicios || mongoose.model<ISolicitudServicio>("Solicitudes_Servicios", solicitudServicioSchema);
+      
 }

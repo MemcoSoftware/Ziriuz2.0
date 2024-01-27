@@ -12,7 +12,7 @@ import { equipoEntity } from "../../../equipos/domain/entities/Equipo.entity";
 // Método para obtener todas las Solicitudes de Servicios con paginación y población
 export const getAllSolicitudesServicios = async (page: number, limit: number): Promise<any[] | undefined> => {
   try {
-    const solicitudServicioModel = solicitudesServiciosEntity();
+    let solicitudServicioModel = solicitudesServiciosEntity();
     let userModel = userEntity();
     let serviciosModel = serviciosEntity();
     let solicitudesEstadosModel = SolicitudesEstadosEntity();
@@ -60,7 +60,7 @@ export const getAllSolicitudesServicios = async (page: number, limit: number): P
 };
 
 // Método para obtener una Solicitud de Servicio por ID con población
-export const getSolicitudServicioByID = async (id: string): Promise<ISolicitudServicio | undefined> => {
+export const getSolicitudServicioByID = async (id: string): Promise<any[] | undefined> => {
   try {
     const solicitudServicioModel = solicitudesServiciosEntity();
     let userModel = userEntity();
@@ -161,7 +161,7 @@ export const updateSolicitudServicioByID = async (id: string, solicitudServicioD
 
 
 // Método para crear una Solicitud de Servicio
-export const createSolicitudServicio = async (solicitudServicioData: any, creadorId: string): Promise<{ success: boolean; message: string }> => {
+export const createSolicitudServicio = async (solicitudServicioData: any): Promise<{ success: boolean; message: string }> => {
   try {
       let response: { success: boolean; message: string } = {
           success: false,
@@ -174,21 +174,30 @@ export const createSolicitudServicio = async (solicitudServicioData: any, creado
       const solicitudesEstadosModel = SolicitudesEstadosEntity();
       const equipoModel = equipoEntity();
 
-      // Verificar si los ObjectIds existen en sus respectivas colecciones
-      const userExists = await userModel.exists({ _id: creadorId });
-      const servicioExists = await serviciosModel.exists({ _id: solicitudServicioData.id_servicio });
-      const solicitudEstadoExists = await solicitudesEstadosModel.exists({ _id: solicitudServicioData.id_solicitud_estado });
-      const equipoExists = await equipoModel.exists({ _id: solicitudServicioData.id_equipo });
-      const cambiadorExists = await userModel.exists({ _id: solicitudServicioData.id_cambiador });
-
-      if (!userExists || !servicioExists || !solicitudEstadoExists || !equipoExists || !cambiadorExists) {
-          LogWarning(`[ORM WARNING]: One or more related entities not found for creating Solicitud Servicio`);
-          response.message = "One or more related entities not found";
-          return response;
+      // Verificar si el creador existe
+      if (!await userModel.findById(solicitudServicioData.id_creador)) {
+          return { success: false, message: "Creador not found" };
       }
 
-      // Asignar el creador a partir del ID pasado como argumento
-      solicitudServicioData.id_creador = creadorId;
+      // Verificar si el servicio existe
+      if (!await serviciosModel.findById(solicitudServicioData.id_servicio)) {
+          return { success: false, message: "Servicio not found" };
+      }
+
+      // Verificar si el estado de solicitud existe
+      if (!await solicitudesEstadosModel.findById(solicitudServicioData.id_solicitud_estado)) {
+          return { success: false, message: "Solicitud Estado not found" };
+      }
+
+      // Verificar si el equipo existe
+      if (!await equipoModel.findById(solicitudServicioData.id_equipo)) {
+          return { success: false, message: "Equipo not found" };
+      }
+
+      // Verificar si el cambiador existe
+      if (solicitudServicioData.id_cambiador && !await userModel.findById(solicitudServicioData.id_cambiador)) {
+          return { success: false, message: "Cambiador not found" };
+      }
 
       // Crear la Solicitud de Servicio
       const newSolicitudServicio = new solicitudServicioModel(solicitudServicioData);
