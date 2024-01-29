@@ -117,7 +117,7 @@ export const deleteSolicitudServicioByID = async (id: string): Promise<any | und
 
 
 // Método para actualizar una Solicitud de Servicio por ID
-export const updateSolicitudServicioByID = async (id: string, solicitudServicioData: any, cambiadorId: string): Promise<{ success: boolean; message: string }> => {
+export const updateSolicitudServicioByID = async (id: string, solicitudServicioData: any): Promise<{ success: boolean; message: string }> => {
   try {
     let response: { success: boolean; message: string } = {
       success: false,
@@ -131,22 +131,25 @@ export const updateSolicitudServicioByID = async (id: string, solicitudServicioD
     const equipoModel = equipoEntity();
 
     // Verificar si los ObjectIds existen en sus respectivas colecciones
-    const userExists = await userModel.exists({ _id: solicitudServicioData.id_creador });
-    const servicioExists = await serviciosModel.exists({ _id: solicitudServicioData.id_servicio });
-    const solicitudEstadoExists = await solicitudesEstadosModel.exists({ _id: solicitudServicioData.id_solicitud_estado });
-    const equipoExists = await equipoModel.exists({ _id: solicitudServicioData.id_equipo });
-    const cambiadorExists = await userModel.exists({ _id: cambiadorId });
-
-    if (!userExists || !servicioExists || !solicitudEstadoExists || !equipoExists || !cambiadorExists) {
-      LogWarning(`[ORM WARNING]: One or more related entities not found for updating Solicitud Servicio ${id}`);
-      response.message = "One or more related entities not found";
-      return response;
+    if (!await userModel.findById(solicitudServicioData.id_creador)) {
+      return { success: false, message: "Creador not found" };
+    }
+    if (!await serviciosModel.findById(solicitudServicioData.id_servicio)) {
+      return { success: false, message: "Servicio not found" };
+    }
+    if (!await solicitudesEstadosModel.findById(solicitudServicioData.id_solicitud_estado)) {
+      return { success: false, message: "Solicitud Estado not found" };
+    }
+    if (!await equipoModel.findById(solicitudServicioData.id_equipo)) {
+      return { success: false, message: "Equipo not found" };
     }
 
-    solicitudServicioData.id_cambiador = cambiadorId;
-
     // Actualizar la Solicitud de Servicio por ID
-    await solicitudServicioModel.findByIdAndUpdate(id, solicitudServicioData);
+    const updatedSolicitudServicio = await solicitudServicioModel.findByIdAndUpdate(id, solicitudServicioData, { new: true });
+
+    if (!updatedSolicitudServicio) {
+      return { success: false, message: `Solicitud Servicio with ID ${id} not found` };
+    }
 
     response.success = true;
     response.message = "Solicitud de Servicio updated successfully";

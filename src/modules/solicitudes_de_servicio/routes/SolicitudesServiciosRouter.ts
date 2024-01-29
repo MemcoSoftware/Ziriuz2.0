@@ -33,21 +33,21 @@ solicitudesServiciosRouter.route('/')
     return res.status(200).send(response);
   })
 
-  // UPDATE:
-  .put(verifyToken, jsonParser, async (req: Request, res: Response) => {
-    const id: any = req?.query?.id;
-    const solicitudServicioData: any = req.body;
-    const cambiadorId: any = req.query.cambiadorId; // Asegúrate de recibir el cambiadorId como parte de la solicitud
+ // UPDATE:
+.put(verifyToken, jsonParser, async (req: Request, res: Response) => {
+  const id: any = req?.query?.id; // El ID de la solicitud de servicio a actualizar
+  const solicitudServicioData: any = req.body; // Los datos de la solicitud de servicio a actualizar
 
-    const controller: SolicitudesServiciosController = new SolicitudesServiciosController();
-    const response: any = await controller.updateSolicitudServicio(id, solicitudServicioData, cambiadorId);
+  const controller: SolicitudesServiciosController = new SolicitudesServiciosController();
+  const response: any = await controller.updateSolicitudServicio(id, solicitudServicioData);
 
-    if (response.success) {
-      return res.status(200).send(response);
-    } else {
-      return res.status(500).send(response);
-    }
-  })
+  if (response.success) {
+    return res.status(200).send(response);
+  } else {
+    return res.status(500).send(response);
+  }
+})
+
 
   // CREATE:
   .post(verifyToken, jsonParser, async (req: Request, res: Response) => {

@@ -54,13 +54,13 @@ export class SolicitudesServiciosController implements ISolicitudesServiciosCont
   
 
   @Put("/")
-  public async updateSolicitudServicio(@Query() id: string, @Body() solicitudServicioData: any, @Query() cambiadorId: string): Promise<any> {
-    if (!id || !cambiadorId) {
+  public async updateSolicitudServicio(@Query() id: string, @Body() solicitudServicioData: any): Promise<any> {
+    if (!solicitudServicioData.id_cambiador) {
       LogWarning('[/api/solicitudes-servicios] Update Solicitud Servicio Request WITHOUT ID or Cambiador ID');
       return { message: "Please provide an Id and Cambiador Id to update an existing Solicitud Servicio" };
     }
 
-    return await updateSolicitudServicioByID(id, solicitudServicioData, cambiadorId);
+    return await updateSolicitudServicioByID(id, solicitudServicioData);
   }
 
   @Post("/")
