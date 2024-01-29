@@ -1,6 +1,6 @@
 // SolicitudesEstados.orm.ts
 import mongoose from "mongoose";
-import SolicitudesEstados from "../entities/SolicitudesEstados.entity";
+import { SolicitudesEstadosEntity } from "../../domain/entities/SolicitudesEstados.entity";
 import { LogError } from "../../../../utils/logger";
 import { ISolicitudesEstados } from "../interfaces/ISolicitudesEstados.interface";
 
@@ -12,7 +12,7 @@ import { ISolicitudesEstados } from "../interfaces/ISolicitudesEstados.interface
 export const getAllSolicitudesEstados = async (page: number, limit: number): Promise<any[] | undefined> => {
   try {
     let response: any = {};
-
+    const SolicitudesEstados = SolicitudesEstadosEntity();
     // Buscar todos los estados (usando paginación)
     const estados: ISolicitudesEstados[] = await SolicitudesEstados
       .find()
@@ -37,8 +37,11 @@ export const getAllSolicitudesEstados = async (page: number, limit: number): Pro
  * Método para obtener un solo estado por ID de la colección "SolicitudesEstados" en el servidor Mongo
  */
 export const getSolicitudesEstadosByID = async (id: string): Promise<ISolicitudesEstados | undefined> => {
+  const SolicitudesEstados = SolicitudesEstadosEntity();
+
   try {
-    return await SolicitudesEstados.findById(id).exec();
+    const solicitudEstado = await SolicitudesEstados.findById(id).exec();
+    return solicitudEstado ? solicitudEstado : undefined;
   } catch (error) {
     LogError(`[ORM ERROR]: Obtaining SolicitudesEstados By ID: ${error}`);
   }
@@ -48,6 +51,8 @@ export const getSolicitudesEstadosByID = async (id: string): Promise<ISolicitude
  * Método para eliminar estado por ID
  */
 export const deleteSolicitudesEstadosByID = async (id: string): Promise<any | undefined> => {
+  const SolicitudesEstados = SolicitudesEstadosEntity();
+
   try {
     return await SolicitudesEstados.deleteOne({ _id: id });
   } catch (error) {
@@ -59,6 +64,8 @@ export const deleteSolicitudesEstadosByID = async (id: string): Promise<any | un
  * Método para actualizar estado por ID
  */
 export const updateSolicitudesEstadosByID = async (id: string, estadoData: any): Promise<{ success: boolean; message: string }> => {
+  const SolicitudesEstados = SolicitudesEstadosEntity();
+
   try {
     await SolicitudesEstados.findByIdAndUpdate(id, estadoData);
 
@@ -79,6 +86,8 @@ export const updateSolicitudesEstadosByID = async (id: string, estadoData: any):
  * Método para crear estado
  */
 export const createSolicitudesEstados = async (estadoData: any): Promise<any | undefined> => {
+  const SolicitudesEstados = SolicitudesEstadosEntity();
+
   try {
     const newEstado = new SolicitudesEstados(estadoData);
     await newEstado.save();

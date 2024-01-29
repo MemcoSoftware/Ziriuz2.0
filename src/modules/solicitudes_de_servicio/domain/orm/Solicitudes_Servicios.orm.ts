@@ -60,13 +60,14 @@ export const getAllSolicitudesServicios = async (page: number, limit: number): P
 };
 
 // Método para obtener una Solicitud de Servicio por ID con población
-export const getSolicitudServicioByID = async (id: string): Promise<any[] | undefined> => {
+export const getSolicitudServicioByID = async (id: string): Promise<ISolicitudServicio | null | undefined> => {
   try {
     const solicitudServicioModel = solicitudesServiciosEntity();
     let userModel = userEntity();
     let serviciosModel = serviciosEntity();
     let solicitudesEstadosModel = SolicitudesEstadosEntity();
     let equipoModel = equipoEntity();
+
     // Buscar solicitud de servicio por ID y poblar campos relacionados
     return await solicitudServicioModel
       .findById(id, { _id: 0 })

@@ -2,10 +2,14 @@
 import mongoose, { Schema } from "mongoose";
 import { ISolicitudServicio } from "../interfaces/Solicitudes_Servicios.interface";
 
-export const solicitudesServiciosEntity = () => {
+class SolicitudesServiciosEntity {
+  private static _instance: mongoose.Model<ISolicitudServicio>;
 
+  private constructor() {}
 
-  const solicitudServicioSchema = new mongoose.Schema<ISolicitudServicio>(
+  static getInstance(): mongoose.Model<ISolicitudServicio> {
+    if (!SolicitudesServiciosEntity._instance) {
+      const solicitudServicioSchema = new mongoose.Schema<ISolicitudServicio>(
     {
     id_creador: {
       type: Schema.Types.ObjectId,
@@ -88,7 +92,14 @@ export const solicitudesServiciosEntity = () => {
     foreignField: "_id",
   });
   
-  // Exporta el modelo de solicitud de servicio
-    return  mongoose.models.Solicitudes_Servicios || mongoose.model<ISolicitudServicio>("Solicitudes_Servicios", solicitudServicioSchema);
-      
+  SolicitudesServiciosEntity._instance = mongoose.models.Solicitudes_Servicios || mongoose.model<ISolicitudServicio>(
+    "Solicitudes_Servicios",
+    solicitudServicioSchema
+  );
 }
+
+return SolicitudesServiciosEntity._instance;
+}
+}
+
+export const solicitudesServiciosEntity = () => SolicitudesServiciosEntity.getInstance();
