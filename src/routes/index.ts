@@ -38,7 +38,7 @@ import serviciosRouter from '../modules/procesos_&_protocolos/routes/ServiciosRo
 import protocolosRouter from '../modules/procesos_&_protocolos/routes/ProtocolosRouter';
 import solicitudesEstadosRouter from '../modules/procesos_&_protocolos/routes/SolicitudesEstadosRouter';
 import solicitudesServiciosRouter from '../modules/solicitudes_de_servicio/routes/SolicitudesServiciosRouter';
-import searchSolicitudesRouter from '@/modules/solicitudes_de_servicio/routes/SearchSolicitudesRouter';
+import searchSolicitudesRouter from '../modules/solicitudes_de_servicio/routes/SearchSolicitudesRouter';
 
 
 // * Server Instance
