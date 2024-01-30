@@ -38,6 +38,7 @@ import serviciosRouter from '../modules/procesos_&_protocolos/routes/ServiciosRo
 import protocolosRouter from '../modules/procesos_&_protocolos/routes/ProtocolosRouter';
 import solicitudesEstadosRouter from '../modules/procesos_&_protocolos/routes/SolicitudesEstadosRouter';
 import solicitudesServiciosRouter from '../modules/solicitudes_de_servicio/routes/SolicitudesServiciosRouter';
+import searchSolicitudesRouter from '@/modules/solicitudes_de_servicio/routes/SearchSolicitudesRouter';
 
 
 // * Server Instance
@@ -96,6 +97,9 @@ server.use('/search/procesos&protocolos', searchProcesosProtocolosRouter) // htt
 // * Redirections to Routers & Controllers -- MODULE SOLICITUDES 
 
 server.use('/solicitudes-servicios', solicitudesServiciosRouter) // http://localhost:8000/api/solicitudes-servicios --> solicitudesServiciosRouter
+
+server.use('/search/solicitudes', searchSolicitudesRouter) // http://localhost:8000/api/search/ --> searchSolicitudesRouter
+
 
 
 export default server;
