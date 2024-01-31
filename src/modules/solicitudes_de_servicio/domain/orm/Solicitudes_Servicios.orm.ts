@@ -6,6 +6,10 @@ import { userEntity } from "../../../users/domain/entities/User.entity";
 import { serviciosEntity } from "../../../procesos_&_protocolos/domain/entities/Servicios.entity";
 import { SolicitudesEstadosEntity } from "../../../procesos_&_protocolos/domain/entities/SolicitudesEstados.entity";
 import { equipoEntity } from "../../../equipos/domain/entities/Equipo.entity";
+import { modeloEquipoEntity } from "../../../equipos/domain/entities/ModeloEquipo.entity";
+import { classDeviceEntity } from "../../../equipos/domain/entities/ClassDevice.entity";
+import { sedeEntity } from "../../../users/domain/entities/Sede.entity";
+import { clientEntity } from "../../../users/domain/entities/Client.entity";
 
 // CRUD
 
@@ -17,6 +21,10 @@ export const getAllSolicitudesServicios = async (page: number, limit: number): P
     let serviciosModel = serviciosEntity();
     let solicitudesEstadosModel = SolicitudesEstadosEntity();
     let equipoModel = equipoEntity();
+    let equipoModeloModel = modeloEquipoEntity();
+    let claseEquipoModel = classDeviceEntity();
+    let sedeModel = sedeEntity();
+    let clientModel = clientEntity();
     let response: any = {};
 
     // Buscar todas las solicitudes de servicios con paginación y poblar campos relacionados
@@ -42,8 +50,31 @@ export const getAllSolicitudesServicios = async (page: number, limit: number): P
       })
       .populate({
         path: 'id_equipo',
-        model: equipoModel,
         select: 'id_sede modelo_equipos id_area id_tipo serie ubicacion frecuencia activo_fijo mtto',
+        populate: [{ // Aquí es donde realizas un populate anidado.
+          path: 'modelo_equipos',
+          select: '_id modelo precio id_clase id_preventivo',
+          model: equipoModeloModel,
+          populate: {
+            path: 'id_clase',
+            select: '_id clase id_preventivo',
+            model: claseEquipoModel,
+          }
+        }, {
+          path: 'id_sede',
+          select: '_id sede_nombre sede_address sede_telefono sede_email id_client',
+          model: sedeModel,
+          populate: {
+            path: 'id_client',
+            select: '_id client_name client_nit client_address client_telefono client_email',
+            model: clientModel,
+          }
+        }]
+      })
+      .populate({
+        path: 'id_cambiador',
+        model: userModel,
+        select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
       })
       .exec() as unknown as ISolicitudServicio[];
 

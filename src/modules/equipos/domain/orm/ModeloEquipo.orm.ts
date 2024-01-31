@@ -63,7 +63,7 @@ export const getModeloEquipoByID = async (id: string): Promise<IModeloEquipo | u
       .populate({
         path: 'id_marca',
         model: marcaEquipo,
-        select: 'marca',
+        select: '_id marca',
       }) // Populate de la relación con Marcas_Equipos
       .populate({
         path: 'id_clase',
@@ -73,7 +73,7 @@ export const getModeloEquipoByID = async (id: string): Promise<IModeloEquipo | u
       .populate({
         path: 'id_preventivo',
         model: preventivoModel,
-        select: 'title codigo version fecha cualitativo mantenimiento cuantitativo otros',
+        select: '_id title codigo version fecha cualitativo mantenimiento cuantitativo otros',
       }) // Populate de la relación con Preventivos
       .exec();
   } catch (error) {

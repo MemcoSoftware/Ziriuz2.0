@@ -39,22 +39,22 @@ export const getAllEquipos = async (page: number, limit: number): Promise<any[] 
       .populate({
         path: 'modelo_equipos',
         model: equipoModeloModel,
-        select: 'modelo precio',
+        select: '_id modelo precio id_clase id_preventivo',
       })
       .populate({
         path: 'id_area',
         model: areaEquipoModel,
-        select: 'area',
+        select: '_id area',
       })
       .populate({
         path: 'id_tipo',
         model: tipoEquipoModel,
-        select: 'tipo',
+        select: '_id tipo',
       })
       .populate({
         path: 'id_sede',
         model: sedeModel, // Populate 'Sedes'
-        select: 'sede_nombre sede_address sede_telefono sede_email id_client', // Include id_client for Clients
+        select: '_id sede_nombre sede_address sede_telefono sede_email id_client', // Include id_client for Clients
       })
       .populate({
         path: 'id_sede.id_client', // Populate 'Clients' within 'Sedes'

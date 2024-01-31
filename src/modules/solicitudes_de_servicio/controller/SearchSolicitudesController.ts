@@ -5,6 +5,10 @@ import { solicitudesServiciosEntity } from '../domain/entities/Solicitudes_Servi
 import { serviciosEntity } from '../../procesos_&_protocolos/domain/entities/Servicios.entity';
 import { SolicitudesEstadosEntity } from '../../procesos_&_protocolos/domain/entities/SolicitudesEstados.entity';
 import { equipoEntity } from '../../equipos/domain/entities/Equipo.entity';
+import { modeloEquipoEntity } from '../../equipos/domain/entities/ModeloEquipo.entity';
+import { classDeviceEntity } from '../../equipos/domain/entities/ClassDevice.entity';
+import { sedeEntity } from '../../users/domain/entities/Sede.entity';
+import { clientEntity } from '../../users/domain/entities/Client.entity';
 
 class SearchSolicitudesController {
   public async searchSolicitudesServiciosByKeyword(keyword: string): Promise<any> {
@@ -20,6 +24,10 @@ class SearchSolicitudesController {
       const servicioModel = serviciosEntity();
       const estadoModel = SolicitudesEstadosEntity();
       const equipoModel = equipoEntity();
+      let equipoModeloModel = modeloEquipoEntity();
+      let claseEquipoModel = classDeviceEntity();
+      let sedeModel = sedeEntity();
+      let clientModel = clientEntity();
       const solicitudServicioModel = solicitudesServiciosEntity();
 
       // Búsqueda en campos relacionados
@@ -58,23 +66,46 @@ class SearchSolicitudesController {
         })
         .populate({
           path: 'id_creador',
-          select: '_id number username name cedula telefono email more_info roles type titulo reg_invima', // Excluye el campo 'password'
+          model: userModel,
+          select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
         })
         .populate({
           path: 'id_servicio',
-          select: '_id servicio', 
+          model: servicioModel,
+          select: 'servicio',
         })
         .populate({
           path: 'id_solicitud_estado',
-          select: '_id estado', 
+          model: estadoModel,
+          select: 'estado',
         })
         .populate({
           path: 'id_equipo',
-          select: '_id id_sede modelo_equipos id_area id_tipo serie ubicacion frecuencia activo_fijo mtto', 
+          select: 'id_sede modelo_equipos id_area id_tipo serie ubicacion frecuencia activo_fijo mtto',
+          populate: [{ // Aquí es donde realizas un populate anidado.
+            path: 'modelo_equipos',
+            select: '_id modelo precio id_clase id_preventivo',
+            model: equipoModeloModel,
+            populate: {
+              path: 'id_clase',
+              select: '_id clase id_preventivo',
+              model: claseEquipoModel,
+            }
+          }, {
+            path: 'id_sede',
+            select: '_id sede_nombre sede_address sede_telefono sede_email id_client',
+            model: sedeModel,
+            populate: {
+              path: 'id_client',
+              select: '_id client_name client_nit client_address client_telefono client_email',
+              model: clientModel,
+            }
+          }]
         })
         .populate({
           path: 'id_cambiador',
-          select: '_id number username name cedula telefono email more_info roles type titulo reg_invima', // Excluye el campo 'password'
+          model: userModel,
+          select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
         })
 
       return solicitudes;
