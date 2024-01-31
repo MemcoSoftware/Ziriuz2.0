@@ -32,7 +32,7 @@ class SearchSolicitudesController {
 
       const servicios = await servicioModel.find({ servicio: { $regex: keyword, $options: 'i' } }).select('_id');
 
-      const estados = await estadoModel.find({ estado: { $regex: keyword, $options: 'i' } }).select('_id');
+      const estados = await estadoModel.find({ estado: { $regex: keyword, $options: 'i' } }).select('_id ');
 
       const equipos = await equipoModel.find({ serie: { $regex: keyword, $options: 'i' } }).select('_id');
 
@@ -49,13 +49,33 @@ class SearchSolicitudesController {
             { id_servicio: { $in: servicioIds } },
             { id_solicitud_estado: { $in: estadoIds } },
             { id_equipo: { $in: equipoIds } },
+            { id_cambiador: { $in: userIds } },
             { aviso: { $regex: keyword, $options: 'i' } },
             { observacion: { $regex: keyword, $options: 'i' } },
             { cambio_estado: { $regex: keyword, $options: 'i' } },
             { observacion_estado: { $regex: keyword, $options: 'i' } },
           ],
         })
-        .populate('id_creador id_servicio id_solicitud_estado id_equipo');
+        .populate({
+          path: 'id_creador',
+          select: '_id number username name cedula telefono email more_info roles type titulo reg_invima', // Excluye el campo 'password'
+        })
+        .populate({
+          path: 'id_servicio',
+          select: '_id servicio', 
+        })
+        .populate({
+          path: 'id_solicitud_estado',
+          select: '_id estado', 
+        })
+        .populate({
+          path: 'id_equipo',
+          select: '_id id_sede modelo_equipos id_area id_tipo serie ubicacion frecuencia activo_fijo mtto', 
+        })
+        .populate({
+          path: 'id_cambiador',
+          select: '_id number username name cedula telefono email more_info roles type titulo reg_invima', // Excluye el campo 'password'
+        })
 
       return solicitudes;
     } catch (error) {
