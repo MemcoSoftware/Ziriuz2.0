@@ -10,6 +10,9 @@ import { modeloEquipoEntity } from "../../../equipos/domain/entities/ModeloEquip
 import { classDeviceEntity } from "../../../equipos/domain/entities/ClassDevice.entity";
 import { sedeEntity } from "../../../users/domain/entities/Sede.entity";
 import { clientEntity } from "../../../users/domain/entities/Client.entity";
+import { marcaEquipoEntity } from "../../../equipos/domain/entities/MarcasEquipos.entity";
+import { areaEquipoEntity } from "../../../equipos/domain/entities/AreaEquipo.entity";
+import { tipoEquipoEntity } from "../../../equipos/domain/entities/TipoEquipo.entity";
 
 // CRUD
 
@@ -93,11 +96,19 @@ export const getAllSolicitudesServicios = async (page: number, limit: number): P
 // Método para obtener una Solicitud de Servicio por ID con población
 export const getSolicitudServicioByID = async (id: string): Promise<ISolicitudServicio | null | undefined> => {
   try {
-    const solicitudServicioModel = solicitudesServiciosEntity();
+    let solicitudServicioModel = solicitudesServiciosEntity();
     let userModel = userEntity();
     let serviciosModel = serviciosEntity();
     let solicitudesEstadosModel = SolicitudesEstadosEntity();
     let equipoModel = equipoEntity();
+    let equipoModeloModel = modeloEquipoEntity();
+    let claseEquipoModel = classDeviceEntity();
+    let sedeModel = sedeEntity();
+    let clientModel = clientEntity();
+    let marcaEquipoModel = marcaEquipoEntity();
+    let areaEquipoModel = areaEquipoEntity();
+    let tipoEquipoModel = tipoEquipoEntity();
+    let response: any = {};
 
     // Buscar solicitud de servicio por ID y poblar campos relacionados
     return await solicitudServicioModel
@@ -120,13 +131,48 @@ export const getSolicitudServicioByID = async (id: string): Promise<ISolicitudSe
       })
       .populate({
         path: 'id_equipo',
-        model: equipoModel,
         select: 'id_sede modelo_equipos id_area id_tipo serie ubicacion frecuencia activo_fijo mtto',
+        populate: [{ // Aquí es donde realizas un populate anidado.
+          path: 'modelo_equipos',
+          select: '_id modelo precio id_clase id_preventivo id_marca id_preventivo',
+          model: equipoModeloModel,
+          populate: [{
+            path: 'id_clase',
+            select: '_id clase id_preventivo',
+            model: claseEquipoModel,
+          },
+          {
+            path: 'id_marca',
+            select: '_id marca',
+            model: marcaEquipoModel,
+          }
+        ]
+        }, {
+          path: 'id_sede',
+          select: '_id sede_nombre sede_address sede_telefono sede_email id_client',
+          model: sedeModel,
+          populate: {
+            path: 'id_client',
+            select: '_id client_name client_nit client_address client_telefono client_email',
+            model: clientModel,
+          }
+        },{
+          path: 'id_area',
+          select: '_id area',
+          model: areaEquipoModel,
+        },
+        {
+          path: 'id_tipo',
+          select: '_id tipo',
+          model: tipoEquipoModel,
+        }
+
+      ]
       })
       .populate({
         path: 'id_cambiador',
         model: userModel,
-        select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
+        select: '_id number username name cedula telefono email more_info roles type titulo reg_invima',
       })
       .exec();
   } catch (error) {

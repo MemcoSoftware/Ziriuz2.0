@@ -48,6 +48,8 @@ class SearchEquiposController {
           $or: [
             { serie: { $regex: keyword, $options: 'i' } },
             { ubicacion: { $regex: keyword, $options: 'i' } },
+            { activo_fijo: { $regex: keyword, $options: 'i' } }, // Nuevo campo de búsqueda
+            { mtto: { $regex: keyword, $options: 'i' } }, // Nuevo campo de búsqueda
             { id_sede: { $in: sedeIds } },
             { modelo_equipos: { $in: modeloIds } },
             { id_area: { $in: areaIds } },
@@ -56,28 +58,46 @@ class SearchEquiposController {
         })
         .select('serie ubicacion frecuencia id_sede modelo_equipos id_area id_tipo') // Puedes seleccionar los campos que desees
 
-      // Popula las relaciones virtuales, si es necesario
-      .populate({
-        path: 'modelo_equipos',
-        model: equipoModeloModel,
-        select: 'modelo',
-      })
-      .populate({
-        path: 'id_area',
-        model: areaEquipoModel,
-        select: 'area',
-      })
-      .populate({
-        path: 'id_tipo',
-        model: tipoEquipoModel,
-        select: 'tipo',
-      })
-      .populate({
-        path: 'id_sede',
-        model: sedeModel,
-        select: 'sede_nombre',
-      });
-
+        .populate({
+          path: 'modelo_equipos',
+          model: modeloEquipoEntity(), // Usa la función para obtener el modelo
+          select: 'modelo precio', // Selecciona los campos que deseas mostrar
+          populate: [
+            {
+              path: 'id_marca',
+              model: marcaEquipoEntity(), // Si es necesario, también realiza populate de id_marca
+              select: 'nombre',
+            },
+            {
+              path: 'id_clase',
+              model: classDeviceEntity(), // Si es necesario, también realiza populate de id_clase
+              select: 'clase',
+            },
+            // Agrega más populate si es necesario
+          ],
+        })
+        .populate({
+          path: 'id_area',
+          model: areaEquipoModel,
+          select: 'area',
+        })
+        .populate({
+          path: 'id_tipo',
+          model: tipoEquipoModel,
+          select: 'tipo',
+        })
+        .populate({
+          path: 'id_sede',
+          model: sedeEntity(), // Usa la función para obtener el modelo
+          select: 'sede_nombre sede_address sede_telefono sede_email', // Selecciona los campos que deseas mostrar
+          populate: [
+            {
+              path: 'id_client',
+              model: clientEntity(), // Si es necesario, también realiza populate de id_client
+              select: '_id client_name client_nit client_address client_telefono client_email', // Selecciona los campos que deseas mostrar
+            },
+          ],
+        });
       return equipos;
     } catch (error) {
       console.error(error);
