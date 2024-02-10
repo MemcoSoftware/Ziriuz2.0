@@ -19,3 +19,14 @@ export interface IFallas_AccionesController {
     // Crear FallaAccion
     createFallaAccion(fallaAccion: any): Promise<any>;
 }
+
+export interface IOrdenes_Sub_EstadosController {
+    // Leer todos los OrdenesSubEstados de la BASE DE DATOS || Obtener OrdenSubEstado por ID
+    getOrdenesSubEstados(page: number, limit: number, id?: string): Promise<any>;
+    // Eliminar orden_sub_estado por ID de la BASE DE DATOS
+    deleteOrdenSubEstado(id?: string): Promise<any>;
+    // Actualizar OrdenSubEstado
+    updateOrdenSubEstado(id: string, ordenSubEstado: any): Promise<any>;
+    // Crear OrdenSubEstado
+    createOrdenSubEstado(ordenSubEstado: any): Promise<any>;
+}

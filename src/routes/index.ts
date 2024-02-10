@@ -42,6 +42,7 @@ import searchSolicitudesRouter from '../modules/solicitudes/routes/SearchSolicit
 import visitasEstadosRouter from '../modules/visitas/routes/Visitas_EstadosRouter';
 import ordenesEstadosRouter from '../modules/ordenes/routes/Ordenes_EstadosRouter';
 import fallasAccionesRouter from '../modules/ordenes/routes/Fallas_AccionesRouter';
+import ordenesSubEstadosRouter from '../modules/ordenes/routes/Ordenes_sub_estadosRouter';
 
 
 // * Server Instance
@@ -112,6 +113,8 @@ server.use('/visitas-estados', visitasEstadosRouter) // http://localhost:8000/ap
 
 server.use('/ordenes-estados', ordenesEstadosRouter) // http://localhost:8000/api/ordenes-estados --> ordenesEstadosRouter
 server.use('/fallas-acciones', fallasAccionesRouter) // http://localhost:8000/api/fallas-acciones --> fallasAccionesRouter
+server.use('/ordenes-sub-estados', ordenesSubEstadosRouter) // http://localhost:8000/api/ordenes-sub-estados --> ordenesSubEstadosRouter
+
 
 
 
