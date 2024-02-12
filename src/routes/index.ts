@@ -43,6 +43,10 @@ import visitasEstadosRouter from '../modules/visitas/routes/Visitas_EstadosRoute
 import ordenesEstadosRouter from '../modules/ordenes/routes/Ordenes_EstadosRouter';
 import fallasAccionesRouter from '../modules/ordenes/routes/Fallas_AccionesRouter';
 import ordenesSubEstadosRouter from '../modules/ordenes/routes/Ordenes_sub_estadosRouter';
+import fallasCausasRouter from '../modules/ordenes/routes/Fallas_CausasRouter';
+import fallasModosRouter from '../modules/ordenes/routes/Fallas_ModosRouter';
+import falloSistemasRouter from '../modules/ordenes/routes/Fallo_SistemasRouter';
+import modosFallosRouter from '../modules/ordenes/routes/Modos_FallosRouter';
 
 
 // * Server Instance
@@ -114,6 +118,11 @@ server.use('/visitas-estados', visitasEstadosRouter) // http://localhost:8000/ap
 server.use('/ordenes-estados', ordenesEstadosRouter) // http://localhost:8000/api/ordenes-estados --> ordenesEstadosRouter
 server.use('/fallas-acciones', fallasAccionesRouter) // http://localhost:8000/api/fallas-acciones --> fallasAccionesRouter
 server.use('/ordenes-sub-estados', ordenesSubEstadosRouter) // http://localhost:8000/api/ordenes-sub-estados --> ordenesSubEstadosRouter
+server.use('/fallas-causas', fallasCausasRouter) // http://localhost:8000/api/fallas-causas --> fallasCausasRouter
+server.use('/fallas-modos', fallasModosRouter) // http://localhost:8000/api/fallas-modos --> fallasModosRouter
+server.use('/fallo-sistemas', falloSistemasRouter) // http://localhost:8000/api/fallo-sistemas --> falloSistemasRouter
+server.use('/modos-fallos', modosFallosRouter) // http://localhost:8000/api/modos-fallos --> modosFallosRouter
+
 
 
 
