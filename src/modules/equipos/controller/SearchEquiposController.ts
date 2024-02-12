@@ -23,6 +23,8 @@ class SearchEquiposController {
       const equipoModeloModel = modeloEquipoEntity();
       const areaEquipoModel = areaEquipoEntity();
       const tipoEquipoModel = tipoEquipoEntity();
+      const marcaEquipoModel = marcaEquipoEntity();
+      const classEquipoModel = classDeviceEntity();
       const sedeModel = sedeEntity(); // Import the Sede entity
       const clientModel = clientEntity(); // Import the Client entity
 
@@ -60,17 +62,17 @@ class SearchEquiposController {
 
         .populate({
           path: 'modelo_equipos',
-          model: modeloEquipoEntity(), // Usa la función para obtener el modelo
+          model: equipoModeloModel, // Usa la función para obtener el modelo
           select: 'modelo precio', // Selecciona los campos que deseas mostrar
           populate: [
             {
               path: 'id_marca',
-              model: marcaEquipoEntity(), // Si es necesario, también realiza populate de id_marca
+              model: marcaEquipoModel, // Si es necesario, también realiza populate de id_marca
               select: 'nombre',
             },
             {
               path: 'id_clase',
-              model: classDeviceEntity(), // Si es necesario, también realiza populate de id_clase
+              model: classEquipoModel, // Si es necesario, también realiza populate de id_clase
               select: 'clase',
             },
             // Agrega más populate si es necesario
@@ -88,12 +90,12 @@ class SearchEquiposController {
         })
         .populate({
           path: 'id_sede',
-          model: sedeEntity(), // Usa la función para obtener el modelo
+          model: sedeModel, // Usa la función para obtener el modelo
           select: 'sede_nombre sede_address sede_telefono sede_email', // Selecciona los campos que deseas mostrar
           populate: [
             {
               path: 'id_client',
-              model: clientEntity(), // Si es necesario, también realiza populate de id_client
+              model: clientModel, // Si es necesario, también realiza populate de id_client
               select: '_id client_name client_nit client_address client_telefono client_email', // Selecciona los campos que deseas mostrar
             },
           ],
