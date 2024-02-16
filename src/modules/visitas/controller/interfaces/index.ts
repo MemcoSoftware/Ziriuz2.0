@@ -11,3 +11,13 @@ export interface IVisitasEstadosController {
     createVisitaEstado(visitaEstado: any): Promise<any>;
 }
 
+export interface IVisitasController {
+    // Leer todas las Visitas de la BASE DE DATOS || Obtener Visita por ID
+    getVisitas(page: number, limit: number, id?: string): Promise<any>;
+    // Eliminar visita por ID de la BASE DE DATOS
+    deleteVisita(id?: string): Promise<any>;
+    // Actualizar Visita
+    updateVisita(id: string, visitaData: any): Promise<any>;
+    // Crear Visita
+    createVisita(visitaData: any): Promise<any>;
+}

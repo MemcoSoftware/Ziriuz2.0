@@ -47,6 +47,7 @@ import fallasCausasRouter from '../modules/ordenes/routes/Fallas_CausasRouter';
 import fallasModosRouter from '../modules/ordenes/routes/Fallas_ModosRouter';
 import falloSistemasRouter from '../modules/ordenes/routes/Fallo_SistemasRouter';
 import modosFallosRouter from '../modules/ordenes/routes/Modos_FallosRouter';
+import visitasRouter from '../modules/visitas/routes/VisitasRouter';
 
 
 // * Server Instance
@@ -111,6 +112,7 @@ server.use('/search/solicitudes', searchSolicitudesRouter) // http://localhost:8
 // * Redirections to Routers & Controllers -- MODULE VISITAS
 
 server.use('/visitas-estados', visitasEstadosRouter) // http://localhost:8000/api/visitas-estados --> visitasEstadosRouter
+server.use('/visitas', visitasRouter) // http://localhost:8000/api/visitas --> visitasRouter
 
 
 // * Redirections to Routers & Controllers -- MODULE ORDENES
