@@ -75,3 +75,9 @@ export interface IModos_FallosController {
     createModoFallo(modoFallo: any): Promise<any>;
 }
 
+export interface IOrdenesController {
+    getOrdenes(page: number, limit: number, id?: string): Promise<any>;
+    deleteOrden(id?: string): Promise<any>;
+    updateOrden(id: string, orden: any): Promise<any>;
+    createOrden(orden: any): Promise<any>;
+}

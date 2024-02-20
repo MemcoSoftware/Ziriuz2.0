@@ -30,6 +30,8 @@
   },
   "homepage": "https://github.com/MemcoSoftware/Ziriuz2.0.git#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.515.0",
+    "aws-sdk": "^2.1560.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -41,6 +43,7 @@
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.4.3",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.4",
     "npm": "^9.8.1",
     "otp-generator": "^4.0.1",
@@ -50,6 +53,7 @@
     "tsoa": "^5.1.1"
   },
   "devDependencies": {
+    "@types/aws-sdk": "^2.7.0",
     "@types/bcrypt": "^5.0.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/body-parser": "^1.19.2",
@@ -58,6 +62,7 @@
     "@types/html-to-text": "^9.0.1",
     "@types/jest": "^29.5.3",
     "@types/jsonwebtoken": "^9.0.2",
+    "@types/multer": "^1.4.11",
     "@types/node": "^20.5.0",
     "@types/nodemailer": "^6.4.9",
     "@types/otp-generator": "^4.0.0",

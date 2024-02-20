@@ -3,8 +3,24 @@ import { LogInfo } from "../../../utils/logger";
 import bodyParser from 'body-parser';
 import { verifyToken } from "../middlewares/verifyToken.middleware";
 import { VisitasController } from "../controller/VisitasController";
+import multer, { FileFilterCallback } from 'multer';
+import path from "path";
+
 
 let jsonParser = bodyParser.json();
+
+// Configuración de Multer con validación de tipo de archivo de imagen
+const upload = multer({
+  dest: 'uploads/',
+  fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (['.png', '.jpg', '.jpeg', '.gif'].includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos de imagen'));
+    }
+  },
+});
 
 // Router de Express
 let visitasRouter = express.Router();
@@ -43,14 +59,14 @@ visitasRouter.route('/')
   })
 
   // UPDATE:
-  .put(verifyToken, jsonParser, async (req: Request, res: Response) => {
-    const id: any = req?.query?.id;
-    const visitaData: any = req.body; // Obtener los datos de Visita del cuerpo
+  .put(verifyToken, jsonParser, upload.single('image'), async (req: Request, res: Response) => {
+    const id: any = req.query.id;
+    const visitaData: any = req.body;  // Datos de la visita
+    const file = req.file;  // El archivo cargado, si existe
 
-    // Instancia del controlador para ejecutar un método
+    LogInfo(`Update Visita with ID: ${id}`);
     const controller: VisitasController = new VisitasController();
-
-    const response: any = await controller.updateVisitas(id, visitaData);
+    const response: any = await controller.updateVisitas(id, visitaData, file);
 
     if (response.success) {
       return res.status(200).send(response);

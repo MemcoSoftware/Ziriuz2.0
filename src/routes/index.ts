@@ -48,6 +48,7 @@ import fallasModosRouter from '../modules/ordenes/routes/Fallas_ModosRouter';
 import falloSistemasRouter from '../modules/ordenes/routes/Fallo_SistemasRouter';
 import modosFallosRouter from '../modules/ordenes/routes/Modos_FallosRouter';
 import visitasRouter from '../modules/visitas/routes/VisitasRouter';
+import ordenesRouter from '../modules/ordenes/routes/OrdenesRouter';
 
 
 // * Server Instance
@@ -124,6 +125,7 @@ server.use('/fallas-causas', fallasCausasRouter) // http://localhost:8000/api/fa
 server.use('/fallas-modos', fallasModosRouter) // http://localhost:8000/api/fallas-modos --> fallasModosRouter
 server.use('/fallo-sistemas', falloSistemasRouter) // http://localhost:8000/api/fallo-sistemas --> falloSistemasRouter
 server.use('/modos-fallos', modosFallosRouter) // http://localhost:8000/api/modos-fallos --> modosFallosRouter
+server.use('/ordenes', ordenesRouter) // http://localhost:8000/api/ordenes --> ordenesRouter
 
 
 

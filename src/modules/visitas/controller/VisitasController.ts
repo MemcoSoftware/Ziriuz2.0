@@ -1,6 +1,6 @@
 // VisitasController.ts
 
-import { Get, Query, Route, Tags, Delete, Put, Body, Post } from "tsoa";
+import { Get, Query, Route, Tags, Delete, Put, Body, Post, UploadedFile } from "tsoa";
 import { LogSuccess, LogError } from "../../../utils/logger";
 import {
   createVisita,
@@ -9,6 +9,9 @@ import {
   getVisitaByID,
   updateVisitaByID
 } from "../domain/orm/Visitas.orm";
+import { uploadVisitaImageToS3 } from "../../../services/s3bucket"; 
+import fs from 'fs';
+
 
 @Route("/api/visitas")
 @Tags("VisitasController")
@@ -52,24 +55,38 @@ export class VisitasController {
   }
 
   @Put("/")
-  public async updateVisitas(@Query() id: string, @Body() visitaData: any): Promise<any> {
-    let response: { success: boolean; message: string } = {
-      success: false,
-      message: "",
-    };
+  public async updateVisitas(@Query() id: string, @Body() visitaData: any, @UploadedFile() file?: Express.Multer.File): Promise<any> {
+    let response = { success: false, message: "" };
 
     if (!id) {
-      LogError('[/api/visitas] Update Visita Request WITHOUT ID');
-      response.message = "Please provide an Id to update an existing Visita";
-      return response;
+      return { success: false, message: "Please provide an Id to update an existing Visita" };
     }
 
-    // Actualizar la Visita con los datos proporcionados
-    await updateVisitaByID(id, visitaData);
+    if (file) {
+      try {
+        const uploadResult = await uploadVisitaImageToS3(file);
+        // Suponiendo que quieres añadir la imagen en el primer objeto de actividades
+        if(visitaData.actividades && visitaData.actividades.length > 0) {
+          visitaData.actividades[0].id_image = uploadResult.Key; // Actualiza la referencia a la imagen
+        }
 
-    response.success = true;
-    response.message = `Visita with ID ${id} updated successfully`;
-    return response;
+        // Elimina el archivo temporal después de la carga exitosa
+        fs.unlink(file.path, err => {
+          if (err) {
+            console.error("Error al eliminar el archivo temporal:", err);
+          } else {
+            console.log(`Archivo temporal ${file.path} eliminado correctamente.`);
+          }
+        });
+      } catch (error) {
+        console.error("Error al subir el archivo a S3:", error);
+        return { success: false, message: "Error uploading file to S3: " + error };
+      }
+    }
+
+    // Continúa con la actualización de la visita
+    await updateVisitaByID(id, visitaData);
+    return { success: true, message: `Visita with ID ${id} updated successfully` };
   }
 
   @Post("/")
