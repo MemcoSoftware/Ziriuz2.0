@@ -22,6 +22,8 @@ import { classDeviceEntity } from "../../../equipos/domain/entities/ClassDevice.
 import { areaEquipoEntity } from "../../../equipos/domain/entities/AreaEquipo.entity";
 import { tipoEquipoEntity } from "../../../equipos/domain/entities/TipoEquipo.entity";
 import { visitasEstadosEntity } from "../../../visitas/domain/entities/Visitas_Estados.entity";
+import { protocolosEntity } from "../../../procesos_&_protocolos/domain/entities/Protocolos.entity";
+import { camposEntity } from "../../../procesos_&_protocolos/domain/entities/Campos.entity";
 // Import other necessary entities for relationships
 
 // CRUD
@@ -51,6 +53,8 @@ export const getAllOrdenes = async (page: number, limit: number): Promise<any[] 
     const tipoEquipoModel = tipoEquipoEntity();
 
     const visitaEstadoModel = visitasEstadosEntity();
+    const protocolosModel = protocolosEntity();
+    const camposModel = camposEntity();
     // Import and define other necessary models for population
 
     const ordenes: IOrden[] = await ordenModel
@@ -152,6 +156,18 @@ export const getAllOrdenes = async (page: number, limit: number): Promise<any[] 
             path: 'id_cerrador',
             model: userModel,
             select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
+          },
+          {
+            path: 'ids_protocolos',
+            model: protocolosModel,
+          },
+          {
+            path: 'actividades.id_protocolo',
+            model: protocolosModel,
+          },
+          {
+            path: 'actividades.ids_campos_preventivo.id_campo',
+            model: camposModel,
           }
         ]
       })
@@ -162,6 +178,7 @@ export const getAllOrdenes = async (page: number, limit: number): Promise<any[] 
       .populate({
         path: 'id_creador',
         model: userModel,
+        select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
       })
       .populate({
         path: 'id_cerrador',
