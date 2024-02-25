@@ -243,6 +243,17 @@ export const getOrdenByID = async (id: string): Promise<IOrden | undefined> => {
     const servicioModel = serviciosEntity();
     const solicitudEstadoModel = SolicitudesEstadosEntity();
     const equipoModel = equipoEntity();
+    const sedeModel = sedeEntity();
+    const clientModel = clientEntity();
+    const modeloEquiposModel = modeloEquipoEntity();
+    const marcaEquipoModel = marcaEquipoEntity();
+    const claseEquipoModel = classDeviceEntity();
+    const areaEquipoModel = areaEquipoEntity();
+    const tipoEquipoModel = tipoEquipoEntity();
+
+    const visitaEstadoModel = visitasEstadosEntity();
+    const protocolosModel = protocolosEntity();
+    const camposModel = camposEntity();
     
     return await ordenModel
       .findById(id)
@@ -266,6 +277,40 @@ export const getOrdenByID = async (id: string): Promise<IOrden | undefined> => {
           {
             path: 'id_equipo',
             model: equipoModel,
+            populate :[
+              {
+                path: 'id_sede',
+                model: sedeModel,
+                select: '_id sede_nombre sede_address sede_telefono sede_email id_client',
+                populate: {
+                  path: 'id_client',
+                  model: clientModel,
+                }
+
+              },
+              {
+                path: 'modelo_equipos',
+                model: modeloEquiposModel,
+                populate: [
+                  {
+                    path: 'id_marca',
+                    model: marcaEquipoModel,
+                  },
+                  {
+                    path: 'id_clase',
+                    model: claseEquipoModel,
+                  }
+                ]
+              },
+              {
+                path: 'id_area',
+                model: areaEquipoModel,
+              },
+              {
+                path: 'id_tipo',
+                model: tipoEquipoModel,
+              }
+            ]
           },
           {
             path: 'id_cambiador',
@@ -281,6 +326,45 @@ export const getOrdenByID = async (id: string): Promise<IOrden | undefined> => {
       .populate({
         path: 'ids_visitas',
         model: visitaModel,
+        populate: [
+          {
+            path: 'id_visita_estado',
+            model: visitaEstadoModel,
+          },
+          {
+            path: 'id_responsable',
+            model: userModel,
+            select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
+          },
+          {
+            path: 'id_creador',
+            model: userModel,
+            select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
+          },
+          {
+            path: 'id_aprobador',
+            model: userModel,
+            select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
+          }
+          ,
+          {
+            path: 'id_cerrador',
+            model: userModel,
+            select: 'number username name cedula telefono email more_info roles type titulo reg_invima',
+          },
+          {
+            path: 'ids_protocolos',
+            model: protocolosModel,
+          },
+          {
+            path: 'actividades.id_protocolo',
+            model: protocolosModel,
+          },
+          {
+            path: 'actividades.ids_campos_preventivo.id_campo',
+            model: camposModel,
+          }
+        ]
       })
       .populate({
         path: 'ids_orden_sub_estados',
