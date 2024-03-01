@@ -5,6 +5,7 @@ import { IVisitas_Estados } from "./IVisitas_Estados.interface";
 import { ICampos } from "../../../procesos_&_protocolos/domain/interfaces/ICampos.interface";
 import { IProtocolos } from "../../../procesos_&_protocolos/domain/interfaces/IProtocolos.interface";
 import { IUser } from "../../../users/domain/interfaces/IUser.interface";
+import { IOrden } from "../../../ordenes/domain/interfaces/IOrden.interface";
 
 interface ICampoPreventivo {
   _id?: ObjectId;
@@ -28,6 +29,7 @@ export interface IVisitas extends Document {
   id_cerrador?: IUser | ObjectId;
   ids_protocolos?: ObjectId[];
   actividades?: IActividad[];
+  id_orden?: IOrden | ObjectId;
   fecha_inicio?: string;
   ejecutar_sede?: boolean;
   duracion?: string;

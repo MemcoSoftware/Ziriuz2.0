@@ -24,6 +24,7 @@ const VisitasSchema = new Schema<IVisitas>({
   id_cerrador: { type: Schema.Types.ObjectId, ref: "Users", required: false },
   ids_protocolos: [{ type: Schema.Types.ObjectId, ref: "Protocolos", required: false }],
   actividades: [ActividadSchema],
+  id_orden: [{ type: Schema.Types.ObjectId, ref: "Ordenes", required: false }],
   fecha_inicio: { type: String, required: false },
   ejecutar_sede: { type: Boolean, required: false },
   duracion: { type: String, required: false },
