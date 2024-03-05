@@ -157,11 +157,11 @@ export const updateVisitaByID = async (id: string, visitaData: any): Promise<{ s
 /**
  * Método para crear una nueva visita.
  */
-export const createVisita = async (visitaData: any): Promise<{ success: boolean; message: string }> => {
+export const createVisita = async (visitaData: any): Promise<{ success: boolean; message: string; visitaId?: string }> => {
   try {
     const newVisita = new (visitasEntity())(visitaData);
-    await newVisita.save();
-    return { success: true, message: "Visita creada correctamente" };
+    const savedVisita = await newVisita.save();
+    return { success: true, message: "Visita creada correctamente", visitaId: savedVisita._id };
   } catch (error) {
     LogError('[ORM ERROR]: Creating Visita: ' + error);
     return { success: false, message: "Error al crear la visita" };

@@ -96,7 +96,7 @@ export class VisitasController {
       const response = await createVisita(visitaData);
 
       if (response.success) {
-        return response;
+        return { success: true, message: "Visita creada correctamente", visitaId: response.visitaId };
       } else {
         LogError(`[Controller ERROR]: Creating Visita: ${response.message}`);
         return response;
@@ -109,4 +109,5 @@ export class VisitasController {
       };
     }
   }
+
 }
