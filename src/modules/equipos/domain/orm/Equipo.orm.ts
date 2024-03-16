@@ -8,6 +8,11 @@ import { areaEquipoEntity } from "../entities/AreaEquipo.entity";
 import { tipoEquipoEntity } from "../entities/TipoEquipo.entity";
 import { sedeEntity } from "../../../users/domain/entities/Sede.entity";
 import { clientEntity } from "../../../users/domain/entities/Client.entity";
+import { classDeviceEntity } from "../entities/ClassDevice.entity";
+import { marcaEquipoEntity } from "../entities/MarcasEquipos.entity";
+import { preventivosEntity } from "../../../procesos_&_protocolos/domain/entities/Preventivos.entity";
+import { camposEntity } from "../../../procesos_&_protocolos/domain/entities/Campos.entity";
+import { camposTiposEntity } from "../../../procesos_&_protocolos/domain/entities/Campos_Tipos.entity";
 
 // CRUD
 
@@ -26,8 +31,13 @@ export const getAllEquipos = async (page: number, limit: number): Promise<any[] 
     let equipoModeloModel = modeloEquipoEntity();
     let areaEquipoModel = areaEquipoEntity();
     let tipoEquipoModel = tipoEquipoEntity();
-    let sedeModel = sedeEntity(); // Import the Sede entity
-    let clientModel = clientEntity(); // Import the Client entity
+    let sedeModel = sedeEntity(); 
+    let clientModel = clientEntity(); 
+    let claseEquipoModel = classDeviceEntity();
+    let marcaEquipoModel = marcaEquipoEntity();
+    let preventivoModel = preventivosEntity();
+    let campoModel = camposEntity();
+    let tipoCampoModel = camposTiposEntity();
     let response: any = {};
 
     // Search all equipos (using pagination) and populate 'modelo_equipos', 'id_area', 'id_tipo', 'id_sede', and 'id_client'
@@ -39,27 +49,73 @@ export const getAllEquipos = async (page: number, limit: number): Promise<any[] 
       .populate({
         path: 'modelo_equipos',
         model: equipoModeloModel,
-        select: '_id modelo precio id_clase id_preventivo',
+        select: 'modelo precio id_marca id_clase id_preventivo',
+        populate: [{
+          path: 'id_clase',
+          model: claseEquipoModel,
+        },
+        {
+          path: 'id_marca',
+          model: marcaEquipoModel,
+        },
+        {
+          path: 'id_preventivo',
+          model: preventivoModel,
+          populate: [{ 
+            path: 'cualitativo',
+            model: campoModel,
+            populate: {
+              path: 'id_tipo',
+              model: tipoCampoModel,
+            }
+          },
+          { 
+            path: 'mantenimiento',
+            model: campoModel,
+            populate: {
+              path: 'id_tipo',
+              model: tipoCampoModel,
+            }
+          },
+          { 
+            path: 'cuantitativo.campo',
+            model: campoModel,
+            populate: {
+              path: 'id_tipo',
+              model: tipoCampoModel,
+            }
+          },
+          { 
+            path: 'otros',
+            model: campoModel,
+            populate: {
+              path: 'id_tipo',
+              model: tipoCampoModel,
+            }
+          },
+        
+        ]
+        }
+      ]
       })
       .populate({
         path: 'id_area',
         model: areaEquipoModel,
-        select: '_id area',
+        select: 'area',
       })
       .populate({
         path: 'id_tipo',
         model: tipoEquipoModel,
-        select: '_id tipo',
+        select: 'tipo',
       })
       .populate({
         path: 'id_sede',
-        model: sedeModel, // Populate 'Sedes'
-        select: '_id sede_nombre sede_address sede_telefono sede_email id_client', // Include id_client for Clients
-      })
-      .populate({
-        path: 'id_sede.id_client', // Populate 'Clients' within 'Sedes'
-        model: clientModel,
-        select: 'client_name client_nit client_address client_telefono client_email',
+        model: sedeModel, 
+        select: 'sede_nombre sede_address sede_telefono sede_email id_client',
+        populate: {
+          path: 'id_client',
+          model: clientModel, 
+        }
       })
       .exec() as unknown as IEquipo[];
 
@@ -89,7 +145,11 @@ export const getEquipoByID = async (id: string): Promise<IEquipo | undefined> =>
     let tipoEquipoModel = tipoEquipoEntity();
     let sedeModel = sedeEntity(); 
     let clientModel = clientEntity(); 
-
+    let claseEquipoModel = classDeviceEntity();
+    let marcaEquipoModel = marcaEquipoEntity();
+    let preventivoModel = preventivosEntity();
+    let campoModel = camposEntity();
+    let tipoCampoModel = camposTiposEntity();
     // Search Equipo by ID and populate 'modelo_equipos', 'id_area', 'id_tipo', 'id_sede', and 'id_client'
     return await equipoModel
       .findById(id, { _id: 0 })
@@ -97,7 +157,54 @@ export const getEquipoByID = async (id: string): Promise<IEquipo | undefined> =>
       .populate({
         path: 'modelo_equipos',
         model: equipoModeloModel,
-        select: 'modelo precio id_marca id_clase',
+        select: 'modelo precio id_marca id_clase id_preventivo',
+        populate: [{
+          path: 'id_clase',
+          model: claseEquipoModel,
+        },
+        {
+          path: 'id_marca',
+          model: marcaEquipoModel,
+        },
+        {
+          path: 'id_preventivo',
+          model: preventivoModel,
+          populate: [{ 
+            path: 'cualitativo',
+            model: campoModel,
+            populate: {
+              path: 'id_tipo',
+              model: tipoCampoModel,
+            }
+          },
+          { 
+            path: 'mantenimiento',
+            model: campoModel,
+            populate: {
+              path: 'id_tipo',
+              model: tipoCampoModel,
+            }
+          },
+          { 
+            path: 'cuantitativo.campo',
+            model: campoModel,
+            populate: {
+              path: 'id_tipo',
+              model: tipoCampoModel,
+            }
+          },
+          { 
+            path: 'otros',
+            model: campoModel,
+            populate: {
+              path: 'id_tipo',
+              model: tipoCampoModel,
+            }
+          },
+        
+        ]
+        }
+      ]
       })
       .populate({
         path: 'id_area',
