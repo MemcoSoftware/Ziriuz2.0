@@ -5,6 +5,7 @@ import { verifyToken } from "../middlewares/verifyToken.middleware";
 import { VisitasController } from "../controller/VisitasController";
 import multer, { FileFilterCallback } from 'multer';
 import path from "path";
+import { generatePresignedUrl } from "../../../services/s3bucket";
 
 
 let jsonParser = bodyParser.json();
@@ -90,5 +91,21 @@ visitasRouter.route('/')
     }
   });
 
+  // Endpoint para generar una URL firmada
+    visitasRouter.route('/generate-presigned-url')
+    .get(verifyToken, async (req: Request, res: Response) => {
+      const fileName = req.query.fileName as string; // Asegúrate de validar y sanitizar la entrada del usuario
+
+      if (!fileName) {
+        return res.status(400).send('Nombre de archivo no proporcionado');
+      }
+
+      try {
+        const url = await generatePresignedUrl(fileName);
+        return res.json({ presignedUrl: url });
+      } catch (err) {
+        return res.status(500).send('No se pudo generar la URL firmada');
+      }
+    });
 // Exportar visitasRouter
 export default visitasRouter;

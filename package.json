@@ -31,6 +31,7 @@
   "homepage": "https://github.com/MemcoSoftware/Ziriuz2.0.git#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.515.0",
+    "@aws-sdk/s3-request-presigner": "^3.537.0",
     "aws-sdk": "^2.1560.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
